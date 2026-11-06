@@ -4,7 +4,7 @@ The MIT license in `LICENSE` covers only the code written for this project.
 
 | Component | Use | License |
 |---|---|---|
-| Geist Serif | Font bundled into every exported report and the project page | SIL Open Font License 1.1, Copyright (c) 2023 Vercel, in collaboration with basement.studio. Full text in `licenses/Geist-OFL-1.1.txt`. |
+| Geist Serif, Geist | Fonts bundled with the project page. Geist Serif is also bundled into every exported report | SIL Open Font License 1.1, Copyright (c) 2023 Vercel, in collaboration with basement.studio. Full text in `licenses/Geist-OFL-1.1.txt`. |
 | React, React DOM | Viewer and fixtures | MIT |
 | Playwright | Browser automation | Apache 2.0 |
 | Zod | Scenario validation | MIT |
