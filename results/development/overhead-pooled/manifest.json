@@ -2,7 +2,7 @@
   "schema": "trace.bench/1",
   "command": "tsx bench/overhead.ts --out results/overhead",
   "source": {
-    "commit": "95cb8ceaa44b9b2ccd913edf6f1e5db483731704",
+    "commit": "b412699bef18e50250c73feb9aaf0cd6176ce51e",
     "dirty": true
   },
   "dependencies": {

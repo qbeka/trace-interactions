@@ -2,7 +2,7 @@
   "schema": "trace.bench/1",
   "command": "tsx bench/corpus.ts --browser webkit --out results/corpus-webkit",
   "source": {
-    "commit": "3a66aaf24fabee3f60fdf0ec6bc8b18c60ac11bb",
+    "commit": "9af1d42c7719b87dfe49b56b242ef01ca1082b4f",
     "dirty": false
   },
   "dependencies": {
