@@ -1,0 +1,40 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "long-session",
+  "description": "A longer editing session with a resize between opens.",
+  "fixture": { "id": "inspector", "version": "1" },
+  "seed": 2,
+  "initialState": {},
+  "viewport": { "width": 1000, "height": 640, "deviceScaleFactor": 1 },
+  "timing": { "mode": "controlled", "stepMs": 16, "settleMs": 500 },
+  "targets": {
+    "trigger": { "role": "button", "name": "Inspect", "traceId": "trigger" },
+    "panel": { "traceId": "panel" },
+    "nameInput": { "role": "textbox", "name": "Name", "traceId": "name-input" },
+    "close": { "role": "button", "name": "Done", "traceId": "close" }
+  },
+  "requirements": [
+    { "kind": "latest-request-wins", "key": "panel", "terminal": ["open", "closed"] },
+    { "kind": "focus-valid" },
+    { "kind": "geometry-origin", "target": "panel", "anchor": "trigger", "tolerancePx": 4 },
+    { "kind": "geometry-fits", "target": "panel", "insetPx": 8, "tolerancePx": 2 },
+    { "kind": "single-interactive", "target": "panel" }
+  ],
+  "actions": [
+    { "at": 0, "type": "activate", "target": "trigger", "requests": { "panel": "open" }, "note": "open" },
+    { "at": 400, "type": "type", "target": "nameInput", "text": " v2", "note": "edit the name" },
+    { "at": 800, "type": "press", "key": "Tab", "note": "tab to Done" },
+    { "at": 1000, "type": "press", "key": "Shift+Tab", "note": "tab back" },
+    { "at": 1200, "type": "activate", "target": "close", "requests": { "panel": "closed" }, "note": "close" },
+    { "at": 1600, "type": "activate", "target": "trigger", "requests": { "panel": "open" }, "note": "open again" },
+    { "at": 2000, "type": "resize", "width": 860, "height": 640, "note": "narrow the window" },
+    { "at": 2400, "type": "type", "target": "nameInput", "text": " v3", "note": "edit again" },
+    { "at": 2800, "type": "resize", "width": 760, "height": 640, "note": "narrow further" },
+    { "at": 3200, "type": "press", "key": "Escape", "target": "nameInput", "requests": { "panel": "closed" }, "note": "close with Escape" },
+    { "at": 3600, "type": "resize", "width": 920, "height": 640, "note": "widen" },
+    { "at": 4000, "type": "activate", "target": "trigger", "requests": { "panel": "open" }, "note": "reopen" },
+    { "at": 4400, "type": "focus", "target": "nameInput", "note": "focus the name" },
+    { "at": 4800, "type": "type", "target": "nameInput", "text": " v4", "note": "last edit" }
+  ],
+  "cleanup": []
+}

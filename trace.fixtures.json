@@ -1,0 +1,6 @@
+{
+  "schema": "trace.registry/1",
+  "fixtures": [
+    { "id": "inspector", "manifest": "fixtures/inspector/fixture.json" }
+  ]
+}

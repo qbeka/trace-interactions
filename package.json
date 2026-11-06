@@ -15,7 +15,8 @@
   },
   "scripts": {
     "trace": "tsx src/cli.ts",
-    "build:fixtures": "tsx scripts/build-fixtures.ts"
+    "build:fixtures": "tsx scripts/build-fixtures.ts",
+    "build:recorder": "tsx scripts/build-recorder.ts"
   },
   "dependencies": {
     "playwright": "1.65.0",

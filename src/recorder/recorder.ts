@@ -160,21 +160,25 @@ function createRecorder() {
     caf: window.cancelAnimationFrame,
   };
   type Timer = (fn: (...args: unknown[]) => void, ms?: number, ...rest: unknown[]) => number;
+  const due = new Map<number, number>();
   (window as unknown as { setTimeout: Timer }).setTimeout = (fn, ms, ...rest) => {
     const id = (wrapped.setTimeout as unknown as Timer).call(
       window,
       (...args: unknown[]) => {
         entry('timer:timeout').delete(id);
+        due.delete(id);
         fn(...args);
       },
       ms,
       ...rest,
     );
     entry('timer:timeout').add(id);
+    due.set(id, performance.now() + (ms ?? 0));
     return id;
   };
   window.clearTimeout = ((id: number) => {
     entry('timer:timeout').delete(id);
+    due.delete(id);
     wrapped.clearTimeout.call(window, id);
   }) as typeof window.clearTimeout;
   (window as unknown as { setInterval: Timer }).setInterval = (fn, ms, ...rest) => {
@@ -470,6 +474,18 @@ function createRecorder() {
     real.raf(wallLoop);
   };
 
+  /**
+   * What the clock has to step through. With no animation, frame or interval
+   * pending, nothing can change before `nextDue`, so the runner may jump there.
+   * Scenario text and sampling do not depend on this: skipped ticks saw no change.
+   */
+  const activity = (): { busy: boolean; nextDue: number | null } => {
+    const animating = [...document.getAnimations()].some((a) => a.playState !== 'finished' && a.playState !== 'idle');
+    const busy = animating || adopted.size > 0 || (ledger.get('timer:frame')?.size ?? 0) > 0 || (ledger.get('timer:interval')?.size ?? 0) > 0;
+    const soonest = Math.min(...due.values());
+    return { busy, nextDue: Number.isFinite(soonest) ? round(soonest - t0) : null };
+  };
+
   let unsubscribe: (() => void) | null = null;
   let probe: { hits: { timer: boolean; frame: boolean }; el: Element; waapi: Animation; before: { perf: number; date: number } } | null = null;
 
@@ -496,6 +512,7 @@ function createRecorder() {
     async tick() {
       tickNo += 1;
       await settle();
+      return activity();
     },
     settle,
     sample,

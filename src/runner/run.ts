@@ -44,7 +44,9 @@ export interface RunOptions {
   /** `stamps` is the low-overhead performance pass. It records no trace. */
   recording?: 'full' | 'stamps';
   /** Saves screenshots to this directory. Never set during a performance pass. */
-  screenshots?: { dir: string; prefix: string; ticks?: number[] };
+  screenshots?: { dir: string; prefix: string; times?: number[] };
+  /** Disables the idle jump. Used by the test that proves the jump changes nothing. */
+  everyTick?: boolean;
 }
 
 export interface RunOutput extends RunResult {
@@ -260,13 +262,23 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
         now = Math.max(now, time);
         return;
       }
+      const stops = opts.screenshots?.times ?? [];
+      let activity: { busy: boolean; nextDue: number | null } = { busy: true, nextDue: null };
       while (now < time) {
-        const step = Math.min(stepMs, time - now);
+        // While idle, jump to the next due timer. Nothing else can change the page.
+        let step = stepMs;
+        if (!activity.busy && !opts.everyTick) {
+          const due = activity.nextDue !== null && activity.nextDue > now ? activity.nextDue : Infinity;
+          step = Math.max(stepMs, Math.min(due, time) - now);
+        }
+        step = Math.min(step, time - now);
+        const stop = stops.find((t) => t > now && t < now + step);
+        if (stop !== undefined) step = stop - now;
         await page.clock.runFor(step);
         now += step;
         tick += 1;
-        await page.evaluate(() => window.__trace.tick());
-        if (opts.screenshots?.ticks?.includes(tick)) await capture(`tick ${tick}`);
+        activity = await page.evaluate(() => window.__trace.tick());
+        if (stops.includes(now)) await capture(`at ${now} ms`);
       }
     };
 
