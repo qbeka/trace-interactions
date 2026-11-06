@@ -22,7 +22,10 @@ const UNCONTROLLED = [
 
 /** Virtual ms spent proving the clock before a run starts. */
 const CLOCK_PROBE_MS = 16;
-const ACTION_TIMEOUT_MS = 1_000;
+/** How long a target may stay unready before the action is invalid. Real time. */
+const ACTION_TIMEOUT_MS = 2_000;
+/** A slow page load on a busy machine is not a scenario problem. */
+const NAVIGATION_TIMEOUT_MS = 30_000;
 
 /** Same surface as the recorder and no observation at all. Wall mode only. */
 const STUB_RECORDER = `window.__trace = {
@@ -203,6 +206,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
 
     const page = await context.newPage();
     page.setDefaultTimeout(ACTION_TIMEOUT_MS);
+    page.setDefaultNavigationTimeout(NAVIGATION_TIMEOUT_MS);
     await page.route(/^https?:/, (route) => {
       const u = new URL(route.request().url());
       return u.origin === new URL(url).origin ? route.continue() : route.abort();
@@ -213,7 +217,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       .waitForFunction(() => {
         const a = window.__traceFixture;
         return a ? { id: a.id, version: a.version } : null;
-      }, undefined, { timeout: 5_000 })
+      }, undefined, { timeout: 10_000 })
       .then((h) => h.jsonValue())
       .catch(() => null);
     if (!adapter) return invalidResult('the page has no window.__traceFixture adapter', null);
