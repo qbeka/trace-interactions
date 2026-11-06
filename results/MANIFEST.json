@@ -26,12 +26,12 @@
       "bytes": 430
     },
     "demo/fixed/report.data.js": {
-      "sha256": "86bd256f8110f01904b3fc553f9fa0fcc64814cfb9effc910a9bd1b469533a57",
-      "bytes": 58935
+      "sha256": "deca726e36f8f97c58c21578ad5705df934c3e241981a1ff10c4260a3aa61540",
+      "bytes": 58780
     },
     "demo/fixed/report.json": {
-      "sha256": "72ea2e4cc7a76dcafb183667edcb9c84f457e548015602bb5512a4f3b2831904",
-      "bytes": 58909
+      "sha256": "6f762b86b5063c98b9d31f81d7c9e741b7b29bcc96227ea467c04e340436db4a",
+      "bytes": 58754
     },
     "demo/fixed/screenshots/original-baseline-000.png": {
       "sha256": "cd5110f59aff8e9621c208e6d4bbebf45ee25643dc2f38cab8e2c46d87df0e5a",
@@ -122,12 +122,12 @@
       "bytes": 430
     },
     "demo/regression/report.data.js": {
-      "sha256": "fdcc3f6935c50d3cf93243d2e6614bf027a6d3dd222e1569120d07832e9630ee",
-      "bytes": 164432
+      "sha256": "172ca298e18603dd6ad709834323897e5bb39ca9bd072082b575f28fefad182e",
+      "bytes": 164381
     },
     "demo/regression/report.json": {
-      "sha256": "e9995beb2e9562ef93ab65dac98e90cc42e6087c39e9a6c45538dc228d7955c9",
-      "bytes": 164406
+      "sha256": "01271100aba6e62805ece929c13f3d6b7e76809b6c39b1c39f231cdd3758d31f",
+      "bytes": 164355
     },
     "demo/regression/screenshots/original-baseline-000.png": {
       "sha256": "cd5110f59aff8e9621c208e6d4bbebf45ee25643dc2f38cab8e2c46d87df0e5a",
@@ -342,7 +342,7 @@
       "bytes": 5019385
     },
     "results/corpus-chromium/manifest.json": {
-      "sha256": "541576bb72bc481c21a2e6360a4ac003aba44f22ce815211b96d6fcc81702719",
+      "sha256": "41da3cb15c9b381f691d27fc76c5888e301c03b0ca84aeb6e8310855b157f78f",
       "bytes": 1486
     },
     "results/corpus-chromium/rows.json": {
@@ -358,7 +358,7 @@
       "bytes": 594
     },
     "results/corpus-firefox/manifest.json": {
-      "sha256": "4dd96a55173ec460fa575b049a444f2c40904f6186492c74679aa595a1eb8706",
+      "sha256": "2769edf98453d139d52e7f97fe7d8a045d2b6e5aafac57ece08d1a59fe18f0d3",
       "bytes": 1494
     },
     "results/corpus-firefox/rows.json": {
@@ -374,7 +374,7 @@
       "bytes": 595
     },
     "results/corpus-webkit/manifest.json": {
-      "sha256": "7b7acad286abde961f65219ff71a1ed42197e13a6adad38443c161722d1d5931",
+      "sha256": "017f91f1b2f18f19ff5974cf7cf853b1bddb41ee1ed5c9e194b8240498e51d94",
       "bytes": 1490
     },
     "results/corpus-webkit/rows.json": {
@@ -390,7 +390,7 @@
       "bytes": 595
     },
     "results/development/overhead-pooled/manifest.json": {
-      "sha256": "718063eed817074117acb8fad75329765af445b95a53d653379ea231c76e1ae8",
+      "sha256": "0e79ef3253762a316395381cd7106b18383ba1e891ccf710e5659972388c718e",
       "bytes": 1186
     },
     "results/development/overhead-pooled/raw.json": {
@@ -426,7 +426,7 @@
       "bytes": 586
     },
     "results/holdout-final-oracle/manifest.json": {
-      "sha256": "5aa5bdbde96dcafdf6f2f0bb8fdb6dbe4f6247e3ab10c4550b1d2744fedb26fb",
+      "sha256": "ddac9d6d62e5a9a4cc24e5e1494ac7e15dc558829fd8add87c02b85c885ed087",
       "bytes": 1351
     },
     "results/holdout-final-oracle/rows.json": {
@@ -458,7 +458,7 @@
       "bytes": 586
     },
     "results/overhead/manifest.json": {
-      "sha256": "6cfa607b4e4d93418ee30ad4ed5c5c65635d7b0b7a20497907feb92be8cf8b42",
+      "sha256": "1fe8f9d66b85461d75ffc5ccd25fd04e2ef659fef2ccb31b8e57aa4f86a89138",
       "bytes": 1187
     },
     "results/overhead/raw.json": {
@@ -470,7 +470,7 @@
       "bytes": 4177
     },
     "results/random/manifest.json": {
-      "sha256": "92ae9b28f74cb79b7f0223270fb4b7267557683ffa3132e99da685626bc21022",
+      "sha256": "e440ae1ae8e3ceb9bd4fb57f7064419217cef9df2be03414ce950cadb29fe00a",
       "bytes": 2135
     },
     "results/random/rows.json": {
@@ -482,7 +482,7 @@
       "bytes": 697
     },
     "results/reduction-written/manifest.json": {
-      "sha256": "b34a81786bc4e2090753ef6b4b8c35e6633caa0c8a625e01b758549f04c35beb",
+      "sha256": "084663f63c13283023c2f5ffd47d0cff7338b38d92a937daaaea1dde8c36c2af",
       "bytes": 1258
     },
     "results/reduction-written/runs/inspector-stale-origin-0/reduced.scenario.json": {
@@ -550,7 +550,7 @@
       "bytes": 1767
     },
     "results/reduction/manifest.json": {
-      "sha256": "47d9960aaeffe91c58ba313e5da610e64f424380d28454220a634fa92d812530",
+      "sha256": "29365315fe2fa6904d0ffd48b9ad351cb34cce1238902b360586bc30d2836519",
       "bytes": 1205
     },
     "results/reduction/report-sample/manifest.json": {
