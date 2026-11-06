@@ -2,8 +2,8 @@
   "schema": "trace.bench/1",
   "command": "tsx bench/reduction.ts --out results/reduction",
   "source": {
-    "commit": "95cb8ceaa44b9b2ccd913edf6f1e5db483731704",
-    "dirty": true
+    "commit": "7c971c1b3b47deb61e9b34cbff98eade909fded1",
+    "dirty": false
   },
   "dependencies": {
     "playwright": "1.65.0",
@@ -50,6 +50,6 @@
     "maxAttempts": 80,
     "maxSeconds": 180
   },
-  "wallSeconds": 1047,
+  "wallSeconds": 1042,
   "exclusions": []
 }

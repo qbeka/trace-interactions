@@ -19,9 +19,9 @@
         2
       ],
       "elapsedMs": {
-        "median": 29451,
-        "min": 29231,
-        "max": 29658,
+        "median": 29135,
+        "min": 29113,
+        "max": 29171,
         "n": 5
       },
       "attempts": [
@@ -123,9 +123,9 @@
         2
       ],
       "elapsedMs": {
-        "median": 40198,
-        "min": 40064,
-        "max": 40277,
+        "median": 40042,
+        "min": 39868,
+        "max": 40251,
         "n": 5
       },
       "attempts": [
@@ -227,9 +227,9 @@
         2
       ],
       "elapsedMs": {
-        "median": 12513,
-        "min": 12479,
-        "max": 12564,
+        "median": 12526,
+        "min": 12518,
+        "max": 12543,
         "n": 5
       },
       "attempts": [
@@ -309,13 +309,13 @@
   "report": {
     "scenarioActions": 18,
     "events": 764,
-    "traceBytes": 102956,
+    "traceBytes": 103242,
     "bytesPerEvent": 135,
-    "reportBytes": 859513,
+    "reportBytes": 861281,
     "generationMs": {
-      "median": 4.5,
-      "min": 4,
-      "max": 4.7,
+      "median": 4.2,
+      "min": 3.7,
+      "max": 6,
       "n": 5
     }
   }

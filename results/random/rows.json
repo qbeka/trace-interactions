@@ -1,2088 +1,2104 @@
 [
   {
     "fixture": "inspector",
-    "seed": 1,
+    "seed": 1001,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2306
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1002,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2664
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1003,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3029
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1004,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3152
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1005,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2711
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1006,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3246
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1007,
     "outcome": "invalid-run",
-    "reason": "target \"nameInput\" is not on the page",
-    "actionIndex": 0
+    "reason": "not actionable: locator.click: Timeout 2000ms exceeded.",
+    "actionIndex": 11
   },
   {
     "fixture": "inspector",
-    "seed": 2,
+    "seed": 1008,
     "outcome": "clean",
     "violations": [],
-    "ms": 2882
+    "ms": 2510
   },
   {
     "fixture": "inspector",
-    "seed": 3,
+    "seed": 1009,
     "outcome": "clean",
     "violations": [],
-    "ms": 4023
+    "ms": 3884
   },
   {
     "fixture": "inspector",
-    "seed": 4,
+    "seed": 1010,
     "outcome": "clean",
     "violations": [],
-    "ms": 2493
+    "ms": 2465
   },
   {
     "fixture": "inspector",
-    "seed": 5,
+    "seed": 1011,
     "outcome": "clean",
     "violations": [],
-    "ms": 3633
+    "ms": 2831
   },
   {
     "fixture": "inspector",
-    "seed": 6,
-    "outcome": "invalid-run",
-    "reason": "target \"nameInput\" is not on the page",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "inspector",
-    "seed": 7,
+    "seed": 1012,
     "outcome": "clean",
     "violations": [],
-    "ms": 2054
+    "ms": 3598
   },
   {
     "fixture": "inspector",
-    "seed": 8,
+    "seed": 1013,
     "outcome": "clean",
     "violations": [],
-    "ms": 2897
+    "ms": 3230
   },
   {
     "fixture": "inspector",
-    "seed": 9,
+    "seed": 1014,
     "outcome": "clean",
     "violations": [],
-    "ms": 2534
+    "ms": 2371
   },
   {
     "fixture": "inspector",
-    "seed": 10,
+    "seed": 1015,
     "outcome": "clean",
     "violations": [],
-    "ms": 2990
+    "ms": 2727
   },
   {
     "fixture": "inspector",
-    "seed": 11,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2881
-  },
-  {
-    "fixture": "inspector",
-    "seed": 12,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2499
-  },
-  {
-    "fixture": "inspector",
-    "seed": 13,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2780
-  },
-  {
-    "fixture": "inspector",
-    "seed": 14,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2310
-  },
-  {
-    "fixture": "inspector",
-    "seed": 15,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3232
-  },
-  {
-    "fixture": "inspector",
-    "seed": 16,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2325
-  },
-  {
-    "fixture": "inspector",
-    "seed": 17,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2713
-  },
-  {
-    "fixture": "inspector",
-    "seed": 18,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3215
-  },
-  {
-    "fixture": "inspector",
-    "seed": 19,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3351
-  },
-  {
-    "fixture": "inspector",
-    "seed": 20,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2361
-  },
-  {
-    "fixture": "inspector",
-    "seed": 21,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2892
-  },
-  {
-    "fixture": "inspector",
-    "seed": 22,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2723
-  },
-  {
-    "fixture": "inspector",
-    "seed": 23,
-    "outcome": "invalid-run",
-    "reason": "target \"nameInput\" is not on the page",
-    "actionIndex": 2
-  },
-  {
-    "fixture": "inspector",
-    "seed": 24,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2564
-  },
-  {
-    "fixture": "inspector",
-    "seed": 25,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2851
-  },
-  {
-    "fixture": "inspector",
-    "seed": 26,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2162
-  },
-  {
-    "fixture": "inspector",
-    "seed": 27,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3328
-  },
-  {
-    "fixture": "inspector",
-    "seed": 28,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2812
-  },
-  {
-    "fixture": "inspector",
-    "seed": 29,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2239
-  },
-  {
-    "fixture": "inspector",
-    "seed": 30,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2375
-  },
-  {
-    "fixture": "inspector",
-    "seed": 31,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2607
-  },
-  {
-    "fixture": "inspector",
-    "seed": 32,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3516
-  },
-  {
-    "fixture": "inspector",
-    "seed": 33,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2485
-  },
-  {
-    "fixture": "inspector",
-    "seed": 34,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3066
-  },
-  {
-    "fixture": "inspector",
-    "seed": 35,
+    "seed": 1016,
     "outcome": "clean",
     "violations": [],
     "ms": 3047
   },
   {
     "fixture": "inspector",
-    "seed": 36,
+    "seed": 1017,
     "outcome": "clean",
     "violations": [],
-    "ms": 2878
+    "ms": 3652
   },
   {
     "fixture": "inspector",
-    "seed": 37,
+    "seed": 1018,
     "outcome": "clean",
     "violations": [],
-    "ms": 2582
+    "ms": 2492
   },
   {
     "fixture": "inspector",
-    "seed": 38,
+    "seed": 1019,
     "outcome": "clean",
     "violations": [],
-    "ms": 3206
+    "ms": 1533
   },
   {
     "fixture": "inspector",
-    "seed": 39,
+    "seed": 1020,
     "outcome": "clean",
     "violations": [],
-    "ms": 2597
+    "ms": 2157
   },
   {
     "fixture": "inspector",
-    "seed": 40,
+    "seed": 1021,
     "outcome": "clean",
     "violations": [],
-    "ms": 3304
+    "ms": 2914
   },
   {
     "fixture": "inspector",
-    "seed": 41,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2228
-  },
-  {
-    "fixture": "inspector",
-    "seed": 42,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2091
-  },
-  {
-    "fixture": "inspector",
-    "seed": 43,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2943
-  },
-  {
-    "fixture": "inspector",
-    "seed": 44,
+    "seed": 1022,
     "outcome": "invalid-run",
     "reason": "target \"nameInput\" is not on the page",
-    "actionIndex": 4
+    "actionIndex": 2
   },
   {
     "fixture": "inspector",
-    "seed": 45,
+    "seed": 1023,
     "outcome": "clean",
     "violations": [],
-    "ms": 2753
+    "ms": 2727
   },
   {
     "fixture": "inspector",
-    "seed": 46,
+    "seed": 1024,
     "outcome": "clean",
     "violations": [],
-    "ms": 2804
+    "ms": 3177
   },
   {
     "fixture": "inspector",
-    "seed": 47,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3014
-  },
-  {
-    "fixture": "inspector",
-    "seed": 48,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2295
-  },
-  {
-    "fixture": "inspector",
-    "seed": 49,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3314
-  },
-  {
-    "fixture": "inspector",
-    "seed": 50,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2525
-  },
-  {
-    "fixture": "inspector",
-    "seed": 51,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2372
-  },
-  {
-    "fixture": "inspector",
-    "seed": 52,
-    "outcome": "invalid-run",
-    "reason": "target \"nameInput\" is not on the page",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "inspector",
-    "seed": 53,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2810
-  },
-  {
-    "fixture": "inspector",
-    "seed": 54,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2414
-  },
-  {
-    "fixture": "inspector",
-    "seed": 55,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2240
-  },
-  {
-    "fixture": "inspector",
-    "seed": 56,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2478
-  },
-  {
-    "fixture": "inspector",
-    "seed": 57,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2961
-  },
-  {
-    "fixture": "inspector",
-    "seed": 58,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3099
-  },
-  {
-    "fixture": "inspector",
-    "seed": 59,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3030
-  },
-  {
-    "fixture": "inspector",
-    "seed": 60,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2705
-  },
-  {
-    "fixture": "inspector",
-    "seed": 61,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2717
-  },
-  {
-    "fixture": "inspector",
-    "seed": 62,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2477
-  },
-  {
-    "fixture": "inspector",
-    "seed": 63,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2797
-  },
-  {
-    "fixture": "inspector",
-    "seed": 64,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2351
-  },
-  {
-    "fixture": "inspector",
-    "seed": 65,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3324
-  },
-  {
-    "fixture": "inspector",
-    "seed": 66,
-    "outcome": "invalid-run",
-    "reason": "target \"close\" is not on the page",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "inspector",
-    "seed": 67,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2136
-  },
-  {
-    "fixture": "inspector",
-    "seed": 68,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2982
-  },
-  {
-    "fixture": "inspector",
-    "seed": 69,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2205
-  },
-  {
-    "fixture": "inspector",
-    "seed": 70,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3296
-  },
-  {
-    "fixture": "inspector",
-    "seed": 71,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2857
-  },
-  {
-    "fixture": "inspector",
-    "seed": 72,
+    "seed": 1025,
     "outcome": "clean",
     "violations": [],
     "ms": 2604
   },
   {
     "fixture": "inspector",
-    "seed": 73,
+    "seed": 1026,
     "outcome": "clean",
     "violations": [],
-    "ms": 2002
+    "ms": 2981
   },
   {
     "fixture": "inspector",
-    "seed": 74,
+    "seed": 1027,
     "outcome": "clean",
     "violations": [],
-    "ms": 2586
+    "ms": 3149
   },
   {
     "fixture": "inspector",
-    "seed": 75,
+    "seed": 1028,
     "outcome": "clean",
     "violations": [],
-    "ms": 2022
+    "ms": 3414
   },
   {
     "fixture": "inspector",
-    "seed": 76,
+    "seed": 1029,
     "outcome": "clean",
     "violations": [],
-    "ms": 2285
+    "ms": 2176
   },
   {
     "fixture": "inspector",
-    "seed": 77,
+    "seed": 1030,
     "outcome": "clean",
     "violations": [],
-    "ms": 2357
+    "ms": 2439
   },
   {
     "fixture": "inspector",
-    "seed": 78,
+    "seed": 1031,
     "outcome": "clean",
     "violations": [],
-    "ms": 2208
+    "ms": 2973
   },
   {
     "fixture": "inspector",
-    "seed": 79,
+    "seed": 1032,
     "outcome": "clean",
     "violations": [],
-    "ms": 3180
+    "ms": 2607
   },
   {
     "fixture": "inspector",
-    "seed": 80,
+    "seed": 1033,
     "outcome": "clean",
     "violations": [],
-    "ms": 2258
+    "ms": 2709
   },
   {
     "fixture": "inspector",
-    "seed": 81,
+    "seed": 1034,
     "outcome": "clean",
     "violations": [],
-    "ms": 2959
+    "ms": 2988
   },
   {
     "fixture": "inspector",
-    "seed": 82,
+    "seed": 1035,
     "outcome": "clean",
     "violations": [],
-    "ms": 3378
+    "ms": 2830
   },
   {
     "fixture": "inspector",
-    "seed": 83,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2613
-  },
-  {
-    "fixture": "inspector",
-    "seed": 84,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2895
-  },
-  {
-    "fixture": "inspector",
-    "seed": 85,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3006
-  },
-  {
-    "fixture": "inspector",
-    "seed": 86,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3024
-  },
-  {
-    "fixture": "inspector",
-    "seed": 87,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3627
-  },
-  {
-    "fixture": "inspector",
-    "seed": 88,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3804
-  },
-  {
-    "fixture": "inspector",
-    "seed": 89,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1890
-  },
-  {
-    "fixture": "inspector",
-    "seed": 90,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2573
-  },
-  {
-    "fixture": "inspector",
-    "seed": 91,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2538
-  },
-  {
-    "fixture": "inspector",
-    "seed": 92,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2400
-  },
-  {
-    "fixture": "inspector",
-    "seed": 93,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2877
-  },
-  {
-    "fixture": "inspector",
-    "seed": 94,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 3798
-  },
-  {
-    "fixture": "inspector",
-    "seed": 95,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2473
-  },
-  {
-    "fixture": "inspector",
-    "seed": 96,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2538
-  },
-  {
-    "fixture": "inspector",
-    "seed": 97,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2776
-  },
-  {
-    "fixture": "inspector",
-    "seed": 98,
-    "outcome": "invalid-run",
-    "reason": "target \"close\" is not on the page",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "inspector",
-    "seed": 99,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2758
-  },
-  {
-    "fixture": "inspector",
-    "seed": 100,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2790
-  },
-  {
-    "fixture": "overlay",
-    "seed": 1,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2247
-  },
-  {
-    "fixture": "overlay",
-    "seed": 2,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2127
-  },
-  {
-    "fixture": "overlay",
-    "seed": 3,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2601
-  },
-  {
-    "fixture": "overlay",
-    "seed": 4,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2633
-  },
-  {
-    "fixture": "overlay",
-    "seed": 5,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1978
-  },
-  {
-    "fixture": "overlay",
-    "seed": 6,
-    "outcome": "invalid-run",
-    "reason": "target \"password\" is not on the page",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "overlay",
-    "seed": 7,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2710
-  },
-  {
-    "fixture": "overlay",
-    "seed": 8,
+    "seed": 1036,
     "outcome": "clean",
     "violations": [],
     "ms": 2390
   },
   {
-    "fixture": "overlay",
-    "seed": 9,
+    "fixture": "inspector",
+    "seed": 1037,
     "outcome": "clean",
     "violations": [],
-    "ms": 2485
+    "ms": 2740
   },
   {
-    "fixture": "overlay",
-    "seed": 10,
+    "fixture": "inspector",
+    "seed": 1038,
     "outcome": "clean",
     "violations": [],
-    "ms": 3471
+    "ms": 2699
   },
   {
-    "fixture": "overlay",
-    "seed": 11,
+    "fixture": "inspector",
+    "seed": 1039,
     "outcome": "clean",
     "violations": [],
-    "ms": 2945
+    "ms": 2486
   },
   {
-    "fixture": "overlay",
-    "seed": 12,
+    "fixture": "inspector",
+    "seed": 1040,
     "outcome": "clean",
     "violations": [],
-    "ms": 2576
+    "ms": 2610
   },
   {
-    "fixture": "overlay",
-    "seed": 13,
+    "fixture": "inspector",
+    "seed": 1041,
     "outcome": "clean",
     "violations": [],
-    "ms": 2198
+    "ms": 3133
   },
   {
-    "fixture": "overlay",
-    "seed": 14,
+    "fixture": "inspector",
+    "seed": 1042,
     "outcome": "clean",
     "violations": [],
-    "ms": 2417
+    "ms": 2642
   },
   {
-    "fixture": "overlay",
-    "seed": 15,
+    "fixture": "inspector",
+    "seed": 1043,
     "outcome": "clean",
     "violations": [],
-    "ms": 2060
+    "ms": 2674
   },
   {
-    "fixture": "overlay",
-    "seed": 16,
+    "fixture": "inspector",
+    "seed": 1044,
     "outcome": "clean",
     "violations": [],
-    "ms": 2842
+    "ms": 2521
   },
   {
-    "fixture": "overlay",
-    "seed": 17,
+    "fixture": "inspector",
+    "seed": 1045,
     "outcome": "clean",
     "violations": [],
-    "ms": 2285
+    "ms": 3233
   },
   {
-    "fixture": "overlay",
-    "seed": 18,
+    "fixture": "inspector",
+    "seed": 1046,
     "outcome": "clean",
     "violations": [],
-    "ms": 2452
+    "ms": 2158
   },
   {
-    "fixture": "overlay",
-    "seed": 19,
+    "fixture": "inspector",
+    "seed": 1047,
     "outcome": "clean",
     "violations": [],
-    "ms": 2476
+    "ms": 2953
   },
   {
-    "fixture": "overlay",
-    "seed": 20,
+    "fixture": "inspector",
+    "seed": 1048,
     "outcome": "clean",
     "violations": [],
-    "ms": 2198
+    "ms": 3484
   },
   {
-    "fixture": "overlay",
-    "seed": 21,
+    "fixture": "inspector",
+    "seed": 1049,
     "outcome": "clean",
     "violations": [],
-    "ms": 2266
+    "ms": 3001
   },
   {
-    "fixture": "overlay",
-    "seed": 22,
+    "fixture": "inspector",
+    "seed": 1050,
     "outcome": "clean",
     "violations": [],
-    "ms": 1611
+    "ms": 2291
   },
   {
-    "fixture": "overlay",
-    "seed": 23,
+    "fixture": "inspector",
+    "seed": 1051,
     "outcome": "clean",
     "violations": [],
-    "ms": 2512
+    "ms": 3549
   },
   {
-    "fixture": "overlay",
-    "seed": 24,
+    "fixture": "inspector",
+    "seed": 1052,
     "outcome": "clean",
     "violations": [],
-    "ms": 1899
+    "ms": 2913
   },
   {
-    "fixture": "overlay",
-    "seed": 25,
+    "fixture": "inspector",
+    "seed": 1053,
     "outcome": "clean",
     "violations": [],
-    "ms": 2854
+    "ms": 2277
   },
   {
-    "fixture": "overlay",
-    "seed": 26,
+    "fixture": "inspector",
+    "seed": 1054,
     "outcome": "clean",
     "violations": [],
-    "ms": 2482
+    "ms": 2707
   },
   {
-    "fixture": "overlay",
-    "seed": 27,
+    "fixture": "inspector",
+    "seed": 1055,
     "outcome": "clean",
     "violations": [],
-    "ms": 2195
+    "ms": 2592
   },
   {
-    "fixture": "overlay",
-    "seed": 28,
+    "fixture": "inspector",
+    "seed": 1056,
     "outcome": "clean",
     "violations": [],
-    "ms": 1976
+    "ms": 2210
   },
   {
-    "fixture": "overlay",
-    "seed": 29,
+    "fixture": "inspector",
+    "seed": 1057,
     "outcome": "clean",
     "violations": [],
-    "ms": 1774
+    "ms": 2797
   },
   {
-    "fixture": "overlay",
-    "seed": 30,
+    "fixture": "inspector",
+    "seed": 1058,
     "outcome": "clean",
     "violations": [],
-    "ms": 2697
+    "ms": 2661
   },
   {
-    "fixture": "overlay",
-    "seed": 31,
+    "fixture": "inspector",
+    "seed": 1059,
     "outcome": "clean",
     "violations": [],
-    "ms": 1974
+    "ms": 2082
   },
   {
-    "fixture": "overlay",
-    "seed": 32,
+    "fixture": "inspector",
+    "seed": 1060,
     "outcome": "clean",
     "violations": [],
-    "ms": 2650
+    "ms": 2447
   },
   {
-    "fixture": "overlay",
-    "seed": 33,
+    "fixture": "inspector",
+    "seed": 1061,
     "outcome": "clean",
     "violations": [],
-    "ms": 1894
+    "ms": 2616
   },
   {
-    "fixture": "overlay",
-    "seed": 34,
+    "fixture": "inspector",
+    "seed": 1062,
     "outcome": "clean",
     "violations": [],
-    "ms": 2772
+    "ms": 2389
   },
   {
-    "fixture": "overlay",
-    "seed": 35,
+    "fixture": "inspector",
+    "seed": 1063,
     "outcome": "clean",
     "violations": [],
-    "ms": 2571
+    "ms": 2447
   },
   {
-    "fixture": "overlay",
-    "seed": 36,
+    "fixture": "inspector",
+    "seed": 1064,
     "outcome": "clean",
     "violations": [],
-    "ms": 1961
+    "ms": 2849
   },
   {
-    "fixture": "overlay",
-    "seed": 37,
+    "fixture": "inspector",
+    "seed": 1065,
     "outcome": "clean",
     "violations": [],
-    "ms": 3091
+    "ms": 2344
   },
   {
-    "fixture": "overlay",
-    "seed": 38,
+    "fixture": "inspector",
+    "seed": 1066,
     "outcome": "clean",
     "violations": [],
-    "ms": 2659
+    "ms": 3081
   },
   {
-    "fixture": "overlay",
-    "seed": 39,
+    "fixture": "inspector",
+    "seed": 1067,
     "outcome": "clean",
     "violations": [],
-    "ms": 1962
+    "ms": 2766
   },
   {
-    "fixture": "overlay",
-    "seed": 40,
+    "fixture": "inspector",
+    "seed": 1068,
     "outcome": "clean",
     "violations": [],
-    "ms": 2688
+    "ms": 2783
   },
   {
-    "fixture": "overlay",
-    "seed": 41,
+    "fixture": "inspector",
+    "seed": 1069,
     "outcome": "clean",
     "violations": [],
-    "ms": 2282
+    "ms": 2978
   },
   {
-    "fixture": "overlay",
-    "seed": 42,
+    "fixture": "inspector",
+    "seed": 1070,
     "outcome": "clean",
     "violations": [],
-    "ms": 1861
+    "ms": 2168
   },
   {
-    "fixture": "overlay",
-    "seed": 43,
+    "fixture": "inspector",
+    "seed": 1071,
     "outcome": "clean",
     "violations": [],
-    "ms": 1868
+    "ms": 2832
   },
   {
-    "fixture": "overlay",
-    "seed": 44,
+    "fixture": "inspector",
+    "seed": 1072,
     "outcome": "clean",
     "violations": [],
-    "ms": 2736
+    "ms": 3170
   },
   {
-    "fixture": "overlay",
-    "seed": 45,
+    "fixture": "inspector",
+    "seed": 1073,
     "outcome": "clean",
     "violations": [],
-    "ms": 1930
+    "ms": 3366
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1074,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3273
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1075,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1688
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1076,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2644
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1077,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2548
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1078,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3047
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1079,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3081
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1080,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2276
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1081,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1404
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1082,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3435
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1083,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2487
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1084,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2583
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1085,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1988
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1086,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2742
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1087,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2679
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1088,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3248
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1089,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3063
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1090,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2225
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1091,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2579
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1092,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2950
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1093,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2525
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1094,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2835
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1095,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2175
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1096,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3107
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1097,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1307
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1098,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2551
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1099,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3362
+  },
+  {
+    "fixture": "inspector",
+    "seed": 1100,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3646
   },
   {
     "fixture": "overlay",
-    "seed": 46,
-    "outcome": "invalid-run",
-    "reason": "target \"password\" is not on the page",
-    "actionIndex": 2
+    "seed": 1001,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2783
   },
   {
     "fixture": "overlay",
-    "seed": 47,
+    "seed": 1002,
+    "outcome": "flagged",
+    "violations": [
+      "dialog ended as \"closing\", but the latest request was \"closed\"."
+    ],
+    "ms": 2093
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1003,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1997
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1004,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2498
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1005,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2781
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1006,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1381
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1007,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2695
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1008,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2125
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1009,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2463
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1010,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2190
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1011,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2546
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1012,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2150
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1013,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1808
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1014,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2179
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1015,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2294
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1016,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2586
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1017,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2757
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1018,
     "outcome": "clean",
     "violations": [],
     "ms": 2102
   },
   {
     "fixture": "overlay",
-    "seed": 48,
+    "seed": 1019,
     "outcome": "clean",
     "violations": [],
-    "ms": 2501
+    "ms": 1824
   },
   {
     "fixture": "overlay",
-    "seed": 49,
+    "seed": 1020,
     "outcome": "clean",
     "violations": [],
-    "ms": 2489
+    "ms": 2252
   },
   {
     "fixture": "overlay",
-    "seed": 50,
+    "seed": 1021,
     "outcome": "clean",
     "violations": [],
-    "ms": 2255
+    "ms": 2269
   },
   {
     "fixture": "overlay",
-    "seed": 51,
+    "seed": 1022,
     "outcome": "clean",
     "violations": [],
-    "ms": 2948
+    "ms": 2461
   },
   {
     "fixture": "overlay",
-    "seed": 52,
+    "seed": 1023,
     "outcome": "clean",
     "violations": [],
-    "ms": 2218
+    "ms": 2364
   },
   {
     "fixture": "overlay",
-    "seed": 53,
+    "seed": 1024,
     "outcome": "clean",
     "violations": [],
-    "ms": 1497
+    "ms": 2572
   },
   {
     "fixture": "overlay",
-    "seed": 54,
+    "seed": 1025,
     "outcome": "clean",
     "violations": [],
-    "ms": 2338
+    "ms": 2313
   },
   {
     "fixture": "overlay",
-    "seed": 55,
+    "seed": 1026,
     "outcome": "clean",
     "violations": [],
-    "ms": 1815
+    "ms": 1808
   },
   {
     "fixture": "overlay",
-    "seed": 56,
+    "seed": 1027,
     "outcome": "clean",
     "violations": [],
-    "ms": 1693
+    "ms": 2383
   },
   {
     "fixture": "overlay",
-    "seed": 57,
+    "seed": 1028,
     "outcome": "clean",
     "violations": [],
-    "ms": 3226
+    "ms": 1859
   },
   {
     "fixture": "overlay",
-    "seed": 58,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1998
-  },
-  {
-    "fixture": "overlay",
-    "seed": 59,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2013
-  },
-  {
-    "fixture": "overlay",
-    "seed": 60,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2352
-  },
-  {
-    "fixture": "overlay",
-    "seed": 61,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2575
-  },
-  {
-    "fixture": "overlay",
-    "seed": 62,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2318
-  },
-  {
-    "fixture": "overlay",
-    "seed": 63,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2318
-  },
-  {
-    "fixture": "overlay",
-    "seed": 64,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2773
-  },
-  {
-    "fixture": "overlay",
-    "seed": 65,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2987
-  },
-  {
-    "fixture": "overlay",
-    "seed": 66,
-    "outcome": "invalid-run",
-    "reason": "target \"cancel\" is not on the page",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "overlay",
-    "seed": 67,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2745
-  },
-  {
-    "fixture": "overlay",
-    "seed": 68,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2345
-  },
-  {
-    "fixture": "overlay",
-    "seed": 69,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2798
-  },
-  {
-    "fixture": "overlay",
-    "seed": 70,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2206
-  },
-  {
-    "fixture": "overlay",
-    "seed": 71,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2092
-  },
-  {
-    "fixture": "overlay",
-    "seed": 72,
-    "outcome": "invalid-run",
-    "reason": "target \"password\" is not on the page",
-    "actionIndex": 12
-  },
-  {
-    "fixture": "overlay",
-    "seed": 73,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2341
-  },
-  {
-    "fixture": "overlay",
-    "seed": 74,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2556
-  },
-  {
-    "fixture": "overlay",
-    "seed": 75,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1931
-  },
-  {
-    "fixture": "overlay",
-    "seed": 76,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2229
-  },
-  {
-    "fixture": "overlay",
-    "seed": 77,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1792
-  },
-  {
-    "fixture": "overlay",
-    "seed": 78,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2665
-  },
-  {
-    "fixture": "overlay",
-    "seed": 79,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2854
-  },
-  {
-    "fixture": "overlay",
-    "seed": 80,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 2146
-  },
-  {
-    "fixture": "overlay",
-    "seed": 81,
+    "seed": 1029,
     "outcome": "invalid-run",
     "reason": "not actionable: locator.click: Timeout 2000ms exceeded.",
-    "actionIndex": 1
+    "actionIndex": 4
   },
   {
     "fixture": "overlay",
-    "seed": 82,
+    "seed": 1030,
     "outcome": "clean",
     "violations": [],
-    "ms": 2767
+    "ms": 2244
   },
   {
     "fixture": "overlay",
-    "seed": 83,
+    "seed": 1031,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2391
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1032,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2791
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1033,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2381
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1034,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2434
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1035,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2177
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1036,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2344
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1037,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2628
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1038,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2070
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1039,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3004
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1040,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2351
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1041,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2156
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1042,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1977
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1043,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 3221
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1044,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2499
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1045,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2056
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1046,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2148
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1047,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2705
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1048,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2849
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1049,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1955
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1050,
     "outcome": "clean",
     "violations": [],
     "ms": 1983
   },
   {
     "fixture": "overlay",
-    "seed": 84,
+    "seed": 1051,
     "outcome": "clean",
     "violations": [],
-    "ms": 2312
+    "ms": 1419
   },
   {
     "fixture": "overlay",
-    "seed": 85,
+    "seed": 1052,
     "outcome": "clean",
     "violations": [],
-    "ms": 2111
+    "ms": 3234
   },
   {
     "fixture": "overlay",
-    "seed": 86,
-    "outcome": "invalid-run",
-    "reason": "not actionable: locator.click: Timeout 2000ms exceeded.",
-    "actionIndex": 3
+    "seed": 1053,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2257
   },
   {
     "fixture": "overlay",
-    "seed": 87,
+    "seed": 1054,
     "outcome": "clean",
     "violations": [],
-    "ms": 2981
+    "ms": 2226
   },
   {
     "fixture": "overlay",
-    "seed": 88,
+    "seed": 1055,
     "outcome": "clean",
     "violations": [],
-    "ms": 2318
+    "ms": 2128
   },
   {
     "fixture": "overlay",
-    "seed": 89,
+    "seed": 1056,
     "outcome": "clean",
     "violations": [],
-    "ms": 1897
+    "ms": 2432
   },
   {
     "fixture": "overlay",
-    "seed": 90,
+    "seed": 1057,
     "outcome": "clean",
     "violations": [],
+    "ms": 2151
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1058,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2213
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1059,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2196
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1060,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1588
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1061,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2347
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1062,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2028
+  },
+  {
+    "fixture": "overlay",
+    "seed": 1063,
+    "outcome": "flagged",
+    "violations": [
+      "dialog ended as \"closing\", but the latest request was \"closed\"."
+    ],
     "ms": 2487
   },
   {
     "fixture": "overlay",
-    "seed": 91,
+    "seed": 1064,
     "outcome": "clean",
     "violations": [],
-    "ms": 1949
+    "ms": 2647
   },
   {
     "fixture": "overlay",
-    "seed": 92,
+    "seed": 1065,
     "outcome": "clean",
     "violations": [],
-    "ms": 1882
+    "ms": 2456
   },
   {
     "fixture": "overlay",
-    "seed": 93,
+    "seed": 1066,
     "outcome": "clean",
     "violations": [],
-    "ms": 2305
+    "ms": 2743
   },
   {
     "fixture": "overlay",
-    "seed": 94,
+    "seed": 1067,
     "outcome": "clean",
     "violations": [],
-    "ms": 1834
+    "ms": 1908
   },
   {
     "fixture": "overlay",
-    "seed": 95,
+    "seed": 1068,
     "outcome": "clean",
     "violations": [],
-    "ms": 2043
+    "ms": 1845
   },
   {
     "fixture": "overlay",
-    "seed": 96,
+    "seed": 1069,
     "outcome": "clean",
     "violations": [],
-    "ms": 2377
+    "ms": 2817
   },
   {
     "fixture": "overlay",
-    "seed": 97,
+    "seed": 1070,
     "outcome": "clean",
     "violations": [],
-    "ms": 2024
+    "ms": 2332
   },
   {
     "fixture": "overlay",
-    "seed": 98,
-    "outcome": "invalid-run",
-    "reason": "target \"cancel\" is not on the page",
-    "actionIndex": 0
+    "seed": 1071,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 2059
   },
   {
     "fixture": "overlay",
-    "seed": 99,
+    "seed": 1072,
     "outcome": "clean",
     "violations": [],
-    "ms": 2060
+    "ms": 2822
   },
   {
     "fixture": "overlay",
-    "seed": 100,
+    "seed": 1073,
     "outcome": "clean",
     "violations": [],
-    "ms": 2648
+    "ms": 2108
   },
   {
-    "fixture": "timeline",
-    "seed": 1,
-    "outcome": "invalid-static"
-  },
-  {
-    "fixture": "timeline",
-    "seed": 2,
+    "fixture": "overlay",
+    "seed": 1074,
     "outcome": "clean",
     "violations": [],
-    "ms": 1404
+    "ms": 2238
   },
   {
-    "fixture": "timeline",
-    "seed": 3,
+    "fixture": "overlay",
+    "seed": 1075,
     "outcome": "clean",
     "violations": [],
-    "ms": 1304
+    "ms": 1625
   },
   {
-    "fixture": "timeline",
-    "seed": 4,
+    "fixture": "overlay",
+    "seed": 1076,
     "outcome": "clean",
     "violations": [],
-    "ms": 1420
+    "ms": 2615
   },
   {
-    "fixture": "timeline",
-    "seed": 5,
+    "fixture": "overlay",
+    "seed": 1077,
     "outcome": "clean",
     "violations": [],
-    "ms": 1348
+    "ms": 1786
   },
   {
-    "fixture": "timeline",
-    "seed": 6,
-    "outcome": "invalid-static"
-  },
-  {
-    "fixture": "timeline",
-    "seed": 7,
+    "fixture": "overlay",
+    "seed": 1078,
     "outcome": "clean",
     "violations": [],
-    "ms": 1268
+    "ms": 2058
   },
   {
-    "fixture": "timeline",
-    "seed": 8,
+    "fixture": "overlay",
+    "seed": 1079,
     "outcome": "clean",
     "violations": [],
-    "ms": 1326
+    "ms": 2444
   },
   {
-    "fixture": "timeline",
-    "seed": 9,
+    "fixture": "overlay",
+    "seed": 1080,
     "outcome": "clean",
     "violations": [],
-    "ms": 1744
+    "ms": 2363
   },
   {
-    "fixture": "timeline",
-    "seed": 10,
+    "fixture": "overlay",
+    "seed": 1081,
     "outcome": "clean",
     "violations": [],
-    "ms": 1101
+    "ms": 2620
   },
   {
-    "fixture": "timeline",
-    "seed": 11,
+    "fixture": "overlay",
+    "seed": 1082,
     "outcome": "clean",
     "violations": [],
-    "ms": 1320
+    "ms": 2764
   },
   {
-    "fixture": "timeline",
-    "seed": 12,
+    "fixture": "overlay",
+    "seed": 1083,
     "outcome": "clean",
     "violations": [],
-    "ms": 1559
+    "ms": 1940
   },
   {
-    "fixture": "timeline",
-    "seed": 13,
+    "fixture": "overlay",
+    "seed": 1084,
     "outcome": "clean",
     "violations": [],
-    "ms": 1470
+    "ms": 2416
   },
   {
-    "fixture": "timeline",
-    "seed": 14,
-    "outcome": "invalid-static"
-  },
-  {
-    "fixture": "timeline",
-    "seed": 15,
+    "fixture": "overlay",
+    "seed": 1085,
     "outcome": "clean",
     "violations": [],
-    "ms": 1423
+    "ms": 1872
   },
   {
-    "fixture": "timeline",
-    "seed": 16,
+    "fixture": "overlay",
+    "seed": 1086,
     "outcome": "clean",
     "violations": [],
-    "ms": 1669
+    "ms": 2380
   },
   {
-    "fixture": "timeline",
-    "seed": 17,
+    "fixture": "overlay",
+    "seed": 1087,
     "outcome": "clean",
     "violations": [],
-    "ms": 1402
+    "ms": 1968
   },
   {
-    "fixture": "timeline",
-    "seed": 18,
+    "fixture": "overlay",
+    "seed": 1088,
     "outcome": "clean",
     "violations": [],
-    "ms": 1270
+    "ms": 1994
   },
   {
-    "fixture": "timeline",
-    "seed": 19,
+    "fixture": "overlay",
+    "seed": 1089,
     "outcome": "clean",
     "violations": [],
-    "ms": 1530
+    "ms": 2823
   },
   {
-    "fixture": "timeline",
-    "seed": 20,
+    "fixture": "overlay",
+    "seed": 1090,
     "outcome": "clean",
     "violations": [],
-    "ms": 1538
+    "ms": 2099
   },
   {
-    "fixture": "timeline",
-    "seed": 21,
+    "fixture": "overlay",
+    "seed": 1091,
     "outcome": "clean",
     "violations": [],
-    "ms": 1318
+    "ms": 2161
   },
   {
-    "fixture": "timeline",
-    "seed": 22,
+    "fixture": "overlay",
+    "seed": 1092,
     "outcome": "clean",
     "violations": [],
-    "ms": 1441
+    "ms": 1982
   },
   {
-    "fixture": "timeline",
-    "seed": 23,
-    "outcome": "invalid-static"
-  },
-  {
-    "fixture": "timeline",
-    "seed": 24,
+    "fixture": "overlay",
+    "seed": 1093,
     "outcome": "clean",
     "violations": [],
-    "ms": 1505
+    "ms": 2391
   },
   {
-    "fixture": "timeline",
-    "seed": 25,
+    "fixture": "overlay",
+    "seed": 1094,
     "outcome": "clean",
     "violations": [],
-    "ms": 1387
+    "ms": 2616
   },
   {
-    "fixture": "timeline",
-    "seed": 26,
+    "fixture": "overlay",
+    "seed": 1095,
     "outcome": "clean",
     "violations": [],
-    "ms": 1121
+    "ms": 2226
   },
   {
-    "fixture": "timeline",
-    "seed": 27,
+    "fixture": "overlay",
+    "seed": 1096,
     "outcome": "clean",
     "violations": [],
-    "ms": 1435
+    "ms": 2728
   },
   {
-    "fixture": "timeline",
-    "seed": 28,
+    "fixture": "overlay",
+    "seed": 1097,
     "outcome": "clean",
     "violations": [],
-    "ms": 1237
+    "ms": 2158
   },
   {
-    "fixture": "timeline",
-    "seed": 29,
+    "fixture": "overlay",
+    "seed": 1098,
     "outcome": "clean",
     "violations": [],
-    "ms": 1502
+    "ms": 1968
   },
   {
-    "fixture": "timeline",
-    "seed": 30,
+    "fixture": "overlay",
+    "seed": 1099,
     "outcome": "clean",
     "violations": [],
-    "ms": 1336
+    "ms": 2071
   },
   {
-    "fixture": "timeline",
-    "seed": 31,
+    "fixture": "overlay",
+    "seed": 1100,
     "outcome": "clean",
     "violations": [],
-    "ms": 1123
+    "ms": 2075
   },
   {
     "fixture": "timeline",
-    "seed": 32,
+    "seed": 1001,
     "outcome": "clean",
     "violations": [],
-    "ms": 1664
+    "ms": 1284
   },
   {
     "fixture": "timeline",
-    "seed": 33,
+    "seed": 1002,
     "outcome": "clean",
     "violations": [],
-    "ms": 1161
+    "ms": 1192
   },
   {
     "fixture": "timeline",
-    "seed": 34,
+    "seed": 1003,
     "outcome": "clean",
     "violations": [],
-    "ms": 1542
+    "ms": 1158
   },
   {
     "fixture": "timeline",
-    "seed": 35,
+    "seed": 1004,
     "outcome": "clean",
     "violations": [],
-    "ms": 1235
+    "ms": 1220
   },
   {
     "fixture": "timeline",
-    "seed": 36,
+    "seed": 1005,
     "outcome": "clean",
     "violations": [],
-    "ms": 1204
+    "ms": 1214
   },
   {
     "fixture": "timeline",
-    "seed": 37,
+    "seed": 1006,
     "outcome": "clean",
     "violations": [],
-    "ms": 1487
+    "ms": 1014
   },
   {
     "fixture": "timeline",
-    "seed": 38,
+    "seed": 1007,
     "outcome": "clean",
     "violations": [],
-    "ms": 1399
+    "ms": 979
   },
   {
     "fixture": "timeline",
-    "seed": 39,
+    "seed": 1008,
     "outcome": "clean",
     "violations": [],
-    "ms": 1328
+    "ms": 1266
   },
   {
     "fixture": "timeline",
-    "seed": 40,
+    "seed": 1009,
     "outcome": "clean",
     "violations": [],
-    "ms": 1501
+    "ms": 1261
   },
   {
     "fixture": "timeline",
-    "seed": 41,
+    "seed": 1010,
     "outcome": "clean",
     "violations": [],
-    "ms": 1486
+    "ms": 1415
   },
   {
     "fixture": "timeline",
-    "seed": 42,
+    "seed": 1011,
     "outcome": "clean",
     "violations": [],
-    "ms": 1304
+    "ms": 1427
   },
   {
     "fixture": "timeline",
-    "seed": 43,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1196
-  },
-  {
-    "fixture": "timeline",
-    "seed": 44,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1466
-  },
-  {
-    "fixture": "timeline",
-    "seed": 45,
+    "seed": 1012,
     "outcome": "clean",
     "violations": [],
     "ms": 1096
   },
   {
     "fixture": "timeline",
-    "seed": 46,
+    "seed": 1013,
     "outcome": "clean",
     "violations": [],
-    "ms": 1285
+    "ms": 945
   },
   {
     "fixture": "timeline",
-    "seed": 47,
+    "seed": 1014,
     "outcome": "clean",
     "violations": [],
-    "ms": 1617
+    "ms": 949
   },
   {
     "fixture": "timeline",
-    "seed": 48,
+    "seed": 1015,
     "outcome": "clean",
     "violations": [],
-    "ms": 1246
+    "ms": 1264
   },
   {
     "fixture": "timeline",
-    "seed": 49,
+    "seed": 1016,
     "outcome": "clean",
     "violations": [],
-    "ms": 1425
+    "ms": 1236
   },
   {
     "fixture": "timeline",
-    "seed": 50,
+    "seed": 1017,
     "outcome": "clean",
     "violations": [],
-    "ms": 1423
+    "ms": 1160
   },
   {
     "fixture": "timeline",
-    "seed": 51,
+    "seed": 1018,
     "outcome": "clean",
     "violations": [],
-    "ms": 1316
+    "ms": 1296
   },
   {
     "fixture": "timeline",
-    "seed": 52,
-    "outcome": "invalid-static"
-  },
-  {
-    "fixture": "timeline",
-    "seed": 53,
+    "seed": 1019,
     "outcome": "clean",
     "violations": [],
-    "ms": 1047
+    "ms": 1279
   },
   {
     "fixture": "timeline",
-    "seed": 54,
+    "seed": 1020,
     "outcome": "clean",
     "violations": [],
-    "ms": 1470
+    "ms": 1079
   },
   {
     "fixture": "timeline",
-    "seed": 55,
+    "seed": 1021,
     "outcome": "clean",
     "violations": [],
-    "ms": 1322
+    "ms": 1582
   },
   {
     "fixture": "timeline",
-    "seed": 56,
+    "seed": 1022,
     "outcome": "clean",
     "violations": [],
-    "ms": 1416
+    "ms": 1133
   },
   {
     "fixture": "timeline",
-    "seed": 57,
+    "seed": 1023,
     "outcome": "clean",
     "violations": [],
-    "ms": 1485
+    "ms": 1363
   },
   {
     "fixture": "timeline",
-    "seed": 58,
+    "seed": 1024,
     "outcome": "clean",
     "violations": [],
-    "ms": 995
+    "ms": 1628
   },
   {
     "fixture": "timeline",
-    "seed": 59,
+    "seed": 1025,
     "outcome": "clean",
     "violations": [],
-    "ms": 1303
+    "ms": 1393
   },
   {
     "fixture": "timeline",
-    "seed": 60,
+    "seed": 1026,
     "outcome": "clean",
     "violations": [],
-    "ms": 1428
+    "ms": 1431
   },
   {
     "fixture": "timeline",
-    "seed": 61,
+    "seed": 1027,
     "outcome": "clean",
     "violations": [],
-    "ms": 1536
+    "ms": 1441
   },
   {
     "fixture": "timeline",
-    "seed": 62,
+    "seed": 1028,
     "outcome": "clean",
     "violations": [],
-    "ms": 1485
+    "ms": 1145
   },
   {
     "fixture": "timeline",
-    "seed": 63,
+    "seed": 1029,
     "outcome": "clean",
     "violations": [],
-    "ms": 1332
+    "ms": 1380
   },
   {
     "fixture": "timeline",
-    "seed": 64,
+    "seed": 1030,
     "outcome": "clean",
     "violations": [],
-    "ms": 1376
+    "ms": 1010
   },
   {
     "fixture": "timeline",
-    "seed": 65,
+    "seed": 1031,
     "outcome": "clean",
     "violations": [],
-    "ms": 1524
+    "ms": 1061
   },
   {
     "fixture": "timeline",
-    "seed": 66,
-    "outcome": "invalid-run",
-    "reason": "a touch pointer cannot move while it is up",
-    "actionIndex": 0
-  },
-  {
-    "fixture": "timeline",
-    "seed": 67,
-    "outcome": "invalid-run",
-    "reason": "a touch pointer cannot move while it is up",
-    "actionIndex": 9
-  },
-  {
-    "fixture": "timeline",
-    "seed": 68,
+    "seed": 1032,
     "outcome": "clean",
     "violations": [],
-    "ms": 1221
+    "ms": 1378
   },
   {
     "fixture": "timeline",
-    "seed": 69,
+    "seed": 1033,
     "outcome": "clean",
     "violations": [],
-    "ms": 1270
+    "ms": 1477
   },
   {
     "fixture": "timeline",
-    "seed": 70,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1402
-  },
-  {
-    "fixture": "timeline",
-    "seed": 71,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1389
-  },
-  {
-    "fixture": "timeline",
-    "seed": 72,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1118
-  },
-  {
-    "fixture": "timeline",
-    "seed": 73,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1102
-  },
-  {
-    "fixture": "timeline",
-    "seed": 74,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1254
-  },
-  {
-    "fixture": "timeline",
-    "seed": 75,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1463
-  },
-  {
-    "fixture": "timeline",
-    "seed": 76,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1542
-  },
-  {
-    "fixture": "timeline",
-    "seed": 77,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1446
-  },
-  {
-    "fixture": "timeline",
-    "seed": 78,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1617
-  },
-  {
-    "fixture": "timeline",
-    "seed": 79,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1134
-  },
-  {
-    "fixture": "timeline",
-    "seed": 80,
-    "outcome": "invalid-static"
-  },
-  {
-    "fixture": "timeline",
-    "seed": 81,
-    "outcome": "invalid-run",
-    "reason": "a touch pointer cannot move while it is up",
-    "actionIndex": 1
-  },
-  {
-    "fixture": "timeline",
-    "seed": 82,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1349
-  },
-  {
-    "fixture": "timeline",
-    "seed": 83,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1350
-  },
-  {
-    "fixture": "timeline",
-    "seed": 84,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1336
-  },
-  {
-    "fixture": "timeline",
-    "seed": 85,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1142
-  },
-  {
-    "fixture": "timeline",
-    "seed": 86,
-    "outcome": "invalid-run",
-    "reason": "a touch pointer cannot move while it is up",
-    "actionIndex": 3
-  },
-  {
-    "fixture": "timeline",
-    "seed": 87,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1324
-  },
-  {
-    "fixture": "timeline",
-    "seed": 88,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1152
-  },
-  {
-    "fixture": "timeline",
-    "seed": 89,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1267
-  },
-  {
-    "fixture": "timeline",
-    "seed": 90,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1286
-  },
-  {
-    "fixture": "timeline",
-    "seed": 91,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1392
-  },
-  {
-    "fixture": "timeline",
-    "seed": 92,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1289
-  },
-  {
-    "fixture": "timeline",
-    "seed": 93,
+    "seed": 1034,
     "outcome": "clean",
     "violations": [],
     "ms": 1312
   },
   {
     "fixture": "timeline",
-    "seed": 94,
+    "seed": 1035,
     "outcome": "clean",
     "violations": [],
-    "ms": 1043
+    "ms": 1662
   },
   {
     "fixture": "timeline",
-    "seed": 95,
+    "seed": 1036,
     "outcome": "clean",
     "violations": [],
-    "ms": 1210
+    "ms": 1499
   },
   {
     "fixture": "timeline",
-    "seed": 96,
-    "outcome": "clean",
-    "violations": [],
-    "ms": 1244
+    "seed": 1037,
+    "outcome": "invalid-run",
+    "reason": "a touch pointer cannot move while it is up",
+    "actionIndex": 7
   },
   {
     "fixture": "timeline",
-    "seed": 97,
+    "seed": 1038,
     "outcome": "clean",
     "violations": [],
-    "ms": 1076
+    "ms": 1445
   },
   {
     "fixture": "timeline",
-    "seed": 98,
+    "seed": 1039,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1287
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1040,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 952
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1041,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1062
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1042,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1278
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1043,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1560
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1044,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1293
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1045,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1413
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1046,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1310
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1047,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1011
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1048,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1326
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1049,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1375
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1050,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1296
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1051,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1135
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1052,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1078
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1053,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1177
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1054,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1142
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1055,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1228
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1056,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1177
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1057,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1242
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1058,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1539
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1059,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1444
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1060,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1312
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1061,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1143
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1062,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1277
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1063,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1158
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1064,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1223
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1065,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1390
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1066,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1509
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1067,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1257
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1068,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1073
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1069,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1542
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1070,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1404
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1071,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1597
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1072,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 942
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1073,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1407
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1074,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1292
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1075,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1090
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1076,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1291
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1077,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1373
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1078,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1062
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1079,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1331
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1080,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1190
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1081,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1403
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1082,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1306
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1083,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1307
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1084,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1199
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1085,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1152
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1086,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1462
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1087,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1343
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1088,
     "outcome": "invalid-static"
   },
   {
     "fixture": "timeline",
-    "seed": 99,
+    "seed": 1089,
     "outcome": "clean",
     "violations": [],
-    "ms": 1334
+    "ms": 1194
   },
   {
     "fixture": "timeline",
-    "seed": 100,
+    "seed": 1090,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1211
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1091,
     "outcome": "clean",
     "violations": [],
     "ms": 1365
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1092,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1078
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1093,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1247
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1094,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1294
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1095,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1196
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1096,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1078
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1097,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1344
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1098,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1342
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1099,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 1281
+  },
+  {
+    "fixture": "timeline",
+    "seed": 1100,
+    "outcome": "clean",
+    "violations": [],
+    "ms": 976
   }
 ]

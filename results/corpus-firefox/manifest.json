@@ -2,8 +2,8 @@
   "schema": "trace.bench/1",
   "command": "tsx bench/corpus.ts --browser firefox --out results/corpus-firefox",
   "source": {
-    "commit": "95cb8ceaa44b9b2ccd913edf6f1e5db483731704",
-    "dirty": true
+    "commit": "7c971c1b3b47deb61e9b34cbff98eade909fded1",
+    "dirty": false
   },
   "dependencies": {
     "playwright": "1.65.0",
@@ -49,7 +49,7 @@
     "timeline": "07d918c93a0dd6fd086c8bdf7a268120baa644b2a8e4ae77bc66ee6501a25a6b"
   },
   "pixelLimit": 576,
-  "wallSeconds": 90,
+  "wallSeconds": 134,
   "repetitions": 1,
   "warmup": 0,
   "exclusions": []

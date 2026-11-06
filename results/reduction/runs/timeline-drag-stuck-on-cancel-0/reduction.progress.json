@@ -1,51 +1,55 @@
 {
-  "kept": [
-    16,
-    17
-  ],
-  "granularity": 2,
-  "attempts": [
-    {
-      "kept": [
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        14,
-        15,
-        16,
-        17
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        16,
-        17
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        17
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        16
-      ],
-      "outcome": "passes"
-    }
-  ]
+  "scenarioHash": "133d83a31ce3c9a40833d706de42eafb7598444f9abd404a849a936ee7d30dcf",
+  "fingerprint": "incomplete-cleanup/transient-cleared/dragging",
+  "state": {
+    "kept": [
+      16,
+      17
+    ],
+    "granularity": 2,
+    "attempts": [
+      {
+        "kept": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          16,
+          17
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          17
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          16
+        ],
+        "outcome": "passes"
+      }
+    ]
+  }
 }

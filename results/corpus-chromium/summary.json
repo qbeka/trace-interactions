@@ -16,8 +16,8 @@
       "trueNegatives": 13
     },
     "traceDiff": {
-      "truePositives": 13,
-      "falseNegatives": 5,
+      "truePositives": 18,
+      "falseNegatives": 0,
       "falsePositives": 9,
       "trueNegatives": 4
     },

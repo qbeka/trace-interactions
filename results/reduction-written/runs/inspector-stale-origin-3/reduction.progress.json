@@ -1,289 +1,293 @@
 {
-  "kept": [
-    0,
-    9,
-    10,
-    11
-  ],
-  "granularity": 4,
-  "attempts": [
-    {
-      "kept": [
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        2,
-        3,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        8,
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        2,
-        3,
-        11,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        2,
-        3,
-        8,
-        9,
-        10
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        2,
-        3,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        8,
-        9,
-        12,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        8,
-        9,
-        10,
-        11,
-        13
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        8,
-        9,
-        10,
-        11,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        10,
-        11,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        8,
-        9,
-        13
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        8,
-        9,
-        10,
-        11
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        8,
-        9,
-        10,
-        11
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        10,
-        11
-      ],
-      "outcome": "other-failure"
-    },
-    {
-      "kept": [
-        0,
-        1,
-        8,
-        9
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        1,
-        8,
-        9,
-        10,
-        11
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        8,
-        9,
-        10,
-        11
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        0,
-        9,
-        10,
-        11
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        9,
-        10,
-        11
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        0,
-        10,
-        11
-      ],
-      "outcome": "other-failure"
-    },
-    {
-      "kept": [
-        0,
-        9,
-        11
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        0,
-        9,
-        10
-      ],
-      "outcome": "passes"
-    }
-  ]
+  "scenarioHash": "bc1edbc168afbf89ec6d665fc3a7fa34bb8e1ebcbeff3f663af3d3eac3acc1ec",
+  "fingerprint": "geometry-discontinuity/geometry-origin/panel",
+  "state": {
+    "kept": [
+      0,
+      9,
+      10,
+      11
+    ],
+    "granularity": 4,
+    "attempts": [
+      {
+        "kept": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          2,
+          3,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          2,
+          3,
+          11,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          2,
+          3,
+          8,
+          9,
+          10
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          2,
+          3,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          8,
+          9,
+          12,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          8,
+          9,
+          10,
+          11,
+          13
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          8,
+          9,
+          10,
+          11,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          10,
+          11,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          8,
+          9,
+          13
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          8,
+          9,
+          10,
+          11
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          10,
+          11
+        ],
+        "outcome": "other-failure"
+      },
+      {
+        "kept": [
+          0,
+          1,
+          8,
+          9
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          1,
+          8,
+          9,
+          10,
+          11
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          8,
+          9,
+          10,
+          11
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          0,
+          9,
+          10,
+          11
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          9,
+          10,
+          11
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          0,
+          10,
+          11
+        ],
+        "outcome": "other-failure"
+      },
+      {
+        "kept": [
+          0,
+          9,
+          11
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          0,
+          9,
+          10
+        ],
+        "outcome": "passes"
+      }
+    ]
+  }
 }

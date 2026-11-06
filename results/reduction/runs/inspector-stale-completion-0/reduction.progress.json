@@ -1,83 +1,87 @@
 {
-  "kept": [
-    10,
-    11
-  ],
-  "granularity": 2,
-  "attempts": [
-    {
-      "kept": [
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        14,
-        15,
-        16,
-        17
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        9,
-        10,
-        11,
-        12,
-        13
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        12,
-        13
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        9,
-        10,
-        11
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        11
-      ],
-      "outcome": "invalid"
-    },
-    {
-      "kept": [
-        9,
-        10
-      ],
-      "outcome": "passes"
-    },
-    {
-      "kept": [
-        10,
-        11
-      ],
-      "outcome": "fails"
-    },
-    {
-      "kept": [
-        10
-      ],
-      "outcome": "passes"
-    }
-  ]
+  "scenarioHash": "5e857324977c97c1f4118f6442fa3d3ea1290ba7ac8060b0e6550f1af71d0c1a",
+  "fingerprint": "stale-final-state/latest-request-wins/panel",
+  "state": {
+    "kept": [
+      10,
+      11
+    ],
+    "granularity": 2,
+    "attempts": [
+      {
+        "kept": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          12,
+          13
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          9,
+          10,
+          11
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          11
+        ],
+        "outcome": "invalid"
+      },
+      {
+        "kept": [
+          9,
+          10
+        ],
+        "outcome": "passes"
+      },
+      {
+        "kept": [
+          10,
+          11
+        ],
+        "outcome": "fails"
+      },
+      {
+        "kept": [
+          10
+        ],
+        "outcome": "passes"
+      }
+    ]
+  }
 }

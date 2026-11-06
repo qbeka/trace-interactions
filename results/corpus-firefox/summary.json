@@ -16,10 +16,10 @@
       "trueNegatives": 13
     },
     "traceDiff": {
-      "truePositives": 13,
-      "falseNegatives": 5,
-      "falsePositives": 10,
-      "trueNegatives": 3
+      "truePositives": 18,
+      "falseNegatives": 0,
+      "falsePositives": 13,
+      "trueNegatives": 0
     },
     "finalScreenshot": {
       "truePositives": 0,

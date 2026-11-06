@@ -1,0 +1,568 @@
+[
+  {
+    "fixture": "combobox",
+    "build": "correct",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 349,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "correct",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 281,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "correct",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 403,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "correct",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 343,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "correct",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 380,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-response",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 345,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-response",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 296,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-response",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 400,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-response",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 343,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-response",
+    "scenario": "type-quickly",
+    "verdict": "regression",
+    "categories": [
+      "stale-final-state"
+    ],
+    "sentence": "resultsFor became \"a\" at 520 ms, but the latest request at 300 ms was \"ap\".",
+    "ms": 380,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "remount-on-results",
+    "scenario": "escape-closes-list",
+    "verdict": "regression",
+    "categories": [
+      "missed-ack"
+    ],
+    "sentence": "\"press Escape\" at 700 ms did not change listbox within 50 ms.",
+    "ms": 349,
+    "traceDiff": true,
+    "screenshotDiffPixels": 3484
+  },
+  {
+    "fixture": "combobox",
+    "build": "remount-on-results",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 279,
+    "traceDiff": true,
+    "screenshotDiffPixels": 2053
+  },
+  {
+    "fixture": "combobox",
+    "build": "remount-on-results",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 397,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "remount-on-results",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 343,
+    "traceDiff": true,
+    "screenshotDiffPixels": 1413
+  },
+  {
+    "fixture": "combobox",
+    "build": "remount-on-results",
+    "scenario": "type-quickly",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "input lost focus to the page body at 600 ms with no user action.",
+    "ms": 386,
+    "traceDiff": true,
+    "screenshotDiffPixels": 2053
+  },
+  {
+    "fixture": "combobox",
+    "build": "duplicate-list-id",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 392,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "duplicate-list-id",
+    "scenario": "list-relationship",
+    "verdict": "regression",
+    "categories": [
+      "duplicate-interactive"
+    ],
+    "sentence": "aria-controls on input points at \"fruit-list\", which matched 2 element(s) and resolved to an unmarked element, not list.",
+    "ms": 281,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "duplicate-list-id",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 397,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "duplicate-list-id",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 343,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "duplicate-list-id",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 382,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "poll-leak",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1801,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "poll-leak",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1130,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "poll-leak",
+    "scenario": "remove-while-searching",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "1 timer:interval still active after removal. There were 0 before mount.",
+    "ms": 1528,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "poll-leak",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1898,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "poll-leak",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 1386,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "escape-keeps-open",
+    "scenario": "escape-closes-list",
+    "verdict": "regression",
+    "categories": [
+      "missed-ack"
+    ],
+    "sentence": "\"press Escape\" at 700 ms did not change listbox within 50 ms.",
+    "ms": 346,
+    "traceDiff": true,
+    "screenshotDiffPixels": 1431
+  },
+  {
+    "fixture": "combobox",
+    "build": "escape-keeps-open",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 280,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "escape-keeps-open",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 399,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "escape-keeps-open",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 343,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "escape-keeps-open",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 380,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-list-width",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 345,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-list-width",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 278,
+    "traceDiff": true,
+    "screenshotDiffPixels": 127
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-list-width",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 394,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-list-width",
+    "scenario": "resize-with-list-open",
+    "verdict": "regression",
+    "categories": [
+      "geometry-discontinuity"
+    ],
+    "sentence": "list overflows the 360x640 viewport by 182 px after the resize.",
+    "ms": 342,
+    "traceDiff": true,
+    "screenshotDiffPixels": 75
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-list-width",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 383,
+    "traceDiff": true,
+    "screenshotDiffPixels": 195
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-restyle",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 347,
+    "traceDiff": false,
+    "screenshotDiffPixels": 58
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-restyle",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 284,
+    "traceDiff": false,
+    "screenshotDiffPixels": 89
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-restyle",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 397,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-restyle",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 349,
+    "traceDiff": false,
+    "screenshotDiffPixels": 89
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-restyle",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 381,
+    "traceDiff": false,
+    "screenshotDiffPixels": 89
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-fast-debounce",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 363,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-fast-debounce",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 281,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-fast-debounce",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 393,
+    "traceDiff": false,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-fast-debounce",
+    "scenario": "resize-with-list-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 342,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-fast-debounce",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 380,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-wide-list",
+    "scenario": "escape-closes-list",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 347,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-wide-list",
+    "scenario": "list-relationship",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 282,
+    "traceDiff": true,
+    "screenshotDiffPixels": 95
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-wide-list",
+    "scenario": "remove-while-searching",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 396,
+    "traceDiff": true,
+    "screenshotDiffPixels": 0
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-wide-list",
+    "scenario": "resize-with-list-open",
+    "verdict": "regression",
+    "categories": [
+      "geometry-discontinuity"
+    ],
+    "sentence": "list overflows the 360x640 viewport by 6 px after the resize.",
+    "ms": 346,
+    "traceDiff": true,
+    "screenshotDiffPixels": 95
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-wide-list",
+    "scenario": "type-quickly",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 385,
+    "traceDiff": true,
+    "screenshotDiffPixels": 163
+  }
+]

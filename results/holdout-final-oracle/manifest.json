@@ -1,0 +1,54 @@
+{
+  "schema": "trace.bench/1",
+  "command": "tsx bench/corpus.ts --labels corpus/holdout.json --out results/holdout-final-oracle",
+  "source": {
+    "commit": "7c971c1b3b47deb61e9b34cbff98eade909fded1",
+    "dirty": false
+  },
+  "dependencies": {
+    "playwright": "1.65.0",
+    "zod": "4.6.7",
+    "@axe-core/playwright": "4.14.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "esbuild": "0.28.2",
+    "geist": "1.9.1",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.6",
+    "vitest": "5.1.0"
+  },
+  "environment": {
+    "os": {
+      "platform": "darwin",
+      "release": "25.6.0",
+      "arch": "arm64"
+    },
+    "hardware": {
+      "cpu": "Apple M5 Pro",
+      "cores": 18,
+      "memoryGb": 48
+    },
+    "power": "AC Power",
+    "node": "v22.16.0",
+    "browser": {
+      "name": "chromium",
+      "version": "158.0.8127.18"
+    }
+  },
+  "labelsSha256": "8ccde41593b7df25fb7de3d95fc3c653911fd0afd8721395c60f8f2f25fe0560",
+  "fixtureBuildHashes": {
+    "combobox": "a521a7a56823d5b83dec059f2e59159e003cedbe48311f420d9b1cb0826156b8"
+  },
+  "pixelLimit": 576,
+  "wallSeconds": 26,
+  "repetitions": 1,
+  "warmup": 0,
+  "exclusions": []
+}

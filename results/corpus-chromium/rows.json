@@ -6,7 +6,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 794,
+    "ms": 772,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -17,7 +17,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2412,
+    "ms": 2385,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -28,7 +28,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 625,
+    "ms": 600,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -38,8 +38,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 1015,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 992,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -49,8 +49,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 693,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 673,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -61,7 +61,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 779,
+    "ms": 768,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -72,7 +72,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2395,
+    "ms": 2378,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -83,7 +83,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 611,
+    "ms": 598,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -98,7 +98,7 @@
       "lost-focus"
     ],
     "sentence": "panel jumped 310 px in one sample at 500 ms. The limit is 160 px.",
-    "ms": 1013,
+    "ms": 985,
     "traceDiff": true,
     "screenshotDiffPixels": 1619
   },
@@ -108,8 +108,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 696,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 666,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -120,7 +120,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 793,
+    "ms": 769,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -133,7 +133,7 @@
       "geometry-discontinuity"
     ],
     "sentence": "panel appeared 80 px away from trigger at 4000 ms. It should start at trigger or at its final position.",
-    "ms": 2404,
+    "ms": 2377,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -144,7 +144,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 621,
+    "ms": 597,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -154,8 +154,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 1009,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 985,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -165,8 +165,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 670,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 666,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -177,7 +177,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 777,
+    "ms": 768,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -188,7 +188,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2411,
+    "ms": 2377,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -199,7 +199,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 627,
+    "ms": 598,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -209,8 +209,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 993,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 985,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -223,7 +223,7 @@
       "geometry-discontinuity"
     ],
     "sentence": "panel overflows the 420x640 viewport by 22 px after the resize.",
-    "ms": 686,
+    "ms": 666,
     "traceDiff": true,
     "screenshotDiffPixels": 1794
   },
@@ -234,7 +234,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 772,
+    "ms": 770,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -245,7 +245,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2413,
+    "ms": 2383,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -256,7 +256,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 630,
+    "ms": 598,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -266,8 +266,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 991,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 985,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -280,7 +280,7 @@
       "lost-focus"
     ],
     "sentence": "nameInput lost focus to the page body at 800 ms with no user action.",
-    "ms": 689,
+    "ms": 666,
     "traceDiff": true,
     "screenshotDiffPixels": 1491
   },
@@ -291,7 +291,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 771,
+    "ms": 770,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -302,7 +302,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2384,
+    "ms": 2376,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -315,8 +315,8 @@
       "incomplete-cleanup"
     ],
     "sentence": "1 observer:ResizeObserver still active after removal. There were 0 before mount.",
-    "ms": 604,
-    "traceDiff": false,
+    "ms": 600,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -325,8 +325,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 995,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 986,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -336,8 +336,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 675,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 665,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -350,7 +350,7 @@
       "missed-ack"
     ],
     "sentence": "\"press Escape\" at 400 ms did not set panel to closing or closed within 50 ms.",
-    "ms": 545,
+    "ms": 532,
     "traceDiff": true,
     "screenshotDiffPixels": 5485
   },
@@ -361,7 +361,7 @@
     "verdict": "diverged",
     "categories": [],
     "sentence": "The scenario ran on the baseline but could not finish on the candidate at action 13: target \"nameInput\" is not on the page.",
-    "ms": 2014,
+    "ms": 1983,
     "traceDiff": true,
     "screenshotDiffPixels": null
   },
@@ -372,7 +372,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 609,
+    "ms": 598,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -382,8 +382,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 1016,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 988,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -393,8 +393,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 671,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 663,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -405,7 +405,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 1063,
+    "ms": 1035,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -416,7 +416,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 3075,
+    "ms": 3048,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -427,7 +427,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 743,
+    "ms": 731,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -437,8 +437,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 1286,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 1255,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -448,8 +448,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 816,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 798,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -460,7 +460,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 793,
+    "ms": 763,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -471,7 +471,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2399,
+    "ms": 2367,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -482,7 +482,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 617,
+    "ms": 594,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -492,8 +492,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 987,
+    "sentence": "Both builds met the 3 of 5 requirements this run reached.",
+    "ms": 981,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -503,8 +503,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 671,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 666,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -515,7 +515,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 774,
+    "ms": 771,
     "traceDiff": true,
     "screenshotDiffPixels": 8803
   },
@@ -526,7 +526,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2384,
+    "ms": 2379,
     "traceDiff": true,
     "screenshotDiffPixels": 13458
   },
@@ -537,7 +537,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 608,
+    "ms": 599,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -547,8 +547,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 990,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 988,
     "traceDiff": true,
     "screenshotDiffPixels": 12911
   },
@@ -558,8 +558,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 688,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 665,
     "traceDiff": true,
     "screenshotDiffPixels": 12050
   },
@@ -570,7 +570,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 770,
+    "ms": 765,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -581,7 +581,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 2389,
+    "ms": 2379,
     "traceDiff": true,
     "screenshotDiffPixels": 3060
   },
@@ -592,7 +592,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 608,
+    "ms": 597,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -602,8 +602,8 @@
     "scenario": "reopen-during-close",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 990,
+    "sentence": "Both builds met the 4 of 5 requirements this run reached.",
+    "ms": 984,
     "traceDiff": true,
     "screenshotDiffPixels": 2882
   },
@@ -613,8 +613,8 @@
     "scenario": "resize-while-editing",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 670,
+    "sentence": "Both builds met the 2 of 3 requirements this run reached.",
+    "ms": 671,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -625,7 +625,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 612,
+    "ms": 603,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -636,7 +636,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 713,
+    "ms": 700,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -647,7 +647,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 742,
+    "ms": 744,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -657,8 +657,8 @@
     "scenario": "reopen-during-exit",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 682,
+    "sentence": "Both builds met the 3 of 4 requirements this run reached.",
+    "ms": 702,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -671,7 +671,7 @@
       "lost-focus"
     ],
     "sentence": "Focus should return to trigger, but it was on the page body at 900 ms.",
-    "ms": 609,
+    "ms": 625,
     "traceDiff": true,
     "screenshotDiffPixels": 470
   },
@@ -684,7 +684,7 @@
       "lost-focus"
     ],
     "sentence": "Focus should return to trigger, but it was on the page body at 1200 ms.",
-    "ms": 712,
+    "ms": 708,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -695,7 +695,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 737,
+    "ms": 783,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -708,7 +708,7 @@
       "lost-focus"
     ],
     "sentence": "Focus should return to trigger, but it was on the page body at 960 ms.",
-    "ms": 695,
+    "ms": 746,
     "traceDiff": true,
     "screenshotDiffPixels": 471811
   },
@@ -721,7 +721,7 @@
       "lost-focus"
     ],
     "sentence": "Focus should return to trigger, but it was on the page body at 900 ms.",
-    "ms": 623,
+    "ms": 627,
     "traceDiff": true,
     "screenshotDiffPixels": 470
   },
@@ -734,7 +734,7 @@
       "lost-focus"
     ],
     "sentence": "Focus should return to trigger, but it was on the page body at 1200 ms.",
-    "ms": 729,
+    "ms": 710,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -745,7 +745,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 768,
+    "ms": 761,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -758,7 +758,7 @@
       "lost-focus"
     ],
     "sentence": "Focus should return to trigger, but it was on the page body at 960 ms.",
-    "ms": 709,
+    "ms": 732,
     "traceDiff": true,
     "screenshotDiffPixels": 471811
   },
@@ -771,7 +771,7 @@
       "lost-focus"
     ],
     "sentence": "Focus moved to a hidden or inert element (dialog-input) at 0 ms.",
-    "ms": 623,
+    "ms": 625,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -782,7 +782,7 @@
     "verdict": "diverged",
     "categories": [],
     "sentence": "The scenario ran on the baseline but could not finish on the candidate at action 2: target \"password\" matches 2 elements.",
-    "ms": 362,
+    "ms": 383,
     "traceDiff": true,
     "screenshotDiffPixels": null
   },
@@ -806,7 +806,7 @@
       "lost-focus"
     ],
     "sentence": "Focus moved to a hidden or inert element (dialog-input) at 0 ms.",
-    "ms": 677,
+    "ms": 674,
     "traceDiff": true,
     "screenshotDiffPixels": 1587
   },
@@ -817,7 +817,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 632,
+    "ms": 630,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -828,7 +828,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 724,
+    "ms": 728,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -839,7 +839,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 743,
+    "ms": 740,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -852,7 +852,7 @@
       "duplicate-interactive"
     ],
     "sentence": "2 live copies of dialog existed at 460 ms.",
-    "ms": 799,
+    "ms": 742,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -865,8 +865,8 @@
       "duplicate-interactive"
     ],
     "sentence": "aria-labelledby on dialog points at \"dialog-title\", which matched 2 element(s) and resolved to an unmarked element, not title.",
-    "ms": 612,
-    "traceDiff": false,
+    "ms": 601,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -878,8 +878,8 @@
       "duplicate-interactive"
     ],
     "sentence": "aria-labelledby on dialog points at \"dialog-title\", which matched 2 element(s) and resolved to an unmarked element, not title.",
-    "ms": 764,
-    "traceDiff": false,
+    "ms": 700,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -889,7 +889,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 760,
+    "ms": 731,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -902,8 +902,8 @@
       "duplicate-interactive"
     ],
     "sentence": "aria-labelledby on dialog points at \"dialog-title\", which matched 2 element(s) and resolved to an unmarked element, not title.",
-    "ms": 694,
-    "traceDiff": false,
+    "ms": 692,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -913,8 +913,8 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 628,
-    "traceDiff": false,
+    "ms": 629,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -924,8 +924,8 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 712,
-    "traceDiff": false,
+    "ms": 726,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -937,8 +937,8 @@
       "incomplete-cleanup"
     ],
     "sentence": "1 document:keydown still active after removal. There were 0 before mount.",
-    "ms": 763,
-    "traceDiff": false,
+    "ms": 738,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -947,9 +947,9 @@
     "scenario": "reopen-during-exit",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 720,
-    "traceDiff": false,
+    "sentence": "Both builds met the 3 of 4 requirements this run reached.",
+    "ms": 692,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -961,7 +961,7 @@
       "missed-ack"
     ],
     "sentence": "\"press Escape\" at 400 ms did not set dialog to closing or closed within 50 ms.",
-    "ms": 530,
+    "ms": 481,
     "traceDiff": true,
     "screenshotDiffPixels": 471850
   },
@@ -972,7 +972,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 710,
+    "ms": 732,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -983,7 +983,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 613,
+    "ms": 586,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -993,8 +993,8 @@
     "scenario": "reopen-during-exit",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 679,
+    "sentence": "Both builds met the 3 of 4 requirements this run reached.",
+    "ms": 674,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1005,7 +1005,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 608,
+    "ms": 642,
     "traceDiff": false,
     "screenshotDiffPixels": 3876
   },
@@ -1016,7 +1016,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 719,
+    "ms": 728,
     "traceDiff": false,
     "screenshotDiffPixels": 4383
   },
@@ -1027,7 +1027,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 742,
+    "ms": 739,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1037,8 +1037,8 @@
     "scenario": "reopen-during-exit",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 677,
+    "sentence": "Both builds met the 3 of 4 requirements this run reached.",
+    "ms": 699,
     "traceDiff": false,
     "screenshotDiffPixels": 8300
   },
@@ -1049,7 +1049,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 605,
+    "ms": 636,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1060,7 +1060,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 710,
+    "ms": 728,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1071,7 +1071,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 742,
+    "ms": 741,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1081,8 +1081,8 @@
     "scenario": "reopen-during-exit",
     "verdict": "pass",
     "categories": [],
-    "sentence": "Both builds met every declared requirement.",
-    "ms": 694,
+    "sentence": "Both builds met the 3 of 4 requirements this run reached.",
+    "ms": 677,
     "traceDiff": true,
     "screenshotDiffPixels": 39897
   },
@@ -1093,7 +1093,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 458,
+    "ms": 532,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1104,7 +1104,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 558,
+    "ms": 579,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1115,7 +1115,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 590,
+    "ms": 592,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1126,7 +1126,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 708,
+    "ms": 711,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1137,7 +1137,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 469,
+    "ms": 467,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1148,7 +1148,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 501,
+    "ms": 483,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1159,7 +1159,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 247,
+    "ms": 248,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1170,7 +1170,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 522,
+    "ms": 556,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1181,7 +1181,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 611,
+    "ms": 639,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1194,7 +1194,7 @@
       "incomplete-cleanup"
     ],
     "sentence": "dragging was still true after pointerCancel at 600 ms. It should be false.",
-    "ms": 463,
+    "ms": 471,
     "traceDiff": true,
     "screenshotDiffPixels": 2971
   },
@@ -1205,7 +1205,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 481,
+    "ms": 485,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1216,7 +1216,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 262,
+    "ms": 267,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1227,7 +1227,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 518,
+    "ms": 540,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1238,7 +1238,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 616,
+    "ms": 653,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1251,7 +1251,7 @@
       "incomplete-cleanup"
     ],
     "sentence": "value was still 80 after pointerCancel at 600 ms. It should be 30.",
-    "ms": 467,
+    "ms": 471,
     "traceDiff": true,
     "screenshotDiffPixels": 2971
   },
@@ -1262,7 +1262,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 480,
+    "ms": 488,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1273,7 +1273,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 248,
+    "ms": 268,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1284,7 +1284,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 532,
+    "ms": 516,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1295,7 +1295,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 615,
+    "ms": 614,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1306,8 +1306,8 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 463,
-    "traceDiff": false,
+    "ms": 473,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -1317,8 +1317,8 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 485,
-    "traceDiff": false,
+    "ms": 483,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -1328,7 +1328,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 249,
+    "ms": 244,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1341,8 +1341,8 @@
       "incomplete-cleanup"
     ],
     "sentence": "1 window:pointermove still active after removal. There were 0 before mount.",
-    "ms": 519,
-    "traceDiff": false,
+    "ms": 520,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -1352,8 +1352,8 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 621,
-    "traceDiff": false,
+    "ms": 623,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -1363,7 +1363,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 474,
+    "ms": 488,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1374,8 +1374,8 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 870,
-    "traceDiff": false,
+    "ms": 868,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -1385,7 +1385,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 287,
+    "ms": 245,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1396,7 +1396,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 518,
+    "ms": 519,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1409,8 +1409,8 @@
       "incomplete-cleanup"
     ],
     "sentence": "1 timer:frame still active after removal. There were 0 before mount.",
-    "ms": 1386,
-    "traceDiff": false,
+    "ms": 1410,
+    "traceDiff": true,
     "screenshotDiffPixels": 0
   },
   {
@@ -1420,7 +1420,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 486,
+    "ms": 467,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1431,7 +1431,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 482,
+    "ms": 483,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1444,7 +1444,7 @@
       "missed-ack"
     ],
     "sentence": "\"nudge right\" at 100 ms did not change value within 50 ms.",
-    "ms": 250,
+    "ms": 248,
     "traceDiff": true,
     "screenshotDiffPixels": 602
   },
@@ -1455,7 +1455,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 537,
+    "ms": 545,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1466,7 +1466,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 616,
+    "ms": 625,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1477,7 +1477,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 465,
+    "ms": 473,
     "traceDiff": true,
     "screenshotDiffPixels": 1706
   },
@@ -1488,7 +1488,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 497,
+    "ms": 484,
     "traceDiff": true,
     "screenshotDiffPixels": 3378
   },
@@ -1499,7 +1499,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 245,
+    "ms": 255,
     "traceDiff": true,
     "screenshotDiffPixels": 2016
   },
@@ -1510,7 +1510,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 517,
+    "ms": 518,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1521,7 +1521,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 622,
+    "ms": 617,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1532,7 +1532,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 470,
+    "ms": 475,
     "traceDiff": true,
     "screenshotDiffPixels": 155
   },
@@ -1543,7 +1543,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 484,
+    "ms": 508,
     "traceDiff": true,
     "screenshotDiffPixels": 159
   },
@@ -1554,7 +1554,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 247,
+    "ms": 285,
     "traceDiff": true,
     "screenshotDiffPixels": 364
   },
@@ -1565,7 +1565,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 516,
+    "ms": 519,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1576,7 +1576,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 614,
+    "ms": 618,
     "traceDiff": true,
     "screenshotDiffPixels": 0
   },
@@ -1587,7 +1587,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 462,
+    "ms": 500,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1598,7 +1598,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 497,
+    "ms": 505,
     "traceDiff": true,
     "screenshotDiffPixels": 330
   },
@@ -1609,7 +1609,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 249,
+    "ms": 269,
     "traceDiff": true,
     "screenshotDiffPixels": 510
   },
@@ -1620,7 +1620,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 516,
+    "ms": 521,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   },
@@ -1631,7 +1631,7 @@
     "verdict": "pass",
     "categories": [],
     "sentence": "Both builds met every declared requirement.",
-    "ms": 618,
+    "ms": 616,
     "traceDiff": false,
     "screenshotDiffPixels": 0
   }
