@@ -34,6 +34,7 @@ code, kbd { font-size: 0.86em; }
 .finding { padding: 40px 0 28px; max-width: 800px; }
 .verdict { margin: 0 0 10px; font-weight: 500; font-size: 13px; color: var(--forest); }
 .verdict-regression, .verdict-shared-failure, .verdict-diverged, .verdict-invalid { color: var(--fail); }
+.finding h1::first-letter { text-transform: uppercase; }
 .finding h1 { margin: 0; font: 400 clamp(25px, 4.2vw, 38px)/1.16 'Geist Serif', Georgia, serif; letter-spacing: -0.012em; text-wrap: pretty; overflow-wrap: anywhere; }
 .lede { margin: 14px 0 0; color: var(--body); overflow-wrap: anywhere; }
 

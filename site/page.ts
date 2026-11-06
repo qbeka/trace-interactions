@@ -155,7 +155,7 @@ function drawStage(stage: Stage, title: string, failing: boolean): void {
   for (const [name, node] of stage.nodes) {
     const r = rectAt(line, name, time);
     show(node.rect, !!r);
-    show(node.name, !!r);
+    show(node.name, !!r && r.w >= unit * 6);
     if (!r) continue;
     set(node.rect, { x: r.x, y: r.y, width: r.w, height: r.h });
     set(node.name, { x: r.x + r.w / 2, y: r.y + r.h + unit * 3 });

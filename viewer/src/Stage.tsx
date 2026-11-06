@@ -46,7 +46,7 @@ export function Stage({ title, label, line, ghost, time, scenario, primary, stat
           return (
             <g key={n}>
               <rect className="node" x={r.x} y={r.y} width={r.w} height={r.h} rx={unit * 0.4} />
-              <text className="node-name" x={r.x + r.w / 2} y={r.y + r.h + unit * 2.4} style={{ fontSize: unit * 2 }}>{n}</text>
+              {r.w >= unit * 6 && <text className="node-name" x={r.x + r.w / 2} y={r.y + r.h + unit * 2.4} style={{ fontSize: unit * 2 }}>{n}</text>}
             </g>
           );
         })}
