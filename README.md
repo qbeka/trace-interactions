@@ -7,12 +7,12 @@ A panel can look right in its final screenshot and still have lost focus, accept
 stale transition or jumped during a resize. Trace finds those failures and explains
 each one in a sentence, with two aligned replays that show where the builds part.
 
-![A Trace report. Two stages show the same four actions on two builds. The candidate's panel starts 80 px from its trigger.](docs/assets/cover.png)
+![The Trace project page. Screenshots of two builds show the same moment. The broken build's panel starts 80 px from the Inspect button.](docs/assets/cover.png)
 
 ## See a report
 
-**[Watch the replay](https://www.qendrimbeka.com/projects/trace/index.html)** in your browser. It plays one failure on two builds, and links to the
-full report. No install needed. The same page is in the repository at
+**[Watch the replay](https://www.qendrimbeka.com/projects/trace/index.html)** in your browser. It plays one failure on two builds, shows the reduction to four
+steps, and links to the full report. No install needed. The same page is in the repository at
 [demo/index.html](demo/index.html).
 
 In the full report, `Space` plays, `[` and `]` step by action, `F` jumps to the failure, and
@@ -159,10 +159,10 @@ The full method, raw runs and failures are in [docs/REPORT.md](docs/REPORT.md).
 |---|---|---|
 | `pnpm check` | Type checks everything | Under 1 s |
 | `pnpm test` | 125 unit tests | Under 1 s |
-| `pnpm test:e2e` | 71 real browser tests on all three engines | About 5 minutes |
+| `pnpm test:e2e` | 79 real browser tests on all three engines | About 5 minutes |
 | `pnpm bench:smoke` | One good pair and one seeded failure | About 4 s |
 | `pnpm bench` | The full measurement | 42 minutes |
-| `pnpm demo` | Rebuilds the reports and project page in `demo/` | About 80 s |
+| `pnpm demo` | Rebuilds the reports, the page's screenshots and the project page in `demo/` | About 4 minutes |
 | `pnpm page` | Rebuilds only the project page, from `site/` | Under 1 s |
 | `pnpm verify:artifacts` | Checks saved results against their hashes | Under 1 s |
 
