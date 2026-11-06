@@ -30,6 +30,7 @@ for (const id of GENERATED_FIXTURES) {
   let invalidStatic = 0;
   let invalidRun = 0;
   let flagged = 0;
+  let crashed = 0;
   const reasons: Record<string, number> = {};
   for (const seed of seeds) {
     const scenario = generateScenario(root, id, seed);
@@ -38,7 +39,14 @@ for (const id of GENERATED_FIXTURES) {
       rows.push({ fixture: id, seed, outcome: 'invalid-static' });
       continue;
     }
-    const r = await runScenario({ browser, url: build.url, scenario, stateAllowlist: fixture.manifest.stateAllowlist });
+    // A harness crash is a result too. It stays in the denominator and is printed.
+    const r = await runScenario({ browser, url: build.url, scenario, stateAllowlist: fixture.manifest.stateAllowlist }).catch((e: Error) => e);
+    if (r instanceof Error) {
+      crashed += 1;
+      rows.push({ fixture: id, seed, outcome: 'harness-error', error: r.message.slice(0, 200) });
+      console.log(`HARNESS ERROR ${id} seed ${seed}: ${r.message.slice(0, 120)}`);
+      continue;
+    }
     if (r.status === 'invalid') {
       invalidRun += 1;
       const reason = (r.invalid?.reason ?? 'unknown').replace(/"[^"]*"/g, '"…"').slice(0, 40);
@@ -51,7 +59,7 @@ for (const id of GENERATED_FIXTURES) {
     rows.push({ fixture: id, seed, outcome: r.violations.length ? 'flagged' : 'clean', violations: r.violations.map((v) => v.sentence), ms: r.durationMs });
     if (r.violations.length > 0) console.log(`FLAGGED ${id} seed ${seed}: ${r.violations[0]!.sentence}`);
   }
-  summary[id] = { seeds: seeds.length, invalidStatic, invalidRun, completed, flagged, reasons };
+  summary[id] = { seeds: seeds.length, invalidStatic, invalidRun, crashed, completed, flagged, reasons };
   await build.stop();
 }
 writeJson(join(out, 'rows.json'), rows);

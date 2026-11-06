@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { chromium } from 'playwright';
@@ -8,6 +8,7 @@ import { reduceScenario, type ReductionReport } from '../src/reduce/reduce.ts';
 import { exportReport } from '../src/report/export.ts';
 import { loadRegistry, serveBuild } from '../src/runner/registry.ts';
 import { runScenario } from '../src/runner/run.ts';
+import { parseScenario } from '../src/scenario/validate.ts';
 import { generateScenario } from './generate.ts';
 import { manifestFor } from './manifest.ts';
 
@@ -25,8 +26,17 @@ const WORKLOADS: [string, string][] = [
   ['timeline', 'drag-stuck-on-cancel'],
 ];
 
-const { values } = parseArgs({ options: { runs: { type: 'string', default: '5' }, out: { type: 'string', default: 'results/reduction' }, 'max-seeds': { type: 'string', default: '60' } } });
+const { values } = parseArgs({
+  options: {
+    runs: { type: 'string', default: '5' },
+    out: { type: 'string', default: 'results/reduction' },
+    'max-seeds': { type: 'string', default: '60' },
+    // fixture,build,scenario. Reduces one written scenario instead of generated ones.
+    written: { type: 'string' },
+  },
+});
 const runs = Number(values.runs);
+const written = values.written?.split(',') as [string, string, string] | undefined;
 const root = resolve(import.meta.dirname, '..');
 const out = resolve(values.out!);
 const registry = loadRegistry(join(root, 'trace.fixtures.json'));
@@ -36,7 +46,7 @@ const manifestBrowser = await chromium.launch();
 const manifest = manifestFor(manifestBrowser, root, 'bench/reduction.ts');
 await manifestBrowser.close();
 
-for (const [id, buildName] of WORKLOADS) {
+for (const [id, buildName] of written ? [[written[0], written[1]] as [string, string]] : WORKLOADS) {
   const fixture = registry.get(id)!;
   const allow = fixture.manifest.stateAllowlist;
   const baseline = await serveBuild(fixture, 'correct');
@@ -44,8 +54,10 @@ for (const [id, buildName] of WORKLOADS) {
   let browser = await chromium.launch();
   let chosen: { seed: number; fingerprint: string; scanned: number; invalid: number } | null = null;
   let invalid = 0;
+  const scenarioFor = (seed: number) =>
+    written ? parseScenario(JSON.parse(readFileSync(join(root, 'fixtures', id, 'scenarios', `${written[2]}.json`), 'utf8'))) : generateScenario(root, id, seed);
   for (let seed = 1; seed <= Number(values['max-seeds']) && !chosen; seed++) {
-    const scenario = generateScenario(root, id, seed);
+    const scenario = scenarioFor(seed);
     const base = await runScenario({ browser, url: baseline.url, scenario, stateAllowlist: allow });
     const cand = await runScenario({ browser, url: candidate.url, scenario, stateAllowlist: allow });
     if (base.status === 'invalid' || cand.status === 'invalid') {
@@ -64,7 +76,7 @@ for (const [id, buildName] of WORKLOADS) {
     await candidate.stop();
     continue;
   }
-  const scenario = generateScenario(root, id, chosen.seed);
+  const scenario = scenarioFor(chosen.seed);
   const reports: ReductionReport[] = [];
   for (let n = 0; n < runs; n++) {
     browser = await chromium.launch();
@@ -102,6 +114,13 @@ for (const [id, buildName] of WORKLOADS) {
   });
   await baseline.stop();
   await candidate.stop();
+}
+
+if (written) {
+  writeJson(join(out, 'summary.json'), { rows });
+  writeJson(join(out, 'manifest.json'), { ...manifest, repetitions: runs, warmup: 0, confirmRuns: 3, reproductionRuns: 10, budget: { maxAttempts: 80, maxSeconds: 180 }, wallSeconds: Math.round((performance.now() - started) / 1000), exclusions: [] });
+  console.log(JSON.stringify(rows, null, 2));
+  process.exit(0);
 }
 
 // Report cost, measured on a real run directory.

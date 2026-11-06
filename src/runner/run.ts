@@ -314,6 +314,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     };
 
     let touch: TouchInput | null = null;
+    let touching = false;
     let pointer = { x: 0, y: 0 };
 
     const perform = async (a: Action, index: number): Promise<void> => {
@@ -336,6 +337,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
           if (useTouch) {
             touch ??= await TouchInput.open(page);
             await touch.down(pointer);
+            touching = true;
           } else {
             await page.mouse.move(pointer.x, pointer.y);
             await page.mouse.down();
@@ -343,14 +345,18 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
           break;
         case 'pointerMove':
           pointer = await resolvePoint(page, a.point, scenario.targets, index);
+          // A mouse can hover. A finger that has lifted cannot move.
+          if (useTouch && !touching) throw new InvalidScenario('a touch pointer cannot move while it is up', index);
           if (touch) await touch.move(pointer);
           else await page.mouse.move(pointer.x, pointer.y);
           break;
         case 'pointerUp':
+          touching = false;
           if (touch) await touch.up();
           else await page.mouse.up();
           break;
         case 'pointerCancel':
+          touching = false;
           if (touch) await touch.cancel();
           else {
             // Firefox and WebKit have no input path for a cancel. This fires the

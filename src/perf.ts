@@ -16,6 +16,9 @@ import type { Scenario } from './scenario/schema.ts';
  *
  * None of these is INP. INP is a field metric over a whole visit, and it ends
  * at the frame the user sees. Virtual time is never used here.
+ *
+ * Values are grouped by event type. Clicks and key presses differ by an order of
+ * magnitude in the fixtures, so one median across both describes neither.
  */
 export const METRICS = ['input-to-handler', 'input-to-commit', 'input-to-render'] as const;
 export type Metric = (typeof METRICS)[number];
@@ -39,8 +42,8 @@ const round = (n: number): number => Math.round(n * 100) / 100;
 export interface PerfRun {
   run: number;
   wallMs: number;
-  /** Median of each metric across this run's inputs. One value per run. */
-  medians: Partial<Record<Metric, number>>;
+  /** Median per event type and metric, keyed `click input-to-commit`. One value per run. */
+  medians: Record<string, number>;
   /** Browser-side work during the run, from Chromium Performance.getMetrics. */
   taskMs: number | null;
   scriptMs: number | null;
@@ -60,7 +63,8 @@ export function summarize(runs: PerfRun[], warmup: number): PerfSummary {
   const add = (name: string, values: number[]) => {
     if (values.length) metrics[name] = { median: round(median(values)), min: round(Math.min(...values)), max: round(Math.max(...values)), n: values.length };
   };
-  for (const m of METRICS) add(m, runs.flatMap((r) => (r.medians[m] === undefined ? [] : [r.medians[m]!])));
+  const keys = [...new Set(runs.flatMap((r) => Object.keys(r.medians)))].sort();
+  for (const key of keys) add(key, runs.flatMap((r) => (r.medians[key] === undefined ? [] : [r.medians[key]!])));
   add('task-ms', runs.flatMap((r) => (r.taskMs === null ? [] : [r.taskMs])));
   add('script-ms', runs.flatMap((r) => (r.scriptMs === null ? [] : [r.scriptMs])));
   add('wall-ms', runs.map((r) => r.wallMs));
@@ -82,11 +86,13 @@ export async function perfRun(o: PerfOptions, run: number): Promise<PerfRun> {
     const r = await runScenario({ browser, url: o.url, scenario: o.scenario, stateAllowlist: o.stateAllowlist, mode: 'wall', recording: o.recording });
     if (r.status !== 'completed') throw new Error(`perf run failed: ${r.invalid?.reason}`);
     const samples = r.latency as LatencySample[];
-    const perMetric = samples.map(sampleMetrics);
-    const medians: Partial<Record<Metric, number>> = {};
-    for (const m of METRICS) {
-      const values = perMetric.flatMap((p) => (p[m] === undefined ? [] : [p[m]!]));
-      if (values.length) medians[m] = round(median(values));
+    const medians: Record<string, number> = {};
+    for (const name of new Set(samples.map((s) => s.name))) {
+      const perMetric = samples.filter((s) => s.name === name).map(sampleMetrics);
+      for (const m of METRICS) {
+        const values = perMetric.flatMap((p) => (p[m] === undefined ? [] : [p[m]!]));
+        if (values.length) medians[`${name} ${m}`] = round(median(values));
+      }
     }
     return {
       run,

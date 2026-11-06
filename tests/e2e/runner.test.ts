@@ -191,6 +191,17 @@ describe('pointer cancel', () => {
     expect(r.violations).toEqual([]);
   });
 
+  it('treats a move after the finger lifts as invalid, not a crash', async () => {
+    const server = await serveVariant('timeline', 'correct');
+    const s = scenario('timeline', 'cancel-drag');
+    const point = { space: 'target-fraction', target: 'track', x: 0.5, y: 0.5 } as const;
+    const bad = { ...s, requirements: [], actions: [...s.actions, { at: 800, type: 'pointerMove', point } as const] };
+    const r = await runScenario({ browser, url: server.url, scenario: bad, stateAllowlist: ALLOW.timeline });
+    await server.close();
+    expect(r.status).toBe('invalid');
+    expect(r.invalid?.actionIndex).toBe(4);
+  });
+
   it.each([['firefox', firefox], ['webkit', webkit]] as const)('falls back to a labelled synthetic cancel on %s', async (_name, type) => {
     const other = await type.launch();
     const good = await serveVariant('timeline', 'correct');
