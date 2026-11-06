@@ -81,6 +81,29 @@ export function viewportAt(line: Timelines, time: number, fallback: { width: num
   return line.viewports[lastAt(line.viewports, time)] ?? fallback;
 }
 
+export interface Frame {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * The region the stages show: every rect either build recorded, plus a margin.
+ * Both stages share it, so a position on one means the same thing on the other.
+ * The full viewport would leave the action as a speck in a corner.
+ */
+export function frameOf(lines: Timelines[], fallback: { width: number; height: number }): Frame {
+  const rects = lines.flatMap((l) => [...l.rects.values()].flat()).flatMap((g) => (g.rect ? [g.rect] : []));
+  if (rects.length === 0) return { x: 0, y: 0, w: fallback.width, h: fallback.height };
+  const left = Math.min(...rects.map((r) => r.x));
+  const top = Math.min(...rects.map((r) => r.y));
+  const right = Math.max(...rects.map((r) => r.x + r.w));
+  const bottom = Math.max(...rects.map((r) => r.y + r.h));
+  const margin = Math.max(12, Math.max(right - left, bottom - top) * 0.06);
+  return { x: left - margin, y: top - margin, w: right - left + margin * 2, h: bottom - top + margin * 2 };
+}
+
 /** The path a target took since it last appeared, up to `time`. */
 export function trailAt(line: Timelines, target: string, time: number): { x: number; y: number }[] {
   const samples = line.rects.get(target);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { alignTime, focusAt, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
+import { alignTime, focusAt, frameOf, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
 import { scenario, trace } from './helpers.ts';
 
 const box = (x: number) => ({ x, y: 0, w: 10, h: 10 });
@@ -51,6 +51,16 @@ describe('viewer model', () => {
     expect(skipIdle(busy, 100)).toBe(960);
     expect(skipIdle(busy, 1008)).toBe(1008);
     expect(skipIdle(busy, 2000)).toBe(2000);
+  });
+
+  it('frames every rect on either build, and falls back to the viewport', () => {
+    const a = timelines(trace().at(0).rect('panel', { x: 500, y: 20, w: 100, h: 50 }).events);
+    const b = timelines(trace().at(0).rect('panel', { x: 300, y: 40, w: 100, h: 50 }).events);
+    const f = frameOf([a, b], { width: 900, height: 600 });
+    expect(f.x).toBeLessThan(300);
+    expect(f.x + f.w).toBeGreaterThan(600);
+    expect(f.w).toBeLessThan(900);
+    expect(frameOf([timelines([])], { width: 900, height: 600 })).toEqual({ x: 0, y: 0, w: 900, h: 600 });
   });
 
   it('picks the target a geometry requirement names', () => {

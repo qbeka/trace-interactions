@@ -46,8 +46,10 @@ code, kbd { font-size: 0.86em; }
 .stage figcaption { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 8px; }
 .stage-title { font-weight: 500; }
 .stage-label { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.stage svg { display: block; width: 100%; height: auto; max-height: 340px; }
+.stage svg { display: block; width: 100%; aspect-ratio: 16 / 10; max-height: 340px; background: var(--tile); border-radius: 6px; }
+.stage .outside { fill: #6040200a; }
 .stage .vp { fill: var(--paper); stroke: var(--line-strong); }
+.stage .node-name { fill: var(--muted); text-anchor: middle; font-family: 'Geist Mono', monospace; }
 .stage .node { fill: none; stroke: var(--quiet); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .stage .primary { fill: #1d3a2a10; stroke: var(--forest); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
 .stage .ghost { fill: none; stroke: var(--quiet); stroke-dasharray: 5 4; stroke-width: 1; vector-effect: non-scaling-stroke; }
@@ -151,6 +153,7 @@ tr.is-failure td { background: var(--fail-wash); }
 @media (max-width: 760px) {
   .page { padding: 0 16px 56px; }
   .stages, .shots { grid-template-columns: 1fr; }
+  .stage svg { aspect-ratio: 2 / 1; }
   .finding { padding: 28px 0 20px; }
   .lane { grid-template-columns: 1fr; gap: 1px; }
   .strip-overlay { left: 0; }

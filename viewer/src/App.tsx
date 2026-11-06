@@ -8,6 +8,7 @@ import {
   failingSide,
   focusName,
   formatMs,
+  frameOf,
   mainStateKey,
   primaryTarget,
   primaryViolation,
@@ -101,6 +102,7 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   const cand = useMemo(() => timelines(c.candidate.events), [c]);
   const end = Math.max(base.end, 1);
   const primary = useMemo(() => primaryTarget(c.scenario), [c]);
+  const frame = useMemo(() => frameOf([base, cand], c.scenario.viewport), [base, cand, c]);
   const stateKey = useMemo(() => mainStateKey(c.scenario), [c]);
   const failure = primaryViolation(c);
   const side = failingSide(c);
@@ -187,8 +189,8 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
 
       <section aria-label="Replay">
         <div className="stages">
-          <Stage title="Baseline" label={c.baseline.label} line={base} ghost={null} time={time} scenario={c.scenario} primary={primary} stateKey={stateKey} failing={side === 'baseline' && pin !== null && time >= pin} />
-          <Stage title="Candidate" label={c.candidate.label} line={cand} ghost={{ line: base, time }} time={candTime} scenario={c.scenario} primary={primary} stateKey={stateKey} failing={side === 'candidate' && pin !== null && time >= pin} />
+          <Stage title="Baseline" label={c.baseline.label} line={base} ghost={null} time={time} scenario={c.scenario} primary={primary} stateKey={stateKey} frame={frame} failing={side === 'baseline' && pin !== null && time >= pin} />
+          <Stage title="Candidate" label={c.candidate.label} line={cand} ghost={{ line: base, time }} time={candTime} scenario={c.scenario} primary={primary} stateKey={stateKey} frame={frame} failing={side === 'candidate' && pin !== null && time >= pin} />
         </div>
         <Legend />
         <Strip baseline={base} candidate={cand} stateKey={stateKey} end={end} time={time} pin={pin} onSeek={seek} />
