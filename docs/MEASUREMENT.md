@@ -92,7 +92,7 @@ samples. Lab timings are not INP.
 
 ## Revision 2
 
-An independent review on a clean clone found real problems after the first frozen run:
+A later review on a clean clone found real problems after the first frozen run:
 requirements that passed without checking anything, an idle jump that could change a
 verdict, a reducer that accepted a sequence the baseline could not run, a run folder that
 could run commands, and a blinded control. Fixing them changed the oracle, so everything
