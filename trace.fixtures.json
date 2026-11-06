@@ -1,6 +1,17 @@
 {
   "schema": "trace.registry/1",
   "fixtures": [
-    { "id": "inspector", "manifest": "fixtures/inspector/fixture.json" }
+    {
+      "id": "inspector",
+      "manifest": "fixtures/inspector/fixture.json"
+    },
+    {
+      "id": "overlay",
+      "manifest": "fixtures/overlay/fixture.json"
+    },
+    {
+      "id": "timeline",
+      "manifest": "fixtures/timeline/fixture.json"
+    }
   ]
 }

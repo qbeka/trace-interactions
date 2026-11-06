@@ -1,0 +1,56 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "keyboard-nudge",
+  "description": "Move the handle with the keyboard.",
+  "fixture": {
+    "id": "timeline",
+    "version": "1"
+  },
+  "seed": 23,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 420,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "handle": {
+      "role": "slider",
+      "name": "Playhead",
+      "traceId": "handle"
+    },
+    "track": {
+      "traceId": "track"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "focus-valid"
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "focus",
+      "target": "handle",
+      "note": "focus the handle"
+    },
+    {
+      "at": 100,
+      "type": "press",
+      "key": "ArrowRight",
+      "note": "nudge right",
+      "ack": {
+        "key": "value",
+        "equals": 35,
+        "withinMs": 50
+      }
+    }
+  ],
+  "cleanup": []
+}

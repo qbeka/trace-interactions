@@ -1,0 +1,94 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "open-and-cancel",
+  "description": "Open the dialog, type, and cancel.",
+  "fixture": {
+    "id": "overlay",
+    "version": "1"
+  },
+  "seed": 11,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Archive project",
+      "traceId": "trigger"
+    },
+    "dialog": {
+      "role": "dialog",
+      "name": "Archive project",
+      "traceId": "dialog"
+    },
+    "password": {
+      "traceId": "dialog-input"
+    },
+    "title": {
+      "traceId": "title"
+    },
+    "cancel": {
+      "role": "button",
+      "name": "Cancel",
+      "traceId": "cancel"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "focus-valid"
+    },
+    {
+      "kind": "focus-restored",
+      "to": "trigger",
+      "whenState": {
+        "dialog": "closed"
+      },
+      "withinMs": 400
+    },
+    {
+      "kind": "single-interactive",
+      "target": "dialog"
+    },
+    {
+      "kind": "relationship-resolves",
+      "from": "dialog",
+      "attribute": "aria-labelledby",
+      "to": "title"
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "activate",
+      "target": "trigger",
+      "note": "open",
+      "ack": {
+        "key": "dialog",
+        "equals": "open",
+        "withinMs": 50
+      }
+    },
+    {
+      "at": 300,
+      "type": "type",
+      "target": "password",
+      "text": "synthetic-pw-1",
+      "note": "type a synthetic password"
+    },
+    {
+      "at": 700,
+      "type": "activate",
+      "target": "cancel",
+      "note": "cancel"
+    }
+  ],
+  "cleanup": []
+}

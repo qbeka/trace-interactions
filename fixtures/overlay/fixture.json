@@ -1,0 +1,21 @@
+{
+  "schema": "trace.fixture/1",
+  "id": "overlay",
+  "version": "1",
+  "stateAllowlist": ["dialog", "passwordLength", "mounted"],
+  "clock": { "channels": ["timers", "frames", "animations"] },
+  "source": "fixtures/overlay",
+  "builds": {
+    "correct": { "dir": ".build/fixtures/overlay/correct" },
+    "no-restore": { "dir": ".build/fixtures/overlay/no-restore" },
+    "stale-restore": { "dir": ".build/fixtures/overlay/stale-restore" },
+    "hidden-clone-focus": { "dir": ".build/fixtures/overlay/hidden-clone-focus" },
+    "live-exit-clone": { "dir": ".build/fixtures/overlay/live-exit-clone" },
+    "duplicate-id": { "dir": ".build/fixtures/overlay/duplicate-id" },
+    "listener-leak": { "dir": ".build/fixtures/overlay/listener-leak" },
+    "escape-ignored": { "dir": ".build/fixtures/overlay/escape-ignored" },
+    "legit-restyle": { "dir": ".build/fixtures/overlay/legit-restyle" },
+    "legit-large": { "dir": ".build/fixtures/overlay/legit-large" },
+    "legit-instant": { "dir": ".build/fixtures/overlay/legit-instant" }
+  }
+}

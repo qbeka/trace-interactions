@@ -1,0 +1,89 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "resize-while-editing",
+  "description": "Resize across the breakpoint while the name field has focus.",
+  "fixture": {
+    "id": "inspector",
+    "version": "1"
+  },
+  "seed": 3,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Inspect",
+      "traceId": "trigger"
+    },
+    "panel": {
+      "traceId": "panel"
+    },
+    "nameInput": {
+      "role": "textbox",
+      "name": "Name",
+      "traceId": "name-input"
+    },
+    "close": {
+      "role": "button",
+      "name": "Done",
+      "traceId": "close"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "focus-stays-on",
+      "target": "nameInput",
+      "whileState": {
+        "panel": "open"
+      }
+    },
+    {
+      "kind": "focus-valid"
+    },
+    {
+      "kind": "geometry-fits",
+      "target": "panel",
+      "insetPx": 8,
+      "tolerancePx": 2
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "activate",
+      "target": "trigger",
+      "note": "open"
+    },
+    {
+      "at": 400,
+      "type": "type",
+      "target": "nameInput",
+      "text": " v2",
+      "note": "edit the name"
+    },
+    {
+      "at": 800,
+      "type": "resize",
+      "width": 560,
+      "height": 640,
+      "note": "cross the breakpoint"
+    },
+    {
+      "at": 1200,
+      "type": "resize",
+      "width": 420,
+      "height": 640,
+      "note": "narrow further"
+    }
+  ],
+  "cleanup": []
+}

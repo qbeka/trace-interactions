@@ -1,0 +1,75 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "escape-closes",
+  "description": "Escape closes the panel from the name field.",
+  "fixture": {
+    "id": "inspector",
+    "version": "1"
+  },
+  "seed": 4,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Inspect",
+      "traceId": "trigger"
+    },
+    "panel": {
+      "traceId": "panel"
+    },
+    "nameInput": {
+      "role": "textbox",
+      "name": "Name",
+      "traceId": "name-input"
+    },
+    "close": {
+      "role": "button",
+      "name": "Done",
+      "traceId": "close"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "focus-restored",
+      "to": "trigger",
+      "whenState": {
+        "panel": "closed"
+      },
+      "withinMs": 400
+    },
+    {
+      "kind": "focus-valid"
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "activate",
+      "target": "trigger",
+      "note": "open"
+    },
+    {
+      "at": 400,
+      "type": "press",
+      "key": "Escape",
+      "target": "nameInput",
+      "note": "press Escape",
+      "ack": {
+        "key": "panel",
+        "equals": "closing",
+        "withinMs": 50
+      }
+    }
+  ],
+  "cleanup": []
+}

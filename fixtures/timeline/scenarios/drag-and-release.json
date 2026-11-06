@@ -1,0 +1,71 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "drag-and-release",
+  "description": "Drag and release normally.",
+  "fixture": {
+    "id": "timeline",
+    "version": "1"
+  },
+  "seed": 22,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 420,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "handle": {
+      "role": "slider",
+      "name": "Playhead",
+      "traceId": "handle"
+    },
+    "track": {
+      "traceId": "track"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "transient-cleared",
+      "after": "pointerUp",
+      "state": {
+        "dragging": false,
+        "settling": false
+      }
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "pointerDown",
+      "point": {
+        "space": "target-fraction",
+        "target": "handle",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "note": "press the handle"
+    },
+    {
+      "at": 200,
+      "type": "pointerMove",
+      "point": {
+        "space": "target-fraction",
+        "target": "track",
+        "x": 0.62,
+        "y": 0.5
+      },
+      "note": "drag"
+    },
+    {
+      "at": 400,
+      "type": "pointerUp",
+      "note": "release"
+    }
+  ],
+  "cleanup": []
+}

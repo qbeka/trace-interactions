@@ -1,0 +1,85 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "remove-after-close",
+  "description": "Remove the page after using the dialog.",
+  "fixture": {
+    "id": "overlay",
+    "version": "1"
+  },
+  "seed": 14,
+  "initialState": {
+    "mounted": false
+  },
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Archive project",
+      "traceId": "trigger"
+    },
+    "dialog": {
+      "role": "dialog",
+      "name": "Archive project",
+      "traceId": "dialog"
+    },
+    "password": {
+      "traceId": "dialog-input"
+    },
+    "title": {
+      "traceId": "title"
+    },
+    "cancel": {
+      "role": "button",
+      "name": "Cancel",
+      "traceId": "cancel"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "resources-released",
+      "key": "mounted",
+      "removedValue": false
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "requestState",
+      "state": {
+        "mounted": true
+      },
+      "setup": true,
+      "note": "mount"
+    },
+    {
+      "at": 100,
+      "type": "activate",
+      "target": "trigger",
+      "note": "open"
+    },
+    {
+      "at": 500,
+      "type": "press",
+      "key": "Escape",
+      "note": "press Escape"
+    },
+    {
+      "at": 900,
+      "type": "requestState",
+      "state": {
+        "mounted": false
+      },
+      "note": "remove"
+    }
+  ],
+  "cleanup": []
+}

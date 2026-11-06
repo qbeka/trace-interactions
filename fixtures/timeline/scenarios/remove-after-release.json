@@ -1,0 +1,87 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "remove-after-release",
+  "description": "Remove the timeline after a normal drag.",
+  "fixture": {
+    "id": "timeline",
+    "version": "1"
+  },
+  "seed": 25,
+  "initialState": {
+    "mounted": false
+  },
+  "viewport": {
+    "width": 900,
+    "height": 420,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "handle": {
+      "role": "slider",
+      "name": "Playhead",
+      "traceId": "handle"
+    },
+    "track": {
+      "traceId": "track"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "resources-released",
+      "key": "mounted",
+      "removedValue": false
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "requestState",
+      "state": {
+        "mounted": true
+      },
+      "setup": true,
+      "note": "mount"
+    },
+    {
+      "at": 100,
+      "type": "pointerDown",
+      "point": {
+        "space": "target-fraction",
+        "target": "handle",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "note": "press the handle"
+    },
+    {
+      "at": 300,
+      "type": "pointerMove",
+      "point": {
+        "space": "target-fraction",
+        "target": "track",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "note": "drag"
+    },
+    {
+      "at": 500,
+      "type": "pointerUp",
+      "note": "release"
+    },
+    {
+      "at": 900,
+      "type": "requestState",
+      "state": {
+        "mounted": false
+      },
+      "note": "remove"
+    }
+  ],
+  "cleanup": []
+}

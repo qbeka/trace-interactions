@@ -1,0 +1,76 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "remove-while-open",
+  "description": "Remove the inspector while it is open.",
+  "fixture": {
+    "id": "inspector",
+    "version": "1"
+  },
+  "seed": 5,
+  "initialState": {
+    "mounted": false
+  },
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Inspect",
+      "traceId": "trigger"
+    },
+    "panel": {
+      "traceId": "panel"
+    },
+    "nameInput": {
+      "role": "textbox",
+      "name": "Name",
+      "traceId": "name-input"
+    },
+    "close": {
+      "role": "button",
+      "name": "Done",
+      "traceId": "close"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "resources-released",
+      "key": "mounted",
+      "removedValue": false
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "requestState",
+      "state": {
+        "mounted": true
+      },
+      "setup": true,
+      "note": "mount"
+    },
+    {
+      "at": 100,
+      "type": "activate",
+      "target": "trigger",
+      "note": "open"
+    },
+    {
+      "at": 500,
+      "type": "requestState",
+      "state": {
+        "mounted": false
+      },
+      "note": "remove"
+    }
+  ],
+  "cleanup": []
+}

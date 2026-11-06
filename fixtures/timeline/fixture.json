@@ -1,0 +1,19 @@
+{
+  "schema": "trace.fixture/1",
+  "id": "timeline",
+  "version": "1",
+  "stateAllowlist": ["value", "dragging", "settling", "mounted"],
+  "clock": { "channels": ["timers", "frames"] },
+  "source": "fixtures/timeline",
+  "builds": {
+    "correct": { "dir": ".build/fixtures/timeline/correct" },
+    "drag-stuck-on-cancel": { "dir": ".build/fixtures/timeline/drag-stuck-on-cancel" },
+    "cancel-keeps-preview": { "dir": ".build/fixtures/timeline/cancel-keeps-preview" },
+    "window-listener-leak": { "dir": ".build/fixtures/timeline/window-listener-leak" },
+    "raf-leak": { "dir": ".build/fixtures/timeline/raf-leak" },
+    "keyboard-ignored": { "dir": ".build/fixtures/timeline/keyboard-ignored" },
+    "legit-restyle": { "dir": ".build/fixtures/timeline/legit-restyle" },
+    "legit-thick-handle": { "dir": ".build/fixtures/timeline/legit-thick-handle" },
+    "legit-fine-steps": { "dir": ".build/fixtures/timeline/legit-fine-steps" }
+  }
+}
