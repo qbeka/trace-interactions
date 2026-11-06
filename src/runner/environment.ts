@@ -33,11 +33,11 @@ function quiet(cmd: string, args: string[]): string | null {
   }
 }
 
-/** Source state of this checkout. Null outside a git repository. */
+/** Source state of this checkout. Saved results do not count as source changes. */
 export function sourceState(): { commit: string | null; dirty: boolean | null } {
   const commit = quiet('git', ['rev-parse', 'HEAD']);
   if (!commit) return { commit: null, dirty: null };
-  return { commit, dirty: (quiet('git', ['status', '--porcelain']) ?? '') !== '' };
+  return { commit, dirty: (quiet('git', ['status', '--porcelain', '--', '.', ':!results']) ?? '') !== '' };
 }
 
 export function powerSource(): string | null {

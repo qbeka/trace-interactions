@@ -11,7 +11,7 @@ freeze. Anything changed afterward is listed in `docs/REPORT.md`.
 - A run is excluded only for a stated reason, listed in the manifest.
 - Timings use the same browser, fixture, input order and machine. Timing numbers never
   come from virtual time.
-- The development corpus is tuned. The first run missed 7 of 18 seeded bugs, mislabeled
+- The development corpus is tuned. The first run missed 5 of 18 seeded bugs, mislabeled
   1 and flagged 3 of 13 clean builds, and the oracle changed because of it. That raw run
   is in `results/development`. A score on this corpus shows the harness works. It does
   not show the oracle generalizes.

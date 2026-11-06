@@ -26,7 +26,10 @@
     "bench:smoke": "tsx bench/smoke.ts",
     "bench": "tsx bench/run.ts",
     "demo": "tsx bench/demo.ts",
-    "build:cli": "tsx scripts/build-cli.ts"
+    "build:cli": "tsx scripts/build-cli.ts",
+    "capture": "tsx scripts/capture.ts",
+    "manifest": "tsx scripts/manifest.ts",
+    "verify:artifacts": "tsx scripts/manifest.ts --check"
   },
   "dependencies": {
     "playwright": "1.65.0",

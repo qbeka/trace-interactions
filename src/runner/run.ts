@@ -62,6 +62,11 @@ export interface RunOptions {
   recording?: 'full' | 'stamps' | 'off';
   /** Saves screenshots to this directory. Never set during a performance pass. */
   screenshots?: { dir: string; prefix: string; times?: number[] };
+  /**
+   * A script that defines `window.__traceFixture`, injected for the test only, so
+   * a local page can be checked with no change to its source or bundle.
+   */
+  adapterScript?: string;
   /** Disables the idle jump. Used by the test that proves the jump changes nothing. */
   everyTick?: boolean;
 }
@@ -203,6 +208,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       await context.clock.pauseAt(1000);
     }
     await context.addInitScript({ content: recording === 'off' ? STUB_RECORDER : recorderSource() });
+    if (opts.adapterScript) await context.addInitScript({ content: opts.adapterScript });
 
     const page = await context.newPage();
     page.setDefaultTimeout(ACTION_TIMEOUT_MS);

@@ -41,6 +41,7 @@ Options for run:
   --baseline-url <url>    use a local URL instead of a registered build
   --candidate-url <url>   same, for the candidate. Needs --allowlist.
   --allowlist a,b         state keys to record when no manifest is registered
+  --adapter <file.js>     inject a test-only adapter, so the page needs no change
   --browser <name>        chromium, firefox or webkit. Default chromium.
   --mode <mode>           controlled or wall. Default comes from the scenario.
   --out <dir>             where to save the run. Default .trace/<scenario id>.
@@ -125,6 +126,7 @@ async function cmdRun(args: string[]): Promise<number> {
       'baseline-url': { type: 'string' },
       'candidate-url': { type: 'string' },
       allowlist: { type: 'string' },
+      adapter: { type: 'string' },
       browser: { type: 'string', default: 'chromium' },
       mode: { type: 'string' },
       out: { type: 'string' },
@@ -190,6 +192,7 @@ async function cmdRun(args: string[]): Promise<number> {
       out,
       mode: values.mode as 'controlled' | 'wall' | undefined,
       screenshots: !values['no-screenshots'],
+      adapterScript: values.adapter ? readFileSync(values.adapter, 'utf8') : undefined,
     });
     await exportReport(out);
     print(comparison);

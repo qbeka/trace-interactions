@@ -18,6 +18,7 @@ export interface CaseOptions {
   /** Second pass that takes screenshots at the failure. Off for measurements. */
   screenshots?: boolean;
   label?: string;
+  adapterScript?: string;
 }
 
 export interface CaseResult {
@@ -51,7 +52,7 @@ export async function runCase(o: CaseOptions): Promise<CaseResult> {
   const label = o.label ?? 'original';
   const dir = resolve(o.out);
   const allow = o.stateAllowlist;
-  const common = { browser: o.browser, scenario: o.scenario, stateAllowlist: allow, mode: o.mode };
+  const common = { browser: o.browser, scenario: o.scenario, stateAllowlist: allow, mode: o.mode, adapterScript: o.adapterScript };
   const baseline = await runScenario({ ...common, url: o.baseline.url });
   const candidate = await runScenario({ ...common, url: o.candidate.url });
   const comparison = compare(baseline, candidate);

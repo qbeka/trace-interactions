@@ -151,6 +151,25 @@ res.end(\`<button data-trace-id="go">Go</button><script>window.__traceFixture = 
   });
 });
 
+describe('a page with no change to its source', () => {
+  it('runs with an injected test-only adapter', async () => {
+    const dir = temp();
+    writeFileSync(join(dir, 'index.html'), '<a href="#a">One</a><a href="#b">Two</a>');
+    const page = await serveDirectory(dir);
+    writeFileSync(join(dir, 'adapter.js'), "window.__traceFixture = { id: 'page', version: '1', getState: () => ({}), subscribe: () => () => {} };");
+    const scenario = join(dir, 's.json');
+    writeFileSync(scenario, JSON.stringify({
+      schema: 'trace.scenario/1', id: 's', fixture: { id: 'page', version: '1' }, seed: 1, initialState: {},
+      viewport: { width: 400, height: 300, deviceScaleFactor: 1 }, timing: { mode: 'controlled', stepMs: 16, settleMs: 50 },
+      targets: {}, requirements: [{ kind: 'focus-valid' }], actions: [{ at: 0, type: 'press', key: 'Tab' }, { at: 50, type: 'press', key: 'Tab' }], cleanup: [],
+    }));
+    const r = await cli(['run', scenario, '--baseline-url', page.url, '--candidate-url', page.url, '--allowlist', 'none', '--adapter', join(dir, 'adapter.js'), '--out', join(dir, 'out'), '--registry', 'none.json']);
+    await page.close();
+    expect(r.out).toMatch(/PASS/);
+    expect(r.code).toBe(0);
+  });
+});
+
 describe('a newly registered fixture', () => {
   it('works through the public contract with nothing from this repository', async () => {
     const dir = temp();
