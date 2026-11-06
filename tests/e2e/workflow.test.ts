@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 import { describe, expect, it } from 'vitest';
+import { serveDirectory } from '../../src/runner/static.ts';
 import { ROOT } from './helpers.ts';
 
 const exec = promisify(execFile);
@@ -109,6 +110,44 @@ describe('reduce, replay, regenerate', () => {
     expect(r.out).toMatch(/NOT REPRODUCED/);
     expect(existsSync(join(out, 'reduced.scenario.json'))).toBe(false);
     expect(existsSync(join(out, 'raw', 'original.candidate.json'))).toBe(true);
+  });
+});
+
+describe('other ways to supply a build', () => {
+  it('runs against local URLs the user started', async () => {
+    const a = await serveDirectory(join(ROOT, '.build/fixtures/overlay/correct'));
+    const b = await serveDirectory(join(ROOT, '.build/fixtures/overlay/no-restore'));
+    const r = await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline-url', a.url, '--candidate-url', b.url, '--allowlist', 'dialog', '--out', temp(), '--registry', 'none.json']);
+    await a.close();
+    await b.close();
+    expect(r.code).toBe(1);
+    expect(r.out).toMatch(/REGRESSION/);
+  });
+
+  it('launches a build from the command in a registered manifest, and stops it', async () => {
+    const dir = temp();
+    const server = join(dir, 'server.mjs');
+    writeFileSync(server, `import { createServer } from 'node:http';
+createServer((_, res) => { res.setHeader('content-type', 'text/html');
+res.end(\`<button data-trace-id="go">Go</button><script>window.__traceFixture = { id: 'launched', version: '1', getState: () => ({}), subscribe: () => () => {} };</script>\`); }).listen(47123, '127.0.0.1');`);
+    writeFileSync(join(dir, 'fixture.json'), JSON.stringify({
+      schema: 'trace.fixture/1', id: 'launched', version: '1', stateAllowlist: [], clock: { channels: [] },
+      builds: { only: { command: [process.execPath, server], url: 'http://127.0.0.1:47123/' } },
+    }));
+    const scenario = join(dir, 's.json');
+    writeFileSync(scenario, JSON.stringify({
+      schema: 'trace.scenario/1', id: 's', fixture: { id: 'launched', version: '1' }, seed: 1, initialState: {},
+      viewport: { width: 400, height: 300, deviceScaleFactor: 1 }, timing: { mode: 'controlled', stepMs: 16, settleMs: 50 },
+      targets: { go: { role: 'button', name: 'Go', traceId: 'go' } }, requirements: [],
+      actions: [{ at: 0, type: 'activate', target: 'go' }], cleanup: [],
+    }));
+    await cli(['fixtures', 'add', join(dir, 'fixture.json')], dir);
+    // Each side launches its own copy, so one port would clash. Baseline only, against a URL for the candidate.
+    const other = await serveDirectory(join(ROOT, '.build/fixtures/overlay/correct'));
+    await other.close();
+    const r = await cli(['run', scenario, '--baseline', 'launched@only', '--candidate-url', 'http://127.0.0.1:47123/', '--out', join(dir, 'out')], dir);
+    expect(r.out).toMatch(/PASS/);
+    await expect(fetch('http://127.0.0.1:47123/').then(() => 'up', () => 'down')).resolves.toBe('down');
   });
 });
 

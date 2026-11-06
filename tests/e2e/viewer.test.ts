@@ -175,6 +175,34 @@ describe('layout', () => {
   });
 });
 
+describe('long labels and dense data', () => {
+  it('survives very long names at 320 px, and a long original trace', async () => {
+    const copy = mkdtempSync(join(tmpdir(), 'trace-long-'));
+    cpSync(failingDir, copy, { recursive: true });
+    const { readFileSync, writeFileSync } = await import('node:fs');
+    const data = JSON.parse(readFileSync(join(copy, 'report.json'), 'utf8'));
+    const long = 'a-rather-long-build-name-from-a-real-monorepo-package-scope-without-any-spaces-at-all';
+    for (const c of data.cases) {
+      c.baseline.label = long;
+      c.candidate.label = `${long}-candidate`;
+      c.scenario.id = long;
+      c.comparison.sentence = `${long} ${c.comparison.sentence}`;
+      for (const a of c.scenario.actions) a.note = long;
+    }
+    writeFileSync(join(copy, 'report.data.js'), `window.__TRACE_REPORT__=${JSON.stringify(data)};`);
+    const server = await serveDirectory(copy);
+    const page = await open(server.url, 320);
+    await page.keyboard.press('r');
+    await page.getByRole('button', { name: 'Original sequence', pressed: true }).waitFor();
+    await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    expect(await page.locator('table').count()).toBeGreaterThanOrEqual(3);
+    await page.context().close();
+    await server.close();
+  });
+});
+
 describe('reduced motion', () => {
   it('never starts on its own and says so', async () => {
     const page = await open(failing.url, 1280, { reducedMotion: 'reduce' });

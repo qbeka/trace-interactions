@@ -491,6 +491,7 @@ function Environment({ data, c }: { data: ReportData; c: ReportCase }) {
         <dt>Machine</dt><dd>{m.environment.hardware.cpu}, {m.environment.hardware.cores} cores, {m.environment.hardware.memoryGb} GB</dd>
         <dt>OS</dt><dd>{m.environment.os.platform} {m.environment.os.release} {m.environment.os.arch}</dd>
         <dt>Viewport</dt><dd>{c.scenario.viewport.width} × {c.scenario.viewport.height} at {c.scenario.viewport.deviceScaleFactor}x</dd>
+        <dt>Fonts</dt><dd>{c.candidate.raster?.fontFamily ?? 'not recorded'}{c.candidate.raster?.loadedFonts.length ? `, loaded ${c.candidate.raster.loadedFonts.join(', ')}` : ''}</dd>
         <dt>Seed</dt><dd>{c.scenario.seed}</dd>
         <dt>Source</dt><dd>{m.source.commit?.slice(0, 12) ?? 'not a git checkout'}{m.source.dirty ? ' with local changes' : ''}</dd>
         <dt>Clock checks</dt><dd>{verified.length ? verified.map(([k, ok]) => `${k} ${ok ? 'held' : 'failed'}`).join(', ') : 'not run in wall mode'}</dd>

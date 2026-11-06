@@ -213,11 +213,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       out: { type: 'string', default: 'results/corpus' },
       browser: { type: 'string', default: 'chromium' },
       fixture: { type: 'string' },
+      labels: { type: 'string', default: 'corpus/labels.json' },
     },
   });
   const root = resolve(import.meta.dirname, '..');
   const out = resolve(values.out!);
-  const raw = readFileSync(join(root, 'corpus/labels.json'), 'utf8');
+  const raw = readFileSync(join(root, values.labels!), 'utf8');
   const all: Label[] = JSON.parse(raw).variants;
   const labels = values.fixture ? all.filter((l) => l.fixture === values.fixture) : all;
   const browser = await BROWSERS[values.browser as keyof typeof BROWSERS].launch();

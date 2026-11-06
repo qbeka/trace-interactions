@@ -13,6 +13,7 @@ export interface RunSide {
   violations: Violation[];
   clock: ClockReport;
   screenshots: Screenshot[];
+  raster: { fontFamily: string; loadedFonts: string[]; devicePixelRatio: number; browser: string } | null;
 }
 
 export interface ReportCase {

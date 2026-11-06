@@ -411,7 +411,9 @@ async function main(argv: string[]): Promise<number> {
       return 0;
     case 'serve': {
       const { values, positionals } = parseArgs({ args: rest, allowPositionals: true, options: { port: { type: 'string', default: '5175' } } });
-      const server = await serveDirectory(positionals[0] ?? '.', Number(values.port));
+      const dir = positionals[0] ?? '.';
+      // The preferred port may be taken by another tool. Any free port will do.
+      const server = await serveDirectory(dir, Number(values.port)).catch(() => serveDirectory(dir, 0));
       console.log(`Serving ${positionals[0] ?? '.'} at ${server.url}`);
       await new Promise(() => {});
       return 0;

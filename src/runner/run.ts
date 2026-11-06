@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Browser, CDPSession, Locator, Page } from 'playwright';
@@ -36,13 +36,12 @@ const STUB_RECORDER = `window.__trace = {
 };`;
 
 const recorderSource = (): string => {
-  const path = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'dist', 'recorder.js');
-  try {
-    return readFileSync(path, 'utf8');
-  } catch {
-    // Installed package layout: recorder.js sits beside cli.js.
-    return readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'recorder.js'), 'utf8');
+  const here = dirname(fileURLToPath(import.meta.url));
+  // Beside the bundled CLI when installed, under dist when run from source.
+  for (const path of [join(here, 'recorder.js'), join(here, '..', '..', 'dist', 'recorder.js')]) {
+    if (existsSync(path)) return readFileSync(path, 'utf8');
   }
+  throw new Error('The recorder is not built. Run: pnpm build');
 };
 
 export interface RunOptions {
@@ -67,6 +66,8 @@ export interface RunOptions {
 export interface RunOutput extends RunResult {
   latency: unknown[];
   metrics: Record<string, number> | null;
+  /** Screenshots only compare fairly inside one of these. */
+  raster: { fontFamily: string; loadedFonts: string[]; devicePixelRatio: number; browser: string } | null;
 }
 
 export function browserKind(browser: Browser): string {
@@ -159,6 +160,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     durationMs: 0,
     latency: [],
     metrics: null,
+    raster: null,
   });
   if (problem) return invalidResult(problem.reason, problem.actionIndex);
 
@@ -445,6 +447,11 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     const events = (await page.evaluate(() => window.__trace.drain())) as TraceEvent[];
     const latency = await page.evaluate(() => window.__trace.latency());
     const used = await page.evaluate(() => window.__trace.usedChannels());
+    const raster = await page.evaluate(() => ({
+      fontFamily: getComputedStyle(document.body).fontFamily,
+      loadedFonts: [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family),
+      devicePixelRatio: window.devicePixelRatio,
+    }));
     return {
       schema: TRACE_SCHEMA,
       status: 'completed',
@@ -456,6 +463,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       durationMs: Math.round(performance.now() - started),
       latency,
       metrics,
+      raster: { ...raster, browser: `${kind} ${browser.version()}` },
     };
   } finally {
     await context.close();

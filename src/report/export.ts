@@ -18,6 +18,7 @@ const side = (run: RunOutput, label: string): RunSide => ({
   violations: run.violations,
   clock: run.clock,
   screenshots: run.screenshots,
+  raster: run.raster,
 });
 
 async function loadCase(dir: string, id: ReportCase['id'], manifest: { baseline: { ref: string }; candidate: { ref: string } }): Promise<ReportCase | null> {
@@ -32,9 +33,13 @@ async function loadCase(dir: string, id: ReportCase['id'], manifest: { baseline:
   };
 }
 
-function viewerDir(): string {
+/** Beside the bundled CLI when installed, under dist when run from source. */
+async function viewerDir(): Promise<string> {
   const here = dirname(fileURLToPath(import.meta.url));
-  return [join(here, '..', '..', 'dist', 'viewer'), join(here, 'viewer')].find((p) => p) as string;
+  for (const dir of [join(here, 'viewer'), join(here, '..', '..', 'dist', 'viewer')]) {
+    if (await exists(join(dir, 'index.html'))) return dir;
+  }
+  throw new Error('The viewer is not built. Run: pnpm build');
 }
 
 /**
@@ -55,8 +60,7 @@ export async function exportReport(dir: string): Promise<string> {
   };
 
   const out = join(run, 'report');
-  const viewer = viewerDir();
-  if (!(await exists(viewer))) throw new Error('The viewer is not built. Run: pnpm build');
+  const viewer = await viewerDir();
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
   await cp(viewer, out, { recursive: true });

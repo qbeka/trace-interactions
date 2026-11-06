@@ -19,13 +19,14 @@
     "build:recorder": "tsx scripts/build-recorder.ts",
     "dev": "vite --config viewer/vite.config.ts",
     "build:viewer": "vite build --config viewer/vite.config.ts",
-    "build": "pnpm build:recorder && pnpm build:viewer && pnpm build:fixtures",
+    "build": "pnpm build:recorder && pnpm build:cli && pnpm build:viewer && pnpm build:fixtures",
     "check": "tsc --noEmit -p .",
     "test": "vitest run",
     "test:e2e": "pnpm build && vitest run --config vitest.e2e.config.ts",
     "bench:smoke": "tsx bench/smoke.ts",
     "bench": "tsx bench/run.ts",
-    "demo": "tsx bench/demo.ts"
+    "demo": "tsx bench/demo.ts",
+    "build:cli": "tsx scripts/build-cli.ts"
   },
   "dependencies": {
     "playwright": "1.65.0",
@@ -47,5 +48,14 @@
     "typescript": "7.0.2",
     "vite": "8.3.6",
     "vitest": "5.1.0"
-  }
+  },
+  "files": [
+    "dist/cli.js",
+    "dist/recorder.js",
+    "dist/viewer",
+    "licenses",
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+  ]
 }
