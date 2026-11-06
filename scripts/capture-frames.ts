@@ -20,7 +20,7 @@ const root = resolve(import.meta.dirname, '..');
 const read = <T>(path: string): T => JSON.parse(readFileSync(path, 'utf8'));
 
 const SCALE = 2;
-const HEIGHT = 260;
+const HEIGHT = 320;
 const WIDTH = 1000;
 const QUALITY = 0.86;
 
@@ -42,7 +42,7 @@ function sameGeometry(a: Geometry[], b: Geometry[]): string | null {
 }
 
 /** Keeps the top of the window. A window narrower than the frame leaves the rest empty. */
-function crop(file: string): PNG {
+function crop(file: string): InstanceType<typeof PNG> {
   const shot = PNG.sync.read(readFileSync(file));
   const out = new PNG({ width: WIDTH * SCALE, height: HEIGHT * SCALE });
   PNG.bitblt(shot, out, 0, 0, Math.min(shot.width, out.width), Math.min(shot.height, out.height), 0, 0);
