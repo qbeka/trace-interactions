@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { cpSync, mkdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { buildPage } from '../scripts/build-page.ts';
+import { captureFrames } from '../scripts/capture-frames.ts';
 
 /**
  * Builds the static demo: a real regression, reduced and replayed, the same
@@ -35,5 +36,7 @@ if (trace('run', join(regression, 'reduced.scenario.json'), '--baseline', 'inspe
 cpSync(join(regression, 'report'), join(out, 'regression'), { recursive: true });
 cpSync(join(fixed, 'report'), join(out, 'fixed'), { recursive: true });
 cpSync(join(regression, 'reduced.scenario.json'), join(out, 'reduced.scenario.json'));
+cpSync(join(regression, 'reduction.progress.json'), join(out, 'reduction.attempts.json'));
+await captureFrames(out);
 await buildPage(out);
 console.log(`Demo written to ${out}`);
