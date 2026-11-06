@@ -40,8 +40,8 @@ browser matrix. Everything now goes on the context, in a fixed order.
 ## Why not virtual time in the browser
 
 Chromium has `Emulation.setVirtualTimePolicy`. It reaches further than a JavaScript
-clock, but it exists only in Chromium. The brief starts with Chromium and then asks for
-Firefox and WebKit, so Trace uses the one mechanism all three share.
+clock, but it exists only in Chromium. Trace has to run on Chromium,
+Firefox and WebKit, so it uses the one mechanism all three share.
 
 ## Web Animations
 

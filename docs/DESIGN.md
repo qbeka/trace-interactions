@@ -58,10 +58,10 @@ but not focus, is costly to capture, and cannot draw the path a panel took.
 
 ## Layout and type
 
-The brief asks for a serif on editorial text and a readable sans for dense
+The report uses a serif for editorial text and a readable sans for dense
 controls. The verdict sentence uses Geist Serif, tables and controls use Geist
 Sans, and trace values use Geist Mono. All three ship with the report, so it
-needs no network. Tokens come from `qendrimbeka.com/tailwind.config.ts`.
+needs no network. Colors and spacing are design tokens in the viewer stylesheet.
 
 There are no metric tiles. A passing report has the same shape as a failing one:
 the sentence says what held, and the stages still replay.

@@ -8,7 +8,7 @@ Node 22.16.0, Playwright 1.65.0, Chromium 158.0.8127.18, Firefox 159.0, WebKit 2
 machine ran other work, so timings are not from an idle system. The final run held the
 display awake.
 
-**Source.** Every result comes from commit `3a66aaf` with a clean source tree, except the
+**Source.** Every result comes from commit `9af1d42` with a clean source tree, except the
 one holdout run at `432cf66`. Each manifest records its commit. The plan is in
 `docs/MEASUREMENT.md`, which was revised before this run. A full run took 42 minutes,
 within the revised 50 minute budget.
@@ -222,9 +222,9 @@ machine:
 
 | Run of this experiment | Off, task ms | Full added | Timestamps added |
 |---|---|---|---|
-| Before the review, commit `1412c34` | 75.9 | 50.2 | 5.9 (range crosses zero) |
-| After the first fixes, commit `7c971c1` | 73.0 | 46.1 | 11.4 |
-| Final, commit `3a66aaf` | 111.1 | 60.5 | 4.9 (range crosses zero) |
+| Before the review, commit `9ae376e` | 75.9 | 50.2 | 5.9 (range crosses zero) |
+| After the first fixes, commit `9f5868e` | 73.0 | 46.1 | 11.4 |
+| Final, commit `9af1d42` | 111.1 | 60.5 | 4.9 (range crosses zero) |
 
 So full recording costs tens of ms in this scenario, and the timestamp level is small and
 not resolved by this experiment. Only the final run's raw data is in `results/overhead`.
@@ -276,11 +276,17 @@ cover the larger changes.
 | Change | Commit | Reason |
 |---|---|---|
 | Action timeout raised from 1 s to 2 s, adapter wait from 5 s to 10 s, navigation timeout added | `432cf66`, before the holdout ran | A busy machine could crash a reduction |
-| `pointerMove` with no finger down became invalid | `1412c34` | A random run crashed on it. 4 sessions then counted as invalid in that run |
-| Timings grouped by event type | `1412c34` | See "A number I did not publish" |
-| Written reduction workload added | `1412c34` | The demo's 14 to 4 had no repeated measurement |
-| `--adapter` added | after `1412c34` | For the optional portfolio check |
-| Oracle, reducer, control and trust fixes | `7c971c1`, `3a66aaf` | The two reviews |
+| `pointerMove` with no finger down became invalid | `9ae376e` | A random run crashed on it. 4 sessions then counted as invalid in that run |
+| Timings grouped by event type | `9ae376e` | See "A number I did not publish" |
+| Written reduction workload added | `9ae376e` | The demo's 14 to 4 had no repeated measurement |
+| `--adapter` added | after `9ae376e` | To check a local page with no change to it |
+| Oracle, reducer, control and trust fixes | `9f5868e`, `9af1d42` | The two reviews |
+| Exported reports drop local paths | after `9af1d42` | A report is made to be shared. This touches only the export step, so no measured result depends on it. The 861,282 byte report was measured before this change and would now be a few hundred bytes smaller |
+
+The history was rewritten once before the first public push, to remove working notes and
+local paths from demo reports. Commit hashes in the saved results and in these docs were
+updated to match, and that is the only edit to any saved result. The source at the measured
+commit is unchanged.
 
 ## Failures worth knowing about
 
@@ -320,7 +326,7 @@ These are real, and they are not fixed.
 3. Let a requirement state a design range, which addresses the holdout false alarm.
 4. Add a narrow width and a keyboard path to the generator, then rerun the 2 unreached workloads.
 5. Test the WebKit input failure with the display asleep, to settle its cause.
-6. Run real participants through `docs/USABILITY.md`.
+6. Watch real participants use it.
 
 ## Reproduce
 
