@@ -158,22 +158,15 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     // A fixture must never reach the network, so a stray request cannot change a run.
     serviceWorkers: 'block',
   });
-  const page = await context.newPage();
-  page.setDefaultTimeout(ACTION_TIMEOUT_MS);
-
   const screenshots: Screenshot[] = [];
   let metrics: Record<string, number> | null = null;
   let cdpMetrics: CDPSession | null = null;
 
   try {
-    await page.route(/^https?:/, (route) => {
-      const u = new URL(route.request().url());
-      return u.origin === new URL(url).origin ? route.continue() : route.abort();
-    });
-
-    // Order matters: this runs before the clock replaces the timing functions,
-    // so the recorder keeps a real frame source. It also runs before page code.
-    await page.addInitScript(
+    // Order matters, and all three go on the context. This script must run before
+    // the clock replaces the timing functions, so the recorder keeps a real frame
+    // source. On Firefox and WebKit a page-level script runs after the clock.
+    await context.addInitScript(
       ({ seed, init }) => {
         const w = window as unknown as Record<string, unknown>;
         w.__traceReal = {
@@ -186,10 +179,17 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       { seed: scenario.seed, init: scenario.initialState },
     );
     if (mode === 'controlled') {
-      await page.clock.install({ time: 0 });
-      await page.clock.pauseAt(1000);
+      await context.clock.install({ time: 0 });
+      await context.clock.pauseAt(1000);
     }
-    await page.addInitScript({ content: recorderSource() });
+    await context.addInitScript({ content: recorderSource() });
+
+    const page = await context.newPage();
+    page.setDefaultTimeout(ACTION_TIMEOUT_MS);
+    await page.route(/^https?:/, (route) => {
+      const u = new URL(route.request().url());
+      return u.origin === new URL(url).origin ? route.continue() : route.abort();
+    });
 
     await page.goto(url, { waitUntil: 'load' });
     const adapter = await page
