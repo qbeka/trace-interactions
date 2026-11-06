@@ -1,0 +1,192 @@
+{
+  "schema": "trace.corpus-labels/1",
+  "note": "Written before the detector ran on the overlay and timeline fixtures. Each build is scored against the correct build of its fixture over all of that fixture's scenarios.",
+  "variants": [
+    {
+      "fixture": "inspector",
+      "build": "correct",
+      "expected": "clean",
+      "mechanism": "control: identical build"
+    },
+    {
+      "fixture": "inspector",
+      "build": "stale-completion",
+      "expected": "stale-final-state",
+      "mechanism": "a stale completion commits after reopening"
+    },
+    {
+      "fixture": "inspector",
+      "build": "stale-origin",
+      "expected": "geometry-discontinuity",
+      "mechanism": "a resize leaves a stale cached origin"
+    },
+    {
+      "fixture": "inspector",
+      "build": "stale-resize",
+      "expected": "geometry-discontinuity",
+      "mechanism": "a resize uses stale geometry"
+    },
+    {
+      "fixture": "inspector",
+      "build": "remount-on-breakpoint",
+      "expected": "lost-focus",
+      "mechanism": "a layout change remounts the focused input"
+    },
+    {
+      "fixture": "inspector",
+      "build": "leak-observer",
+      "expected": "incomplete-cleanup",
+      "mechanism": "removal leaves an observer"
+    },
+    {
+      "fixture": "inspector",
+      "build": "escape-ignored",
+      "expected": "missed-ack",
+      "mechanism": "a key press is never acknowledged"
+    },
+    {
+      "fixture": "inspector",
+      "build": "legit-slow",
+      "expected": "clean",
+      "mechanism": "legitimate: longer animation"
+    },
+    {
+      "fixture": "inspector",
+      "build": "legit-fade",
+      "expected": "clean",
+      "mechanism": "legitimate: fade instead of a move"
+    },
+    {
+      "fixture": "inspector",
+      "build": "legit-restyle",
+      "expected": "clean",
+      "mechanism": "legitimate: new colors, radius and padding"
+    },
+    {
+      "fixture": "inspector",
+      "build": "legit-wide",
+      "expected": "clean",
+      "mechanism": "legitimate: wider panel"
+    },
+    {
+      "fixture": "overlay",
+      "build": "correct",
+      "expected": "clean",
+      "mechanism": "control: identical build"
+    },
+    {
+      "fixture": "overlay",
+      "build": "no-restore",
+      "expected": "lost-focus",
+      "mechanism": "a closed dialog does not restore focus"
+    },
+    {
+      "fixture": "overlay",
+      "build": "stale-restore",
+      "expected": "lost-focus",
+      "mechanism": "focus is restored to a detached trigger"
+    },
+    {
+      "fixture": "overlay",
+      "build": "hidden-clone-focus",
+      "expected": "lost-focus",
+      "mechanism": "focus moves into a hidden clone"
+    },
+    {
+      "fixture": "overlay",
+      "build": "live-exit-clone",
+      "expected": "duplicate-interactive",
+      "mechanism": "an exit clone stays interactive"
+    },
+    {
+      "fixture": "overlay",
+      "build": "duplicate-id",
+      "expected": "duplicate-interactive",
+      "mechanism": "a duplicate id breaks the target relationship"
+    },
+    {
+      "fixture": "overlay",
+      "build": "listener-leak",
+      "expected": "incomplete-cleanup",
+      "mechanism": "removal leaves a document listener"
+    },
+    {
+      "fixture": "overlay",
+      "build": "escape-ignored",
+      "expected": "missed-ack",
+      "mechanism": "a key press is never acknowledged"
+    },
+    {
+      "fixture": "overlay",
+      "build": "legit-restyle",
+      "expected": "clean",
+      "mechanism": "legitimate: new colors and radius"
+    },
+    {
+      "fixture": "overlay",
+      "build": "legit-large",
+      "expected": "clean",
+      "mechanism": "legitimate: larger dialog"
+    },
+    {
+      "fixture": "overlay",
+      "build": "legit-instant",
+      "expected": "clean",
+      "mechanism": "legitimate: no exit transition"
+    },
+    {
+      "fixture": "timeline",
+      "build": "correct",
+      "expected": "clean",
+      "mechanism": "control: identical build"
+    },
+    {
+      "fixture": "timeline",
+      "build": "drag-stuck-on-cancel",
+      "expected": "incomplete-cleanup",
+      "mechanism": "pointer cancellation leaves a drag active"
+    },
+    {
+      "fixture": "timeline",
+      "build": "cancel-keeps-preview",
+      "expected": "incomplete-cleanup",
+      "mechanism": "a cancel keeps the preview value"
+    },
+    {
+      "fixture": "timeline",
+      "build": "window-listener-leak",
+      "expected": "incomplete-cleanup",
+      "mechanism": "a cancelled drag leaves a window listener"
+    },
+    {
+      "fixture": "timeline",
+      "build": "raf-leak",
+      "expected": "incomplete-cleanup",
+      "mechanism": "removal leaves a frame callback running"
+    },
+    {
+      "fixture": "timeline",
+      "build": "keyboard-ignored",
+      "expected": "missed-ack",
+      "mechanism": "a key press is never acknowledged"
+    },
+    {
+      "fixture": "timeline",
+      "build": "legit-restyle",
+      "expected": "clean",
+      "mechanism": "legitimate: new colors and shape"
+    },
+    {
+      "fixture": "timeline",
+      "build": "legit-thick-handle",
+      "expected": "clean",
+      "mechanism": "legitimate: larger handle"
+    },
+    {
+      "fixture": "timeline",
+      "build": "legit-fine-steps",
+      "expected": "clean",
+      "mechanism": "legitimate: finer snapping"
+    }
+  ]
+}
