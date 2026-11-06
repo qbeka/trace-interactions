@@ -99,6 +99,12 @@ describe('focus', () => {
     expect(evaluate(scenario(need(restored)), t.events)).toEqual([]);
   });
 
+  it('accepts focus leaving because the user pressed Tab', () => {
+    const t = trace().state('open', true).at(0).action(0, 'press').focus('trigger', 2).at(10).state('open', false).at(20);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'press', label: 'Tab' }).focus(null);
+    expect(evaluate(scenario(need(restored)), t.events)).toEqual([]);
+  });
+
   it('still fails when focus is wrong while the state holds, even if it reopens later', () => {
     const t = trace().state('open', true).at(0).action(0, 'press').focus('input', 1).at(10).state('open', false).focus(null).at(60).state('open', true).focus('input', 3);
     expect(evaluate(scenario(need(restored)), t.events)[0]?.category).toBe('lost-focus');
@@ -156,9 +162,23 @@ describe('geometry', () => {
 
   it('flags a panel left outside the viewport after a resize', () => {
     const panel = { x: 500, y: 20, w: 280, h: 50 };
-    const t = trace().viewport(800, 600).at(10).rect('panel', panel).at(20).viewport(600, 600).action(0, 'resize');
+    const t = trace().viewport(800, 600).at(10).rect('panel', panel).at(20).viewport(600, 600).action(0, 'resize').at(300).state('settled', true);
     // Right edge 780 against a limit of 600 - (8 - 2) = 594.
     expect(evaluate(scenario(need(fits)), t.events)[0]?.sentence).toMatch(/by 186 px/);
+  });
+
+  it('does not judge a panel still in flight when the next action arrives', () => {
+    const inFlight = { x: 500, y: 20, w: 280, h: 50 };
+    const t = trace().viewport(800, 600).at(100).rect('panel', inFlight).viewport(600, 600).action(0, 'resize').at(116).rect('panel', inFlight);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'next' });
+    expect(evaluate(scenario(need(fits)), t.events)).toEqual([]);
+  });
+
+  it('judges a panel that has stopped, however far the next action is', () => {
+    const stuck = { x: 500, y: 20, w: 280, h: 50 };
+    const t = trace().viewport(800, 600).at(100).rect('panel', stuck).viewport(600, 600).action(0, 'resize').at(400);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'next' });
+    expect(evaluate(scenario(need(fits)), t.events)[0]?.category).toBe('geometry-discontinuity');
   });
 
   it('passes a panel that follows the viewport', () => {
@@ -202,6 +222,18 @@ describe('cleanup', () => {
   it('flags a drag that stays active after a cancel', () => {
     const t = trace().state('dragging', true).at(10).action(0, 'pointerCancel').at(20);
     expect(evaluate(scenario(need(cleared)), t.state('other', 1).events)[0]?.category).toBe('incomplete-cleanup');
+  });
+
+  it('is not fooled by the next gesture setting the state again', () => {
+    const t = trace().state('dragging', true).at(10).state('dragging', false).action(0, 'pointerCancel').at(10);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'pointerDown', label: 'down' }).state('dragging', true);
+    expect(evaluate(scenario(need(cleared)), t.events)).toEqual([]);
+  });
+
+  it('still fails when the state was wrong right up to the next gesture', () => {
+    const t = trace().state('dragging', true).at(10).action(0, 'pointerCancel').at(200);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'next' });
+    expect(evaluate(scenario(need(cleared)), t.events)[0]?.category).toBe('incomplete-cleanup');
   });
 
   it('passes when the cancel clears the drag', () => {

@@ -61,6 +61,11 @@ function stateTimeline(events: TraceEvent[]) {
   };
 }
 
+/** The value a key held just before the event with this sequence number. */
+function valueBefore(events: TraceEvent[], key: string, seq: number): Primitive | undefined {
+  return only(events, 'state').filter((st) => st.key === key && st.seq < seq).at(-1)?.value;
+}
+
 function holdsAt(state: ReturnType<typeof stateTimeline>, want: Record<string, Primitive>, tick: number): boolean {
   return Object.entries(want).every(([k, v]) => state(k, tick) === v);
 }
@@ -156,10 +161,12 @@ function focusRestored(s: Scenario, r: Extract<Requirement, { kind: 'focus-resto
     if (holds && !wasHolding) {
       // Only closes that a scenario action caused count. The first render does not.
       if (actionEnds.some((a) => a.seq < st.seq) && !isCleanupEra(events, st)) {
-        // Judged where the state stops holding or at the deadline, whichever is
-        // first. If the user reopens at once, focus moving on is correct.
+        // Judged where the state stops holding, where the user next moves focus,
+        // or at the deadline, whichever is first. Focus moving on after that is
+        // the user's doing, not a failed restore.
         const ended = keyed.find((x) => x.seq > st.seq && !holdsAt(state, r.whenState, x.tick));
-        const untilTick = ended ? ended.tick : Infinity;
+        const moved = starts(events).find((a) => a.seq > st.seq && FOCUS_MOVING.has(a.type));
+        const untilTick = Math.min(ended?.tick ?? Infinity, moved?.tick ?? Infinity);
         const deadline = st.t + r.withinMs;
         const inWindow = (e: At): boolean => e.tick < untilTick && e.t <= deadline;
         const held = focus.filter(inWindow).at(-1);
@@ -253,22 +260,28 @@ function geometryOrigin(r: Extract<Requirement, { kind: 'geometry-origin' }>, ev
   return [];
 }
 
+/** A target that moved this recently is still in flight, so its rect says nothing yet. */
+const DEFAULT_SETTLED_MS = 100;
+
 function geometryFits(r: Extract<Requirement, { kind: 'geometry-fits' }>, events: TraceEvent[]): Violation[] {
   const viewports = only(events, 'viewport');
   const geometry = only(events, 'geometry').filter((g) => g.target === r.target);
   const main = starts(events);
+  const settledMs = r.settledMs ?? DEFAULT_SETTLED_MS;
+  const endT = events.at(-1)?.t ?? 0;
   for (const a of only(events, 'action').filter((e) => e.type === 'resize' && e.phase === 'end' && !e.cleanup)) {
     const vp = viewports.filter((v) => v.seq < a.seq).at(-1);
     if (!vp) continue;
     const next = main.find((m) => m.seq > a.seq);
-    const before = geometry.filter((g) => g.seq < (next?.seq ?? Infinity)).at(-1);
-    if (!before?.rect) continue;
+    const last = geometry.filter((g) => g.seq < (next?.seq ?? Infinity)).at(-1);
+    if (!last?.rect) continue;
+    if ((next?.t ?? endT) - last.t < settledMs) continue;
     const limit = r.insetPx - r.tolerancePx;
-    const { x, y, w, h } = before.rect;
+    const { x, y, w, h } = last.rect;
     const over = Math.max(limit - x, limit - y, x + w - (vp.width - limit), y + h - (vp.height - limit));
     if (over > 0) {
       return [
-        violation(r.kind, 'geometry-discontinuity', `${r.target} overflows the ${vp.width}x${vp.height} viewport by ${Math.round(over)} px after the resize.`, before, r.target),
+        violation(r.kind, 'geometry-discontinuity', `${r.target} overflows the ${vp.width}x${vp.height} viewport by ${Math.round(over)} px after the resize.`, last, r.target),
       ];
     }
   }
@@ -310,17 +323,17 @@ function relationshipResolves(s: Scenario, r: Extract<Requirement, { kind: 'rela
 }
 
 function transientCleared(r: Extract<Requirement, { kind: 'transient-cleared' }>, events: TraceEvent[]): Violation[] {
-  const state = stateTimeline(events);
   const actions = only(events, 'action').filter((a) => a.type === r.after && a.phase === 'end' && !a.cleanup);
   const main = starts(events);
-  const lastTick = events.at(-1)?.tick ?? 0;
+  const end = (events.at(-1)?.seq ?? 0) + 1;
   for (const a of actions) {
+    // Judged just before the next action. That action may rightly set the same state again.
     const next = main.find((m) => m.seq > a.seq);
-    const settled = next ? next.tick : lastTick;
+    const limit = next?.seq ?? end;
     for (const [key, value] of Object.entries(r.state)) {
-      if (state(key, settled) !== value) {
-        const at = next ?? a;
-        return [violation(r.kind, 'incomplete-cleanup', `${key} was still ${fmt(state(key, settled) ?? null)} after ${r.after} at ${a.t} ms. It should be ${fmt(value)}.`, at, key)];
+      const found = valueBefore(events, key, limit);
+      if (found !== value) {
+        return [violation(r.kind, 'incomplete-cleanup', `${key} was still ${fmt(found ?? null)} after ${r.after} at ${a.t} ms. It should be ${fmt(value)}.`, next ?? a, key)];
       }
     }
   }

@@ -143,6 +143,8 @@ export const Requirement = z.discriminatedUnion('kind', [
     target: Name,
     insetPx: z.number().min(0),
     tolerancePx: z.number().min(0),
+    /** A target that moved within this window is still in flight and is not judged. Default 100. */
+    settledMs: Ms.optional(),
   }),
   /** At most one visible, non-inert element answers to the target. */
   z.strictObject({ kind: z.literal('single-interactive'), target: Name }),

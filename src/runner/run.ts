@@ -22,7 +22,7 @@ const UNCONTROLLED = [
 
 /** Virtual ms spent proving the clock before a run starts. */
 const CLOCK_PROBE_MS = 16;
-const ACTION_TIMEOUT_MS = 2_000;
+const ACTION_TIMEOUT_MS = 1_000;
 
 const recorderSource = (): string => {
   const path = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'dist', 'recorder.js');
