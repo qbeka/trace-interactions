@@ -229,9 +229,16 @@ export function describeRequirement(r: Requirement): string {
 const entries = (state: Record<string, unknown>): string =>
   Object.entries(state).map(([k, v]) => `${k} is ${String(v)}`).join(' and ');
 
-export function requirementStatus(r: Requirement, side: RunSide): 'held' | 'broken' | 'not run' {
+export function requirementStatus(index: number, side: RunSide): 'held' | 'broken' | 'not exercised' | 'not run' {
   if (side.status === 'invalid') return 'not run';
-  return side.violations.some((v) => v.requirement === r.kind) ? 'broken' : 'held';
+  const status = side.requirements.find((r) => r.index === index)?.status ?? 'not-exercised';
+  return status === 'not-exercised' ? 'not exercised' : status;
+}
+
+/** Acknowledgements are not in the requirement list, so they get their own row. */
+export function ackStatus(side: RunSide): 'held' | 'broken' | 'not run' {
+  if (side.status === 'invalid') return 'not run';
+  return side.violations.some((v) => v.category === 'missed-ack') ? 'broken' : 'held';
 }
 
 /** Sorted times at which anything was recorded, on either build. */

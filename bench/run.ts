@@ -2,18 +2,20 @@ import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 /**
- * The full measurement. Declared budget: 40 minutes on the reference machine.
+ * The full measurement. Declared budget: 50 minutes on the reference machine.
  * Workload and pass criteria are frozen in docs/MEASUREMENT.md.
  */
-const BUDGET_MS = 40 * 60_000;
+const BUDGET_MS = 50 * 60_000;
 const root = resolve(import.meta.dirname, '..');
 const steps: [string, string[]][] = [
   ['smoke', ['bench/smoke.ts']],
   ['corpus on chromium', ['bench/corpus.ts', '--out', 'results/corpus-chromium']],
   ['corpus on firefox', ['bench/corpus.ts', '--browser', 'firefox', '--out', 'results/corpus-firefox']],
   ['corpus on webkit', ['bench/corpus.ts', '--browser', 'webkit', '--out', 'results/corpus-webkit']],
-  ['random sessions', ['bench/random.ts', '--seeds', '100', '--out', 'results/random']],
+  ['random sessions', ['bench/random.ts', '--seeds', '100', '--first-seed', '1001', '--out', 'results/random']],
+  ['holdout on final code', ['bench/corpus.ts', '--labels', 'corpus/holdout.json', '--out', 'results/holdout-final-oracle']],
   ['reduction', ['bench/reduction.ts', '--out', 'results/reduction']],
+  ['reduction of the written session', ['bench/reduction.ts', '--written', 'inspector,stale-origin,long-session', '--out', 'results/reduction-written']],
   ['overhead', ['bench/overhead.ts', '--out', 'results/overhead']],
 ];
 const only = process.argv[2];

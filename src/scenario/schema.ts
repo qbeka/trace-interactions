@@ -155,11 +155,16 @@ export const Requirement = z.discriminatedUnion('kind', [
     attribute: z.enum(['aria-controls', 'aria-labelledby', 'aria-describedby', 'aria-owns']),
     to: Name,
   }),
-  /** After the named action settles, transient state and pointer capture are gone. */
+  /**
+   * Judged just before the next action: transient state is clear and no pointer
+   * capture is held. If that action comes sooner than `settledMs` after this one,
+   * this occurrence is not judged. Default 0.
+   */
   z.strictObject({
     kind: z.literal('transient-cleared'),
     after: z.enum(['pointerUp', 'pointerCancel', 'press']),
     state: StateMap,
+    settledMs: Ms.optional(),
   }),
   /** After removal, listeners, observers, timers and frames return to the count before mount. */
   z.strictObject({

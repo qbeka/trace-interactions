@@ -12,6 +12,7 @@ import {
   mainStateKey,
   primaryTarget,
   primaryViolation,
+  ackStatus,
   requirementStatus,
   skipIdle,
   timelines,
@@ -106,7 +107,8 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   const stateKey = useMemo(() => mainStateKey(c.scenario), [c]);
   const failure = primaryViolation(c);
   const side = failingSide(c);
-  const pin = failure?.at.t ?? null;
+  // A failure time is on its own build's clock. The transport runs on the baseline's.
+  const pin = failure ? (side === 'candidate' ? alignTime(cand, base, failure.at.t) : failure.at.t) : null;
   const [time, setTime] = useState(pin === null ? end : Math.min(pin, end));
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(0.25);
@@ -269,10 +271,17 @@ function Requirements({ c }: { c: ReportCase }) {
             {c.scenario.requirements.map((r, i) => (
               <tr key={i}>
                 <td>{describeRequirement(r)}</td>
-                <Status side={c.baseline} r={r} />
-                <Status side={c.candidate} r={r} />
+                <Status value={requirementStatus(i, c.baseline)} />
+                <Status value={requirementStatus(i, c.candidate)} />
               </tr>
             ))}
+            {c.scenario.actions.some((a) => a.ack) && (
+              <tr>
+                <td>Each declared action was acknowledged.</td>
+                <Status value={ackStatus(c.baseline)} />
+                <Status value={ackStatus(c.candidate)} />
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -280,9 +289,8 @@ function Requirements({ c }: { c: ReportCase }) {
   );
 }
 
-function Status({ side, r }: { side: RunSide; r: ReportCase['scenario']['requirements'][number] }) {
-  const s = requirementStatus(r, side);
-  return <td className={`status status-${s.replace(' ', '-')}`}>{s}</td>;
+function Status({ value }: { value: string }) {
+  return <td className={`status status-${value.replace(' ', '-')}`}>{value}</td>;
 }
 
 function Violations({ c, onSeek }: { c: ReportCase; onSeek: (t: number) => void }) {
@@ -318,7 +326,7 @@ function Reduction({ data, active }: { data: ReportData; active: ReportCase }) {
         <h2>Reduction</h2>
         <p>
           {r.status === 'unstable'
-            ? `The failure appeared in ${r.originalReproduction.reproduced} of ${r.originalReproduction.runs} runs, so it is unstable and the original trace is the evidence.`
+            ? `The failure appeared in ${r.reducedReproduction.runs > 0 ? `${r.reducedReproduction.reproduced} of ${r.reducedReproduction.runs} runs of the reduced sequence` : `${r.originalReproduction.reproduced} of ${r.originalReproduction.runs} runs`}, so it is unstable and the original trace is the evidence.`
             : 'The failure did not appear again, so nothing was reduced.'}
         </p>
       </section>
@@ -329,7 +337,7 @@ function Reduction({ data, active }: { data: ReportData; active: ReportCase }) {
       <h2>Reduction</h2>
       <p>
         {r.originalActions} actions became {r.reducedActions}. It took {r.attempts} attempts in {(r.elapsedMs / 1000).toFixed(1)} s.
-        The result {r.oneMinimal ? 'is 1-minimal: removing any remaining action loses the failure' : `stopped early (${r.stopped})`}.
+        The result {r.oneMinimal ? 'is 1-minimal: removing any one remaining action loses this failure, makes the sequence invalid, or changes the failure' : `is not proven minimal (${r.stopped})`}.
         The failure appeared in {r.reducedReproduction.reproduced} of {r.reducedReproduction.runs} candidate runs and {r.baselineReproduction.reproduced} of {r.baselineReproduction.runs} baseline runs.
       </p>
       <ol className="kept">

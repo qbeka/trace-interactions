@@ -102,11 +102,20 @@ export function sequenceProblem(
   return null;
 }
 
-/** Non-empty after a run means the pointer stayed down, which `cleanup` must finish. */
-export function endsWithPointerDown(actions: Action[]): boolean {
-  return actions.reduce((p, a) => {
-    if (a.type === 'pointerDown') return true;
-    if (a.type === 'pointerUp' || a.type === 'pointerCancel') return false;
-    return p;
-  }, false);
+/** Every state key a scenario depends on. A key the page never publishes is a typo. */
+export function namedKeys(s: ScenarioType): string[] {
+  const keys = new Set<string>();
+  const add = (state: Record<string, unknown> | undefined) => Object.keys(state ?? {}).forEach((k) => keys.add(k));
+  for (const r of s.requirements) {
+    if (r.kind === 'latest-request-wins' || r.kind === 'resources-released') keys.add(r.key);
+    if (r.kind === 'focus-stays-on') add(r.whileState);
+    if (r.kind === 'focus-restored') add(r.whenState);
+    if (r.kind === 'transient-cleared') add(r.state);
+  }
+  for (const a of [...s.actions, ...s.cleanup]) {
+    add(a.requires);
+    if (a.ack) keys.add(a.ack.key);
+    if (a.type === 'waitFor') add(a.state);
+  }
+  return [...keys];
 }

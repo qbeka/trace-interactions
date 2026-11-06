@@ -4,9 +4,9 @@ import { fileURLToPath } from 'node:url';
 import type { Browser, CDPSession, Locator, Page } from 'playwright';
 import type { RecorderConfig } from '../recorder/recorder.ts';
 import type { Action, Point, Scenario, Target } from '../scenario/schema.ts';
-import { InvalidScenario, staticProblem } from '../scenario/validate.ts';
+import { InvalidScenario, namedKeys, staticProblem } from '../scenario/validate.ts';
 import { TRACE_SCHEMA, type ClockReport, type PendingEvent, type RunResult, type Screenshot, type TraceEvent } from '../trace/types.ts';
-import { evaluate } from '../oracle/oracle.ts';
+import { evaluateAll } from '../oracle/oracle.ts';
 
 /** Time sources that neither mode holds still. Reported on every run. */
 const UNCONTROLLED = [
@@ -15,6 +15,7 @@ const UNCONTROLLED = [
   'Web Workers',
   'Compositor-driven scrolling and native smooth scroll',
   'Scroll-driven animation timelines',
+  'crypto.randomUUID and crypto.getRandomValues',
   'Media playback',
   'Network',
   'Rasterization',
@@ -106,6 +107,19 @@ async function resolvePoint(page: Page, point: Point, targets: Scenario['targets
   return { x: box.x + box.width * point.x, y: box.y + box.height * point.y };
 }
 
+/** The browser reports whole or rounded pixels, so a press may land this far from the aim. */
+const LANDING_TOLERANCE_PX = 3;
+
+/**
+ * True if a press landed where it was aimed. Without this check a misplaced press
+ * reads as a page that ignored the gesture, and scenarios that expect nothing to
+ * stay stuck pass with no drag at all.
+ */
+export function pressLanded(aim: { x: number; y: number }, landed: { x: number; y: number } | null): boolean {
+  if (!landed) return false;
+  return Math.abs(aim.x - landed.x) <= LANDING_TOLERANCE_PX && Math.abs(aim.y - landed.y) <= LANDING_TOLERANCE_PX;
+}
+
 /** Sends real touch input through CDP so a cancel is a browser cancel. Chromium only. */
 class TouchInput {
   private constructor(private cdp: CDPSession) {}
@@ -163,6 +177,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     invalid: { reason, actionIndex },
     events,
     violations: [],
+    requirements: [],
     clock: emptyClock,
     screenshots: [],
     durationMs: 0,
@@ -180,7 +195,6 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     viewport: { width: scenario.viewport.width, height: scenario.viewport.height },
     deviceScaleFactor: scenario.viewport.deviceScaleFactor,
     hasTouch: useTouch,
-    // A fixture must never reach the network, so a stray request cannot change a run.
     serviceWorkers: 'block',
   });
   const screenshots: Screenshot[] = [];
@@ -213,10 +227,14 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     const page = await context.newPage();
     page.setDefaultTimeout(ACTION_TIMEOUT_MS);
     page.setDefaultNavigationTimeout(NAVIGATION_TIMEOUT_MS);
-    await page.route(/^https?:/, (route) => {
+    // Ordinary requests and sockets to another origin are stopped, so a stray call
+    // cannot change a run. This is a guard, not a sandbox: a same-origin redirect
+    // is followed without passing through here.
+    await context.route(/^https?:/, (route) => {
       const u = new URL(route.request().url());
       return u.origin === new URL(url).origin ? route.continue() : route.abort();
     });
+    await context.routeWebSocket(/.*/, (socket) => socket.close());
 
     await page.goto(url, { waitUntil: 'load' });
     const adapter = await page
@@ -304,9 +322,10 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       while (now < time) {
         // While idle, jump to the next due timer. Nothing else can change the page.
         let step = stepMs;
-        if (!activity.busy && !opts.everyTick) {
-          const due = activity.nextDue !== null && activity.nextDue > now ? activity.nextDue : Infinity;
-          step = Math.max(stepMs, Math.min(due, time) - now);
+        // A timer already due has not fired yet, so it means step normally, not skip.
+        const overdue = activity.nextDue !== null && activity.nextDue <= now;
+        if (!activity.busy && !opts.everyTick && !overdue) {
+          step = Math.max(stepMs, Math.min(activity.nextDue ?? Infinity, time) - now);
         }
         step = Math.min(step, time - now);
         const stop = stops.find((t) => t > now && t < now + step);
@@ -347,6 +366,12 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
           } else {
             await page.mouse.move(pointer.x, pointer.y);
             await page.mouse.down();
+          }
+          if (recording !== 'off') {
+            const landed = await page.evaluate(() => window.__trace.lastPointerDown());
+            if (!pressLanded(pointer, landed)) {
+              throw new InvalidScenario(`the press aimed at ${Math.round(pointer.x)}, ${Math.round(pointer.y)} landed at ${landed ? `${Math.round(landed.x)}, ${Math.round(landed.y)}` : 'nowhere'}`, index);
+            }
           }
           break;
         case 'pointerMove':
@@ -438,7 +463,8 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     try {
       await capture('start');
       await runList(scenario.actions, false, 0);
-      const mainEnd = (scenario.actions.at(-1)?.at ?? 0) + scenario.timing.settleMs;
+      // From where time actually is. A final `waitFor` can run past the last `at`.
+      const mainEnd = Math.max(now, scenario.actions.at(-1)?.at ?? 0) + scenario.timing.settleMs;
       await advanceTo(mainEnd);
       await capture('settled');
       await runList(scenario.cleanup, true, mainEnd);
@@ -468,12 +494,22 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       loadedFonts: [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family),
       devicePixelRatio: window.devicePixelRatio,
     }));
+    // A requirement on a key the page never published would always pass. That is a
+    // typo in the scenario, so it stops here instead of reading as "held".
+    if (recording === 'full') {
+      const published = new Set(events.flatMap((e) => (e.k === 'state' ? [e.key] : [])));
+      const unknown = namedKeys(scenario).filter((k) => !published.has(k));
+      if (unknown.length) {
+        return { ...invalidResult(`the page never published state key "${unknown[0]}". Check its spelling and the fixture's allowlist`, null, events), clock: { ...emptyClock, verified } };
+      }
+    }
+    const judged = recording === 'full' ? evaluateAll(scenario, events) : { violations: [], requirements: [] };
     return {
       schema: TRACE_SCHEMA,
       status: 'completed',
       invalid: null,
       events,
-      violations: recording === 'full' ? evaluate(scenario, events) : [],
+      ...judged,
       clock: { mode, verified, uncontrolled, used },
       screenshots,
       durationMs: Math.round(performance.now() - started),

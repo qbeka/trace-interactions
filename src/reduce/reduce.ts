@@ -4,7 +4,8 @@ import type { Browser } from 'playwright';
 import { writeJson, behaviorHash } from '../case.ts';
 import { runScenario, type RunOutput } from '../runner/run.ts';
 import type { Scenario } from '../scenario/schema.ts';
-import { sequenceProblem } from '../scenario/validate.ts';
+import { InvalidScenario, sequenceProblem } from '../scenario/validate.ts';
+import { sha256 } from '../runner/environment.ts';
 import { ddmin, type Budget, type Outcome, type ReduceState, type StopReason } from './ddmin.ts';
 
 export interface ReductionReport {
@@ -46,6 +47,7 @@ export interface ReduceInput {
   /** Runs used for the published reproduction rate. */
   reproductionRuns: number;
   mode?: 'controlled' | 'wall';
+  adapterScript?: string;
   signal?: AbortSignal;
   resume?: boolean;
 }
@@ -58,7 +60,7 @@ export async function reduceScenario(i: ReduceInput): Promise<ReductionReport> {
   const started = Date.now();
   const dir = resolve(i.out);
   const progressPath = join(dir, 'reduction.progress.json');
-  const common = { browser: i.browser, stateAllowlist: i.stateAllowlist, mode: i.mode };
+  const common = { browser: i.browser, stateAllowlist: i.stateAllowlist, mode: i.mode, adapterScript: i.adapterScript };
   const candidateRun = (scenario: Scenario) => runScenario({ ...common, scenario, url: i.candidateUrl });
   const baselineRun = (scenario: Scenario) => runScenario({ ...common, scenario, url: i.baselineUrl });
   const behaviors = new Set<string>();
@@ -111,13 +113,20 @@ export async function reduceScenario(i: ReduceInput): Promise<ReductionReport> {
     for (let n = 1; n < i.confirmRuns; n++) {
       if (!hasPrint(await candidateRun(s), i.fingerprint)) return 'unstable';
     }
-    // A smaller sequence that also fails the baseline is no longer this regression.
-    return hasPrint(await baselineRun(s), i.fingerprint) ? 'other-failure' : 'fails';
+    // The baseline must run this sequence and pass it. A sequence it cannot run is
+    // invalid, and one that fails there too is no longer this regression.
+    const baseline = await baselineRun(s);
+    if (baseline.status === 'invalid') return 'invalid';
+    return hasPrint(baseline, i.fingerprint) ? 'other-failure' : 'fails';
   };
 
   const required = new Set(i.scenario.actions.flatMap((a, n) => (a.setup ? [n] : [])));
-  const resume: ReduceState | undefined =
-    i.resume && existsSync(progressPath) ? JSON.parse(readFileSync(progressPath, 'utf8')) : undefined;
+  const scenarioHash = sha256(JSON.stringify(i.scenario));
+  const saved = i.resume && existsSync(progressPath) ? JSON.parse(readFileSync(progressPath, 'utf8')) : null;
+  if (saved && (saved.scenarioHash !== scenarioHash || saved.fingerprint !== i.fingerprint)) {
+    throw new InvalidScenario('saved progress belongs to a different scenario or failure. Run without --resume');
+  }
+  const resume: ReduceState | undefined = saved?.state;
 
   const result = await ddmin({
     count: i.scenario.actions.length,
@@ -126,7 +135,7 @@ export async function reduceScenario(i: ReduceInput): Promise<ReductionReport> {
     budget: i.budget,
     signal: i.signal,
     resume,
-    onProgress: (state) => writeJson(progressPath, state),
+    onProgress: (state) => writeJson(progressPath, { scenarioHash, fingerprint: i.fingerprint, state }),
   });
 
   const reduced = subset(i.scenario, result.kept);
@@ -145,7 +154,8 @@ export async function reduceScenario(i: ReduceInput): Promise<ReductionReport> {
     reducedActions: result.kept.length,
     attempts: result.attempts.length,
     stopped: result.stopped,
-    oneMinimal: result.stopped === 'minimal',
+    // An unstable deletion was refused, not disproved, so it may still be removable.
+    oneMinimal: result.stopped === 'minimal' && base.outcomes.unstable === 0,
     keptIndices: result.kept,
     distinctBehaviors,
     elapsedMs: Date.now() - started,

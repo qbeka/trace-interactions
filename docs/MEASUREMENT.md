@@ -1,7 +1,8 @@
 # Measurement plan
 
-This file was committed before the final measurement. The commit that adds it is the
-freeze. Anything changed afterward is listed in `docs/REPORT.md`.
+This file was committed before the first frozen measurement, and revision 2 at the end
+was committed before the second. Anything changed after a freeze is listed in
+`docs/REPORT.md`.
 
 ## Rules
 
@@ -83,8 +84,33 @@ samples. Lab timings are not INP.
 | Check | Target |
 |---|---|
 | Smoke suite | Under 60 s after install |
-| Full benchmark | Under 40 minutes on the reference machine |
+| Full benchmark | Under 40 minutes on the reference machine. Revision 2 raises this to 50, because it adds 2 steps. |
 | Seeded control detection on the development corpus | Every seeded bug caught. Any miss invalidates the result. |
 | Reduction | Same fingerprint, reproduced in 10 of 10 fresh runs, 0 on the baseline |
 | Holdout | Reported as measured. No target, because a target would invite tuning. |
 | Overhead | Reported as measured |
+
+## Revision 2
+
+An independent review on a clean clone found real problems after the first frozen run:
+requirements that passed without checking anything, an idle jump that could change a
+verdict, a reducer that accepted a sequence the baseline could not run, a run folder that
+could run commands, and a blinded control. Fixing them changed the oracle, so everything
+is measured again on the final code.
+
+- **Oracle.** Each requirement now reports `held`, `broken` or `not-exercised`. Several
+  requirements became stricter. A key the page never publishes makes the scenario invalid.
+- **Trace difference control.** It now compares every recorded channel, sorted within
+  each ms. The first version compared only state, focus and geometry, which blinded it.
+- **Holdout.** The result from `432cf66` stands as the only held-out result, and it
+  belongs to the oracle of that commit. The combobox family has now been seen, and some
+  fixes came from a review that used it, so the rerun on final code is a regression
+  check. It is reported under its own name and is not a second holdout.
+- **Random sessions.** Seeds are 1001 to 1100, which no development run used. The
+  requirement list stays the reduced one in `bench/generate.ts`, and the report says so.
+- **Input check.** A press that does not land within 3 px of its aim now makes the run
+  invalid. The review saw WebKit misplace presses, and those runs had passed silently.
+- **Display.** The full run holds the display awake with `caffeinate -d`. The reviewer's
+  WebKit failures happened during a long idle period. The cause is unproven.
+- **Scoring.** A build that fails to run a scenario because of input is listed as invalid,
+  and it never counts as a detection.

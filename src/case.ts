@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import type { Browser } from 'playwright';
 import { compare, type Comparison } from './compare.ts';
@@ -30,6 +30,13 @@ export interface CaseResult {
 export function writeJson(path: string, value: unknown): void {
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify(value, null, 2) + '\n');
+}
+
+/** A new run replaces the old one, so a report can never mix evidence from two runs. */
+export function clearRun(dir: string): void {
+  for (const name of ['raw', 'screenshots', 'report', 'reduced.scenario.json', 'reduction.json', 'reduction.progress.json']) {
+    rmSync(join(dir, name), { recursive: true, force: true });
+  }
 }
 
 /** Hash of the behavior a run showed, for comparing repeated runs. Ignores sequence numbers. */

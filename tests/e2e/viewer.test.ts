@@ -81,7 +81,7 @@ describe('portable report', () => {
 
   it('makes a passing run as readable as a failure', async () => {
     const page = await open(passing.url);
-    expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('Both builds met every declared requirement.');
+    expect(await page.getByRole('heading', { level: 1 }).textContent()).toMatch(/^Both builds met /);
     await expect(page.getByRole('columnheader', { name: 'Requirement' }).count()).resolves.toBe(1);
     expect(await page.locator('td.status-held').count()).toBeGreaterThan(0);
     expect(await page.locator('td.status-broken').count()).toBe(0);

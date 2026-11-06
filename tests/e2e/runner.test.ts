@@ -63,7 +63,39 @@ describe('determinism', () => {
   });
 });
 
+describe('idle jump', () => {
+  it('still samples timers scheduled from inside a timer', async () => {
+    const chain = `${ADAPTER}${button}<div id="box" data-trace-id="box" style="position:absolute;left:0;top:50px;width:40px;height:40px"></div><script>
+      document.querySelector('button').onclick = () => setTimeout(() => {
+        const box = document.getElementById('box');
+        [0, 100, 200, 300].forEach((ms, i) => setTimeout(() => { box.style.left = (i + 1) * 40 + 'px'; }, ms));
+      }, 200);
+    </script>`;
+    const server = await servePage(chain);
+    const s = plainScenario({
+      targets: { go: { role: 'button', name: 'Go', traceId: 'go' }, box: { traceId: 'box' } },
+      requirements: [{ kind: 'geometry-continuous', target: 'box', maxStepPx: 60 }],
+      timing: { mode: 'controlled', stepMs: 16, settleMs: 1000 },
+    });
+    const fast = await runScenario({ browser, url: server.url, scenario: s, stateAllowlist: [] });
+    const slow = await runScenario({ browser, url: server.url, scenario: s, stateAllowlist: [], everyTick: true });
+    await server.close();
+    expect(slow.violations).toEqual([]);
+    expect(fast.violations).toEqual([]);
+  });
+});
+
 describe('invalid scenarios are not regressions', () => {
+  it('rejects a requirement on a state key the page never published', async () => {
+    const server = await serveVariant('inspector', 'stale-completion');
+    const s = scenario('inspector', 'reopen-during-close');
+    const typo = { ...s, requirements: [{ kind: 'latest-request-wins' as const, key: 'pannel', terminal: ['open', 'closed'] }], actions: s.actions.map((a) => ({ ...a, requests: undefined, ack: undefined })) };
+    const r = await runScenario({ browser, url: server.url, scenario: typo, stateAllowlist: ALLOW.inspector });
+    await server.close();
+    expect(r.status).toBe('invalid');
+    expect(r.invalid?.reason).toMatch(/never published state key "pannel"/);
+  });
+
   it('reports a failed selector as invalid', async () => {
     const server = await serveVariant('inspector', 'correct');
     const s = scenario('inspector', 'reopen-during-close');
@@ -153,6 +185,16 @@ describe('clock contract', () => {
 });
 
 describe('privacy', () => {
+  it('does not store text a page hides in attributes', async () => {
+    const server = await servePage(`${ADAPTER}<input role="value=hunter2" data-trace-id="my secret note" aria-label="Go" id="in"><button data-trace-id="go">Go</button>`);
+    const s = plainScenario({ actions: [{ at: 0, type: 'press', key: 'Tab' }] });
+    const r = await runScenario({ browser, url: server.url, scenario: s, stateAllowlist: [] });
+    await server.close();
+    const saved = JSON.stringify(r.events);
+    expect(saved).not.toContain('hunter2');
+    expect(saved).not.toContain('secret');
+  });
+
   it('never records typed text or a value outside the allowlist', async () => {
     const server = await serveVariant('overlay', 'correct');
     const r = await runScenario({ browser, url: server.url, scenario: scenario('overlay', 'open-and-cancel'), stateAllowlist: ALLOW.overlay });

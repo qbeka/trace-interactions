@@ -1,5 +1,5 @@
 import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { realpath, stat } from 'node:fs/promises';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { extname, join, normalize, resolve } from 'node:path';
@@ -28,7 +28,13 @@ export interface StaticServer {
 export async function serveDirectory(dir: string, port = 0): Promise<StaticServer> {
   const root = resolve(dir);
   const server = createServer(async (req, res) => {
-    const path = decodeURIComponent(new URL(req.url ?? '/', 'http://local').pathname);
+    let path: string;
+    try {
+      path = decodeURIComponent(new URL(req.url ?? '/', 'http://local').pathname);
+    } catch {
+      res.writeHead(400).end('bad request');
+      return;
+    }
     const file = resolve(join(root, normalize(path)));
     if (file !== root && !file.startsWith(root + '/')) {
       res.writeHead(403).end();
@@ -38,6 +44,12 @@ export async function serveDirectory(dir: string, port = 0): Promise<StaticServe
     const target = info?.isDirectory() ? join(file, 'index.html') : file;
     if (!(await stat(target).catch(() => null))?.isFile()) {
       res.writeHead(404).end('not found');
+      return;
+    }
+    // A symbolic link must not lead out of the folder being served.
+    const real = await realpath(target);
+    if (!real.startsWith((await realpath(root)) + '/')) {
+      res.writeHead(403).end();
       return;
     }
     res.writeHead(200, { 'content-type': TYPES[extname(target)] ?? 'application/octet-stream', 'cache-control': 'no-store' });

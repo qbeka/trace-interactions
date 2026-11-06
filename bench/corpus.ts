@@ -54,16 +54,21 @@ export function scenariosOf(root: string, fixture: string): Scenario[] {
     .map((f) => parseScenario(JSON.parse(readFileSync(join(dir, f), 'utf8'))));
 }
 
-/** Everything a person would call behavior or layout, minus sequence numbers. */
+/**
+ * Every recorded channel, sorted inside each ms. Two events at one ms can swap
+ * order between runs, and that is not a behavior difference.
+ */
 function shape(run: RunOutput): string {
-  return JSON.stringify(
-    run.events.flatMap((e): unknown[] => {
-      if (e.k === 'state') return [[e.t, e.key, e.value]];
-      if (e.k === 'geometry') return [[e.t, e.target, e.rect]];
-      if (e.k === 'focus') return [[e.t, e.ref?.traceId ?? null]];
-      return [];
-    }),
-  );
+  return run.events
+    .flatMap((e) => {
+      if (e.k === 'action' || e.k === 'unsupported') return [];
+      const { seq: _seq, tick: _tick, ...rest } = e;
+      if (e.k === 'focus' && e.ref) return [JSON.stringify({ ...rest, ref: { ...e.ref, node: 0 } })];
+      if (e.k === 'geometry') return [JSON.stringify({ ...rest, node: 0 })];
+      return [JSON.stringify(rest)];
+    })
+    .sort()
+    .join('\n');
 }
 
 function pixelDiff(a: string, b: string): number {

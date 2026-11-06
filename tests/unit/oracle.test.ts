@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { evaluate } from '../../src/oracle/oracle.ts';
+import { evaluate, evaluateAll } from '../../src/oracle/oracle.ts';
 import type { Requirement } from '../../src/scenario/schema.ts';
 import { need, scenario, trace } from './helpers.ts';
 
@@ -201,18 +201,131 @@ describe('duplicates', () => {
   const rel: Requirement = { kind: 'relationship-resolves', from: 'trigger', attribute: 'aria-controls', to: 'panel' };
 
   it('flags an id that matches two elements', () => {
-    const t = trace().add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 2, resolved: 'panel' });
+    const t = trace().add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 2, missing: 0, resolved: 'panel' });
     expect(evaluate(scenario(need(rel)), t.events)[0]?.category).toBe('duplicate-interactive');
   });
 
   it('flags an id that resolves to the wrong element', () => {
-    const t = trace().add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 1, resolved: 'other' });
+    const t = trace().at(1).add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 1, missing: 0, resolved: 'other' }).rect('panel', box(0));
     expect(evaluate(scenario(need(rel)), t.events)[0]?.category).toBe('duplicate-interactive');
   });
 
   it('allows an id with nothing to point at while the panel is closed', () => {
-    const t = trace().add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 0, resolved: null });
+    const t = trace().add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 0, missing: 1, resolved: null });
     expect(evaluate(scenario(need(rel)), t.events)).toEqual([]);
+  });
+});
+
+describe('references while the target exists', () => {
+  const rel: Requirement = { kind: 'relationship-resolves', from: 'trigger', attribute: 'aria-labelledby', to: 'panel' };
+
+  it('flags a dangling id while the panel is open', () => {
+    const t = trace().at(1).add({ k: 'relation', from: 'trigger', attribute: 'aria-labelledby', id: 'gone', matches: 0, missing: 1, resolved: null }).rect('panel', box(0));
+    expect(evaluate(scenario(need(rel)), t.events)[0]?.category).toBe('duplicate-interactive');
+  });
+
+  it('flags a removed attribute while the panel is open', () => {
+    const t = trace().at(1).add({ k: 'relation', from: 'trigger', attribute: 'aria-labelledby', id: null, matches: 0, missing: 0, resolved: null }).rect('panel', box(0));
+    expect(evaluate(scenario(need(rel)), t.events)[0]?.category).toBe('duplicate-interactive');
+  });
+
+  it('flags one dangling id in a list of two', () => {
+    const t = trace().at(1).add({ k: 'relation', from: 'trigger', attribute: 'aria-labelledby', id: 'a b', matches: 1, missing: 1, resolved: 'panel' }).rect('panel', box(0));
+    expect(evaluate(scenario(need(rel)), t.events)[0]?.category).toBe('duplicate-interactive');
+  });
+
+  it('accepts a list of ids that includes the target', () => {
+    const t = trace().at(1).add({ k: 'relation', from: 'trigger', attribute: 'aria-labelledby', id: 'a b', matches: 1, missing: 0, resolved: 'other panel' }).rect('panel', box(0));
+    expect(evaluate(scenario(need(rel)), t.events)).toEqual([]);
+  });
+});
+
+describe('requirements that are not exercised', () => {
+  const status = (r: Requirement, events: ReturnType<typeof trace>['events'], actions?: never) =>
+    evaluateAll(scenario({ requirements: [r], ...(actions ? { actions } : {}) }), events).requirements[0]?.status;
+
+  it('does not call a focus requirement held if the target never had focus', () => {
+    const r: Requirement = { kind: 'focus-stays-on', target: 'input', whileState: { panel: 'open' } };
+    expect(status(r, trace().state('panel', 'open').events)).toBe('not-exercised');
+  });
+
+  it('does not call a restore requirement held if the state never began', () => {
+    const r: Requirement = { kind: 'focus-restored', to: 'trigger', whenState: { open: false }, withinMs: 100 };
+    expect(status(r, trace().state('open', true).at(0).action(0, 'press').events)).toBe('not-exercised');
+  });
+
+  it('does not call a leak requirement held with no count before mount', () => {
+    const r: Requirement = { kind: 'resources-released', key: 'mounted', removedValue: false };
+    const t = trace().state('mounted', true).resources({}).at(10).state('mounted', false).resources({});
+    expect(status(r, t.events)).toBe('not-exercised');
+  });
+
+  it('does not call a fit requirement held if every resize was still in flight', () => {
+    const r: Requirement = { kind: 'geometry-fits', target: 'panel', insetPx: 8, tolerancePx: 2 };
+    const t = trace().viewport(800, 600).at(100).rect('panel', box(10)).action(0, 'resize').at(116).rect('panel', box(12));
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'next' });
+    expect(status(r, t.events)).toBe('not-exercised');
+  });
+
+  it('reports held when the check really ran', () => {
+    const t = trace().at(1).focus('input', 1);
+    expect(status({ kind: 'focus-valid' }, t.events)).toBe('held');
+  });
+
+  it('reports each of two requirements of one kind on its own', () => {
+    const a: Requirement = { kind: 'geometry-continuous', target: 'panel', maxStepPx: 10 };
+    const b: Requirement = { kind: 'geometry-continuous', target: 'input', maxStepPx: 10 };
+    const t = trace().at(0).rect('panel', box(0)).rect('input', box(0)).at(16).rect('panel', box(100)).rect('input', box(1));
+    expect(evaluateAll(scenario({ requirements: [a, b] }), t.events).requirements.map((x) => x.status)).toEqual(['broken', 'held']);
+  });
+});
+
+describe('cases the first review found', () => {
+  it('fails a request the build ignored, which leaves no state event', () => {
+    const req: Requirement = { kind: 'latest-request-wins', key: 'panel', terminal: ['open', 'closed'] };
+    const actions = [{ type: 'activate', target: 'trigger', at: 0, requests: { panel: 'closed' } }] as never;
+    const t = trace().state('panel', 'open').at(0).action(0, 'activate').at(500).state('other', 1);
+    expect(evaluate(scenario(need(req, actions)), t.events)[0]?.category).toBe('stale-final-state');
+  });
+
+  it('ignores state changes that cleanup caused', () => {
+    const req: Requirement = { kind: 'latest-request-wins', key: 'panel', terminal: ['open', 'closed'] };
+    const actions = [{ type: 'activate', target: 'trigger', at: 0, requests: { panel: 'open' } }] as never;
+    const t = trace().state('panel', 'closed').at(0).action(0, 'activate').state('panel', 'open').at(600);
+    t.action(0, 'requestState', true).state('panel', 'closed');
+    expect(evaluate(scenario(need(req, actions)), t.events)).toEqual([]);
+  });
+
+  it('catches a stale origin when the next action shares the same ms', () => {
+    const origin: Requirement = { kind: 'geometry-origin', target: 'panel', anchor: 'trigger', tolerancePx: 4 };
+    const t = trace().at(0).rect('trigger', box(500)).at(1).action(0, 'activate').rect('panel', box(200));
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'focus', label: 'focus' });
+    t.at(16).rect('panel', box(300)).at(32).rect('panel', box(350));
+    expect(evaluate(scenario(need(origin)), t.events)[0]?.category).toBe('geometry-discontinuity');
+  });
+
+  it('does not let a late answer to one action acknowledge the next', () => {
+    const actions = [
+      { type: 'activate', target: 'trigger', at: 0 },
+      { type: 'activate', target: 'trigger', at: 100, ack: { key: 'panel', withinMs: 500 } },
+    ] as never;
+    const t = trace().at(0).action(0, 'activate').state('panel', 'closing').at(100);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'second' });
+    t.add({ k: 'action', phase: 'start', index: 2, cleanup: false, type: 'press', label: 'third' }).at(200).state('panel', 'closed');
+    expect(evaluate(scenario({ actions }), t.events)[0]?.category).toBe('missed-ack');
+  });
+
+  it('flags pointer capture still held after a cancel', () => {
+    const r: Requirement = { kind: 'transient-cleared', after: 'pointerCancel', state: { dragging: false } };
+    const t = trace().state('dragging', false).at(1).add({ k: 'event', name: 'gotpointercapture', target: 'h' }).at(10).action(0, 'pointerCancel').at(20).state('x', 1);
+    expect(evaluate(scenario(need(r)), t.events)[0]?.sentence).toMatch(/capture/);
+  });
+
+  it('waits for settledMs before judging a transient state', () => {
+    const r: Requirement = { kind: 'transient-cleared', after: 'pointerUp', state: { settling: false }, settledMs: 200 };
+    const t = trace().state('settling', true).at(10).action(0, 'pointerUp').at(110);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'next' });
+    expect(evaluate(scenario(need(r)), t.events)).toEqual([]);
   });
 });
 

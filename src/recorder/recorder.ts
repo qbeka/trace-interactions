@@ -57,6 +57,19 @@ declare global {
 
 const round = (n: number): number => Math.round(n * 100) / 100;
 
+/**
+ * Attributes can hold anything a page writes there, including user text. Only a
+ * short identifier-shaped value is kept.
+ */
+const safeToken = (value: string | null): string | null => (value !== null && /^[\w:.-]{1,64}$/.test(value) ? value : null);
+const safeRole = (value: string | null): string | null => (value !== null && /^[a-z]{1,24}$/.test(value) ? value : null);
+
+/** Named keys only. A printable key is user text, and so is anything unrecognized. */
+const NAMED_KEYS = new Set([
+  'Escape', 'Enter', 'Tab', 'Backspace', 'Delete', 'Home', 'End', 'PageUp', 'PageDown',
+  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Shift', 'Control', 'Alt', 'Meta',
+]);
+
 function createRecorder() {
   const real: RealFns = window.__traceReal ?? {
     raf: window.requestAnimationFrame.bind(window),
@@ -203,6 +216,23 @@ function createRecorder() {
     wrapped.caf.call(window, id);
   }) as typeof window.cancelAnimationFrame;
 
+  const nativeIdle = window.requestIdleCallback;
+  if (nativeIdle) {
+    window.requestIdleCallback = ((cb: IdleRequestCallback, opts?: IdleRequestOptions) => {
+      const id = nativeIdle.call(window, (d) => {
+        entry('timer:idle').delete(id);
+        cb(d);
+      }, opts);
+      entry('timer:idle').add(id);
+      return id;
+    }) as typeof window.requestIdleCallback;
+    const nativeCancel = window.cancelIdleCallback;
+    window.cancelIdleCallback = ((id: number) => {
+      entry('timer:idle').delete(id);
+      nativeCancel.call(window, id);
+    }) as typeof window.cancelIdleCallback;
+  }
+
   const counts = (): Record<string, number> => {
     const out: Record<string, number> = {};
     for (const [key, set] of [...ledger].sort(([a], [b]) => a.localeCompare(b))) {
@@ -257,8 +287,8 @@ function createRecorder() {
   const refOf = (el: Element): NodeRef => ({
     node: nodeId(el),
     tag: el.tagName.toLowerCase(),
-    role: el.getAttribute('role'),
-    traceId: el.getAttribute('data-trace-id'),
+    role: safeRole(el.getAttribute('role')),
+    traceId: safeToken(el.getAttribute('data-trace-id')),
     hidden: isHiddenFromUser(el),
     connected: el.isConnected,
   });
@@ -326,15 +356,19 @@ function createRecorder() {
     for (const { from, fromTraceId, attribute } of config.relations) {
       const owner = document.querySelector(`[data-trace-id="${CSS.escape(fromTraceId)}"]`);
       if (!owner) continue;
-      const id = owner.getAttribute(attribute);
-      const matches = id ? document.querySelectorAll(`[id="${CSS.escape(id)}"]`).length : 0;
-      // `getElementById` is what assistive technology follows: the first match wins.
-      const found = id ? document.getElementById(id) : null;
-      const resolved = found?.getAttribute('data-trace-id') ?? null;
-      const key = JSON.stringify([id, matches, resolved]);
+      // ARIA references are a space-separated list, and `getElementById` is what
+      // assistive technology follows: for a repeated id, the first match wins.
+      const raw = owner.getAttribute(attribute);
+      const ids = raw?.trim() ? raw.trim().split(/\s+/) : [];
+      const counts = ids.map((id) => document.querySelectorAll(`[id="${CSS.escape(id)}"]`).length);
+      const resolved = ids.map((id) => safeToken(document.getElementById(id)?.getAttribute('data-trace-id') ?? null)).filter(Boolean).join(' ');
+      const id = raw === null ? null : ids.map((x) => safeToken(x) ?? '?').join(' ');
+      const matches = Math.max(0, ...counts);
+      const missing = counts.filter((c) => c === 0).length;
+      const key = JSON.stringify([id, matches, missing, resolved]);
       if (lastRelation.get(`${from}:${attribute}`) === key) continue;
       lastRelation.set(`${from}:${attribute}`, key);
-      push({ k: 'relation', from, attribute, id, matches, resolved });
+      push({ k: 'relation', from, attribute, id, matches, missing, resolved: resolved || null });
     }
   };
 
@@ -422,7 +456,10 @@ function createRecorder() {
   let captureOwner: Element | null = null;
   let capturedPointer: number | null = null;
 
+  let lastDown: { x: number; y: number } | null = null;
+
   const onEvent = (e: Event): void => {
+    if (e.type === 'pointerdown') lastDown = { x: (e as PointerEvent).clientX, y: (e as PointerEvent).clientY };
     if (e.type === 'gotpointercapture') {
       captureOwner = e.target as Element;
       capturedPointer = (e as PointerEvent).pointerId;
@@ -434,10 +471,9 @@ function createRecorder() {
     push({
       k: 'event',
       name: e.type,
-      target: el?.getAttribute('data-trace-id') ?? null,
+      target: safeToken(el?.getAttribute('data-trace-id') ?? null),
       ...(e instanceof PointerEvent ? { pointerId: e.pointerId } : {}),
-      // A printable key is user text. Only named keys such as Escape are kept.
-      ...(e instanceof KeyboardEvent && e.key.length > 1 ? { key: e.key } : {}),
+      ...(e instanceof KeyboardEvent && NAMED_KEYS.has(e.key) ? { key: e.key } : {}),
     });
     if (e.type === 'focusin' || e.type === 'focusout') sampleFocus();
   };
@@ -475,13 +511,14 @@ function createRecorder() {
   };
 
   /**
-   * What the clock has to step through. With no animation, frame or interval
-   * pending, nothing can change before `nextDue`, so the runner may jump there.
+   * What the clock has to step through. With no animation, frame, idle callback or
+   * interval pending, no page code can run before `nextDue`, so the runner may jump there.
    * Scenario text and sampling do not depend on this: skipped ticks saw no change.
    */
   const activity = (): { busy: boolean; nextDue: number | null } => {
     const animating = [...document.getAnimations()].some((a) => a.playState !== 'finished' && a.playState !== 'idle');
-    const busy = animating || adopted.size > 0 || (ledger.get('timer:frame')?.size ?? 0) > 0 || (ledger.get('timer:interval')?.size ?? 0) > 0;
+    const pending = (key: string): boolean => (ledger.get(key)?.size ?? 0) > 0;
+    const busy = animating || adopted.size > 0 || pending('timer:frame') || pending('timer:interval') || pending('timer:idle');
     const soonest = Math.min(...due.values());
     return { busy, nextDue: Number.isFinite(soonest) ? round(soonest - t0) : null };
   };
@@ -542,6 +579,10 @@ function createRecorder() {
     },
     usedChannels() {
       return [...usedChannels];
+    },
+    /** Where the browser says the last press landed. The runner compares this to where it aimed. */
+    lastPointerDown() {
+      return lastDown;
     },
     /** See the `pointerCancel` case in the runner for why this exists. */
     syntheticCancel() {

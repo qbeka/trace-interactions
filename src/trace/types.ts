@@ -37,7 +37,8 @@ export type TraceEvent =
   | (Base & { k: 'state'; key: string; value: Primitive })
   | (Base & { k: 'focus'; ref: NodeRef | null })
   | (Base & { k: 'geometry'; target: string; rect: Rect | null; node: number | null; count: number; interactive: number })
-  | (Base & { k: 'relation'; from: string; attribute: string; id: string | null; matches: number; resolved: string | null })
+  /** `matches` is the most elements any listed id matched. `missing` counts ids with no match. */
+  | (Base & { k: 'relation'; from: string; attribute: string; id: string | null; matches: number; missing: number; resolved: string | null })
   | (Base & { k: 'a11y'; target: string; matches: number })
   | (Base & { k: 'event'; name: string; target: string | null; pointerId?: number; key?: string })
   | (Base & { k: 'resources'; counts: Record<string, number> })
@@ -51,6 +52,8 @@ export type PendingEvent = Unstamped<TraceEvent>;
 
 export type Violation = {
   requirement: string;
+  /** Position in the scenario's requirement list. -1 for acknowledgements. */
+  index?: number;
   category: Category;
   /** One plain sentence a person can act on. */
   sentence: string;
@@ -60,6 +63,16 @@ export type Violation = {
   /** Stable across runs of one failure. The reducer holds this fixed. */
   fingerprint: string;
 };
+
+/**
+ * `not-exercised` means the run never reached what the requirement checks, so it
+ * neither held nor broke. A pass built on these would be empty, so reports show them.
+ */
+export interface RequirementResult {
+  index: number;
+  kind: string;
+  status: 'held' | 'broken' | 'not-exercised';
+}
 
 export type RunStatus = 'completed' | 'invalid';
 
@@ -91,6 +104,7 @@ export interface RunResult {
   invalid: InvalidInfo | null;
   events: TraceEvent[];
   violations: Violation[];
+  requirements: RequirementResult[];
   clock: ClockReport;
   screenshots: Screenshot[];
   durationMs: number;

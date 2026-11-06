@@ -17,6 +17,7 @@ const run = (violations: Violation[], status: RunResult['status'] = 'completed')
   invalid: status === 'invalid' ? { reason: 'no target', actionIndex: 2 } : null,
   events: [],
   violations,
+  requirements: [],
   clock: { mode: 'controlled', verified: {}, uncontrolled: [], used: [] },
   screenshots: [],
   durationMs: 1,
@@ -47,6 +48,10 @@ describe('compare', () => {
     const c = compare(run([]), run([], 'invalid'));
     expect(c.verdict).toBe('diverged');
     expect(c.sentence).toMatch(/action 3/);
+  });
+  it('does not claim every requirement held when some were not reached', () => {
+    const b = { ...run([]), requirements: [{ index: 0, kind: 'a', status: 'held' as const }, { index: 1, kind: 'b', status: 'not-exercised' as const }] };
+    expect(compare(b, b).sentence).toBe('Both builds met the 1 of 2 requirements this run reached.');
   });
   it('maps verdicts to exit codes', () => {
     expect(['pass', 'fixed', 'regression', 'shared-failure', 'invalid', 'diverged'].map((x) => exitCode(x as never))).toEqual([0, 0, 1, 1, 2, 2]);

@@ -55,7 +55,10 @@ export function compare(baseline: RunResult, candidate: RunResult): Comparison {
   if (resolved.length > 0) {
     return { verdict: 'fixed', sentence: `The candidate fixes this: ${resolved[0]!.sentence}`, introduced, resolved, shared };
   }
-  return { verdict: 'pass', sentence: 'Both builds met every declared requirement.', introduced, resolved, shared };
+  const total = candidate.requirements.length;
+  const reached = candidate.requirements.filter((r) => r.status !== 'not-exercised').length;
+  const sentence = reached === total ? 'Both builds met every declared requirement.' : `Both builds met the ${reached} of ${total} requirements this run reached.`;
+  return { verdict: 'pass', sentence, introduced, resolved, shared };
 }
 
 /** 0 pass or fixed, 1 a real failure, 2 the scenario could not run. */

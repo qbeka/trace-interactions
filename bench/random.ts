@@ -13,12 +13,12 @@ import { manifestFor } from './manifest.ts';
  * a false alarm or a real bug in the fixture, and both matter. Invalid sequences
  * are reported as their own count.
  */
-const { values } = parseArgs({ options: { seeds: { type: 'string', default: '40' }, out: { type: 'string', default: 'results/random' }, build: { type: 'string', default: 'correct' } } });
+const { values } = parseArgs({ options: { seeds: { type: 'string', default: '40' }, 'first-seed': { type: 'string', default: '1' }, out: { type: 'string', default: 'results/random' }, build: { type: 'string', default: 'correct' } } });
 const root = resolve(import.meta.dirname, '..');
 const out = resolve(values.out!);
 const registry = loadRegistry(join(root, 'trace.fixtures.json'));
 const browser = await chromium.launch();
-const seeds = Array.from({ length: Number(values.seeds) }, (_, i) => i + 1);
+const seeds = Array.from({ length: Number(values.seeds) }, (_, i) => i + Number(values['first-seed']));
 const started = performance.now();
 const rows: unknown[] = [];
 const summary: Record<string, unknown> = {};

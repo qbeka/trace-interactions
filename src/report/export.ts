@@ -16,6 +16,7 @@ const side = (run: RunOutput, label: string): RunSide => ({
   invalid: run.invalid,
   events: run.events,
   violations: run.violations,
+  requirements: run.requirements,
   clock: run.clock,
   screenshots: run.screenshots,
   raster: run.raster,

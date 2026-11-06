@@ -1,7 +1,7 @@
 import type { Comparison } from '../../src/compare.ts';
 import type { ReductionReport } from '../../src/reduce/reduce.ts';
 import type { Scenario } from '../../src/scenario/schema.ts';
-import type { ClockReport, InvalidInfo, RunStatus, Screenshot, TraceEvent, Violation } from '../../src/trace/types.ts';
+import type { ClockReport, InvalidInfo, RequirementResult, RunStatus, Screenshot, TraceEvent, Violation } from '../../src/trace/types.ts';
 
 export const REPORT_SCHEMA = 'trace.report/1';
 
@@ -11,6 +11,7 @@ export interface RunSide {
   invalid: InvalidInfo | null;
   events: TraceEvent[];
   violations: Violation[];
+  requirements: RequirementResult[];
   clock: ClockReport;
   screenshots: Screenshot[];
   raster: { fontFamily: string; loadedFonts: string[]; devicePixelRatio: number; browser: string } | null;

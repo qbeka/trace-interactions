@@ -1,5 +1,5 @@
 import { execFile, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
@@ -110,6 +110,78 @@ describe('reduce, replay, regenerate', () => {
     expect(r.out).toMatch(/NOT REPRODUCED/);
     expect(existsSync(join(out, 'reduced.scenario.json'))).toBe(false);
     expect(existsSync(join(out, 'raw', 'original.candidate.json'))).toBe(true);
+  });
+});
+
+describe('trust boundaries', () => {
+  it('never runs a command named by a run folder', async () => {
+    const dir = temp();
+    const out = join(dir, 'run');
+    await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline', 'overlay@correct', '--candidate', 'overlay@no-restore', '--out', out, '--no-screenshots']);
+    const marker = join(dir, 'pwned');
+    writeFileSync(join(dir, 'evil.json'), JSON.stringify({ schema: 'trace.registry/1', fixtures: [{ id: 'overlay', manifest: 'evil-fixture.json' }] }));
+    writeFileSync(join(dir, 'evil-fixture.json'), JSON.stringify({
+      schema: 'trace.fixture/1', id: 'overlay', version: '1', stateAllowlist: [], clock: { channels: [] },
+      builds: { correct: { command: ['touch', marker], url: 'http://127.0.0.1:47199/' }, 'no-restore': { command: ['touch', marker], url: 'http://127.0.0.1:47199/' } },
+    }));
+    const path = join(out, 'manifest.json');
+    const manifest = JSON.parse(readFileSync(path, 'utf8'));
+    manifest.fixture.registry = join(dir, 'evil.json');
+    writeFileSync(path, JSON.stringify(manifest));
+    writeFileSync(join(out, 'reduced.scenario.json'), readFileSync(join(out, 'raw', 'original.scenario.json')));
+    await cli(['replay', out]);
+    expect(existsSync(marker)).toBe(false);
+  });
+
+  it('survives a malformed URL and does not follow a link out of the folder', async () => {
+    const dir = temp();
+    writeFileSync(join(dir, 'index.html'), 'ok');
+    symlinkSync('/etc/hosts', join(dir, 'link.txt'));
+    const server = await serveDirectory(dir);
+    expect((await fetch(`${server.url}%E0%A4%A`)).status).toBe(400);
+    expect((await fetch(`${server.url}link.txt`)).status).toBe(403);
+    expect((await fetch(server.url)).status).toBe(200);
+    await server.close();
+  });
+
+  it('replaces an old run, so a report cannot mix two runs', async () => {
+    const out = temp();
+    await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline', 'overlay@correct', '--candidate', 'overlay@no-restore', '--out', out, '--no-screenshots']);
+    writeFileSync(join(out, 'reduced.scenario.json'), '{}');
+    writeFileSync(join(out, 'raw', 'reduced.comparison.json'), '{}');
+    await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline', 'overlay@correct', '--candidate', 'overlay@correct', '--out', out, '--no-screenshots']);
+    expect(existsSync(join(out, 'reduced.scenario.json'))).toBe(false);
+    expect(existsSync(join(out, 'raw', 'reduced.comparison.json'))).toBe(false);
+    expect(JSON.parse(readFileSync(join(out, 'report', 'report.json'), 'utf8')).cases.map((c: { id: string }) => c.id)).toEqual(['original']);
+  });
+
+  it('refuses to resume from progress that belongs to something else', async () => {
+    const out = temp();
+    await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline', 'overlay@correct', '--candidate', 'overlay@no-restore', '--out', out, '--no-screenshots']);
+    writeFileSync(join(out, 'reduction.progress.json'), JSON.stringify({ scenarioHash: 'other', fingerprint: 'x', state: { kept: [99], granularity: 2, attempts: [] } }));
+    const r = await cli(['reduce', out, '--resume']);
+    expect(r.code).toBe(2);
+    expect(r.out).toMatch(/different scenario/);
+  });
+
+  it('asks for the adapter again instead of reporting a false non-reproduction', async () => {
+    const dir = temp();
+    writeFileSync(join(dir, 'index.html'), '<a href="#a">One</a>');
+    const page = await serveDirectory(dir);
+    writeFileSync(join(dir, 'adapter.js'), "window.__traceFixture = { id: 'page', version: '1', getState: () => ({}), subscribe: () => () => {} };");
+    const scenario = join(dir, 's.json');
+    writeFileSync(scenario, JSON.stringify({
+      schema: 'trace.scenario/1', id: 's', fixture: { id: 'page', version: '1' }, seed: 1, initialState: {},
+      viewport: { width: 400, height: 300, deviceScaleFactor: 1 }, timing: { mode: 'controlled', stepMs: 16, settleMs: 50 },
+      targets: {}, requirements: [{ kind: 'focus-valid' }], actions: [{ at: 0, type: 'press', key: 'Tab' }], cleanup: [],
+    }));
+    const out = join(dir, 'out');
+    await cli(['run', scenario, '--baseline-url', page.url, '--candidate-url', page.url, '--allowlist', 'none', '--adapter', join(dir, 'adapter.js'), '--out', out, '--registry', 'none.json']);
+    writeFileSync(join(out, 'reduced.scenario.json'), readFileSync(scenario));
+    const r = await cli(['replay', out]);
+    await page.close();
+    expect(r.code).toBe(2);
+    expect(r.out).toMatch(/Pass it again with --adapter/);
   });
 });
 

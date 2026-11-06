@@ -4,7 +4,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { chromium, firefox, webkit, type Browser } from 'playwright';
-import { runCase, writeJson } from './case.ts';
+import { clearRun, runCase, writeJson } from './case.ts';
 import { exitCode, type Comparison } from './compare.ts';
 import { perfRun, summarize, type PerfRun } from './perf.ts';
 import { reduceScenario, type ReductionReport } from './reduce/reduce.ts';
@@ -29,8 +29,8 @@ const USAGE = `trace: replay an interaction on two builds and explain what broke
 
   trace validate <scenario.json>
   trace run <scenario.json> --baseline <fixture@build> --candidate <fixture@build> [options]
-  trace reduce <run-dir> [--max-attempts N] [--max-seconds N] [--resume]
-  trace replay <run-dir>
+  trace reduce <run-dir> [--max-attempts N] [--max-seconds N] [--resume] [--adapter file]
+  trace replay <run-dir> [--adapter file]
   trace report <run-dir>
   trace perf <scenario.json> --baseline <fixture@build> --candidate <fixture@build> [--runs 5] [--warmup 1]
   trace serve <dir> [--port 5175]
@@ -77,7 +77,7 @@ interface RunManifest {
   dependencies: Record<string, string>;
   environment: ReturnType<typeof environment>;
   scenario: { id: string; path: string; sha256: string; seed: number; viewport: Scenario['viewport'] };
-  fixture: { id: string; version: string; stateAllowlist: string[]; registry: string | null };
+  fixture: { id: string; version: string; stateAllowlist: string[] };
   baseline: { ref: string; url: string | null; sha256: string | null };
   candidate: { ref: string; url: string | null; sha256: string | null };
   mode: string;
@@ -85,6 +85,8 @@ interface RunManifest {
   repetitions: number;
   exclusions: string[];
   recorderSha256: string | null;
+  /** Whether a test-only adapter was injected. Its path is never read back from here. */
+  adapter: boolean;
 }
 
 const repoRoot = (): string => resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -114,6 +116,11 @@ function resolveBuildRef(fixtures: Map<string, LoadedFixture>, ref: string): { f
 function print(c: Comparison): void {
   console.log(`${c.verdict.toUpperCase()}: ${c.sentence}`);
   for (const v of c.introduced.slice(1)) console.log(`  also ${v.category}: ${v.sentence}`);
+}
+
+function printUnreached(scenario: Scenario, run: { requirements: { index: number; status: string }[] }): void {
+  const unreached = run.requirements.filter((r) => r.status === 'not-exercised');
+  for (const r of unreached) console.log(`  not exercised: ${scenario.requirements[r.index]?.kind}`);
 }
 
 async function cmdRun(args: string[]): Promise<number> {
@@ -173,7 +180,7 @@ async function cmdRun(args: string[]): Promise<number> {
         seed: scenario.seed,
         viewport: scenario.viewport,
       },
-      fixture: { ...scenario.fixture, stateAllowlist: allow, registry: values.registry! },
+      fixture: { ...scenario.fixture, stateAllowlist: allow },
       baseline: { ref: baseline.label, url: values['baseline-url'] ?? null, sha256: values.baseline ? buildHash(fixture, values.baseline) : null },
       candidate: { ref: candidate.label, url: values['candidate-url'] ?? null, sha256: values.candidate ? buildHash(fixture, values.candidate) : null },
       mode: values.mode ?? scenario.timing.mode,
@@ -181,9 +188,11 @@ async function cmdRun(args: string[]): Promise<number> {
       repetitions: 1,
       exclusions: [],
       recorderSha256: recorderHash(),
+      adapter: values.adapter !== undefined,
     };
+    clearRun(out);
     writeJson(join(out, 'manifest.json'), manifest);
-    const { comparison } = await runCase({
+    const { comparison, candidate: run } = await runCase({
       browser,
       scenario,
       stateAllowlist: allow,
@@ -196,6 +205,7 @@ async function cmdRun(args: string[]): Promise<number> {
     });
     await exportReport(out);
     print(comparison);
+    printUnreached(scenario, run);
     console.log(`Report: ${relative(process.cwd(), join(out, 'report', 'index.html'))}`);
     return exitCode(comparison.verdict);
   } finally {
@@ -213,8 +223,12 @@ function loadRun(dir: string) {
   return { out, manifest, comparison, scenario };
 }
 
-async function serveFromManifest(m: RunManifest): Promise<{ baseline: ServedBuild; candidate: ServedBuild }> {
-  const fixtures = m.fixture.registry ? loadRegistry(m.fixture.registry) : new Map<string, LoadedFixture>();
+/**
+ * A run folder is data and may come from someone else. Build commands only ever
+ * come from the registry the user points at here, never from a path in the folder.
+ */
+async function serveFromManifest(m: RunManifest, registry: string): Promise<{ baseline: ServedBuild; candidate: ServedBuild }> {
+  const fixtures = loadRegistry(registry);
   const serve = async (side: RunManifest['baseline'], label: string) => {
     if (side.url) return fromUrl(label, side.url);
     const r = resolveBuildRef(fixtures, side.ref);
@@ -233,6 +247,8 @@ async function cmdReduce(args: string[]): Promise<number> {
       'confirm-runs': { type: 'string', default: '3' },
       'reproduction-runs': { type: 'string', default: '10' },
       resume: { type: 'boolean', default: false },
+      registry: { type: 'string', default: REGISTRY_FILE },
+      adapter: { type: 'string' },
     },
   });
   const { out, manifest, comparison, scenario } = loadRun(positionals[0] ?? '');
@@ -246,8 +262,9 @@ async function cmdReduce(args: string[]): Promise<number> {
     console.log('\nStopping after the current attempt. Progress is saved.');
     controller.abort();
   });
+  const adapterScript = readAdapter(manifest, values.adapter);
+  const { baseline, candidate } = await serveFromManifest(manifest, values.registry!);
   const browser = await launch(manifest.environment.browser.name);
-  const { baseline, candidate } = await serveFromManifest(manifest);
   try {
     const report = await reduceScenario({
       browser,
@@ -261,13 +278,14 @@ async function cmdReduce(args: string[]): Promise<number> {
       confirmRuns: Number(values['confirm-runs']),
       reproductionRuns: Number(values['reproduction-runs']),
       mode: manifest.mode as 'controlled' | 'wall',
+      adapterScript,
       signal: controller.signal,
       resume: values.resume,
     });
     printReduction(report);
     if (report.status !== 'not-reproduced' && existsSync(join(out, 'reduced.scenario.json'))) {
       const reduced = parseScenario(JSON.parse(readFileSync(join(out, 'reduced.scenario.json'), 'utf8')));
-      await runCase({ browser, scenario: reduced, stateAllowlist: manifest.fixture.stateAllowlist, baseline, candidate, out, mode: manifest.mode as 'controlled' | 'wall', screenshots: true, label: 'reduced' });
+      await runCase({ browser, scenario: reduced, stateAllowlist: manifest.fixture.stateAllowlist, baseline, candidate, out, mode: manifest.mode as 'controlled' | 'wall', screenshots: true, label: 'reduced', adapterScript });
     }
     await exportReport(out);
     return report.status === 'reduced' ? 0 : 1;
@@ -292,15 +310,26 @@ function printReduction(r: ReductionReport): void {
   console.log(`Attempts: ${Object.entries(r.outcomes).map(([k, v]) => `${v} ${k}`).join(', ')}. Stopped: ${r.stopped}.`);
 }
 
+function readAdapter(m: RunManifest, path: string | undefined): string | undefined {
+  if (m.adapter && !path) throw new InvalidScenario('this run used an injected adapter. Pass it again with --adapter <file.js>');
+  return path ? readFileSync(path, 'utf8') : undefined;
+}
+
 async function cmdReplay(args: string[]): Promise<number> {
-  const { out, manifest } = loadRun(args[0] ?? '');
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    options: { registry: { type: 'string', default: REGISTRY_FILE }, adapter: { type: 'string' } },
+  });
+  const { out, manifest } = loadRun(positionals[0] ?? '');
   const path = join(out, 'reduced.scenario.json');
   if (!existsSync(path)) throw new InvalidScenario('this run has no reduced scenario. Run: trace reduce <run-dir>');
   const scenario = readScenario(path);
+  const adapterScript = readAdapter(manifest, values.adapter);
+  const { baseline, candidate } = await serveFromManifest(manifest, values.registry!);
   const browser = await launch(manifest.environment.browser.name);
-  const { baseline, candidate } = await serveFromManifest(manifest);
   try {
-    const { comparison } = await runCase({ browser, scenario, stateAllowlist: manifest.fixture.stateAllowlist, baseline, candidate, out, mode: manifest.mode as 'controlled' | 'wall', screenshots: true, label: 'reduced' });
+    const { comparison } = await runCase({ browser, scenario, stateAllowlist: manifest.fixture.stateAllowlist, baseline, candidate, out, mode: manifest.mode as 'controlled' | 'wall', screenshots: true, label: 'reduced', adapterScript });
     await exportReport(out);
     print(comparison);
     return exitCode(comparison.verdict);
