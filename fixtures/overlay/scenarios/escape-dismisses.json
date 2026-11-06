@@ -78,7 +78,10 @@
       "note": "press Escape",
       "ack": {
         "key": "dialog",
-        "equals": "closing",
+        "oneOf": [
+          "closing",
+          "closed"
+        ],
         "withinMs": 50
       }
     }

@@ -54,9 +54,13 @@ const ActionBase = {
   requests: StateMap.optional(),
   /** State that must hold before the action runs, or the scenario is invalid. */
   requires: StateMap.optional(),
-  /** State change that proves the page received the action. */
+  /**
+   * State change that proves the page received the action. Without `oneOf`, any
+   * change of the key counts. Prefer that: pinning a transitional value or an
+   * exact number fails legitimate changes, such as dropping an exit animation.
+   */
   ack: z
-    .strictObject({ key: Name, equals: Primitive, withinMs: Ms })
+    .strictObject({ key: Name, oneOf: z.array(Primitive).min(1).optional(), withinMs: Ms })
     .optional(),
 };
 

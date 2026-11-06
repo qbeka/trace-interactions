@@ -242,6 +242,8 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     await page.evaluate(() => window.__trace.start());
     await mark({ k: 'viewport', width: scenario.viewport.width, height: scenario.viewport.height });
     await page.evaluate(() => window.__trace.settle());
+    // The count before any action. `resources-released` compares against this.
+    await page.evaluate(() => window.__trace.checkpoint());
 
     const stepMs = scenario.timing.stepMs;
     const wallStart = performance.now();

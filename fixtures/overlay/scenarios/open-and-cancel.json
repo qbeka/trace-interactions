@@ -72,7 +72,9 @@
       "note": "open",
       "ack": {
         "key": "dialog",
-        "equals": "open",
+        "oneOf": [
+          "open"
+        ],
         "withinMs": 50
       }
     },

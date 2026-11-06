@@ -48,9 +48,18 @@ describe('focus', () => {
     expect(evaluate(scenario(need(stays)), t.events)[0]?.category).toBe('lost-focus');
   });
 
-  it('allows focus to leave when a user action moved it', () => {
-    const t = trace().state('panel', 'open').at(0).action(0, 'focus').focus('input', 1).at(50).action(1, 'press').focus('trigger', 9);
+  it('allows focus to leave during an action that moves it', () => {
+    const t = trace().state('panel', 'open').at(0).action(0, 'focus').focus('input', 1).at(50);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'press', label: 'Tab' }).focus('trigger', 9);
+    t.add({ k: 'action', phase: 'end', index: 1, cleanup: false, type: 'press', label: 'Tab' });
     expect(evaluate(scenario(need(stays)), t.events)).toEqual([]);
+  });
+
+  it('does not let an earlier action excuse a later focus loss', () => {
+    const t = trace().state('panel', 'open').at(0).focus('input', 1).at(400).action(0, 'type').at(800);
+    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'resize', label: 'resize' }).focus(null);
+    t.add({ k: 'action', phase: 'end', index: 1, cleanup: false, type: 'resize', label: 'resize' });
+    expect(evaluate(scenario(need(stays)), t.events)[0]?.category).toBe('lost-focus');
   });
 
   it('allows focus to leave once the state no longer holds, in the same tick', () => {
@@ -82,6 +91,16 @@ describe('focus', () => {
 
   it('fails when focus returns to a trigger that is hidden', () => {
     const t = trace().state('open', true).at(0).action(0, 'press').focus('input', 1).at(10).state('open', false).at(20).focus('trigger', 2, { hidden: true });
+    expect(evaluate(scenario(need(restored)), t.events)[0]?.category).toBe('lost-focus');
+  });
+
+  it('accepts focus moving on when the state stops holding inside the window', () => {
+    const t = trace().state('open', true).at(0).action(0, 'press').focus('input', 1).at(10).state('open', false).focus('trigger', 2).at(60).state('open', true).focus('input', 3);
+    expect(evaluate(scenario(need(restored)), t.events)).toEqual([]);
+  });
+
+  it('still fails when focus is wrong while the state holds, even if it reopens later', () => {
+    const t = trace().state('open', true).at(0).action(0, 'press').focus('input', 1).at(10).state('open', false).focus(null).at(60).state('open', true).focus('input', 3);
     expect(evaluate(scenario(need(restored)), t.events)[0]?.category).toBe('lost-focus');
   });
 
@@ -125,6 +144,12 @@ describe('geometry', () => {
   it('flags a panel that starts somewhere else and then moves', () => {
     const t = trace().at(0).rect('trigger', box(500)).rect('panel', box(200)).at(16).rect('panel', box(300, 200));
     expect(evaluate(scenario(need(origin)), t.events)[0]?.category).toBe('geometry-discontinuity');
+  });
+
+  it('does not count a later resize as motion of the entrance', () => {
+    // A fade: appears at its resting place, then a resize moves it.
+    const t = trace().at(0).rect('trigger', box(500)).at(1).action(0, 'activate').rect('panel', box(100, 300)).at(400).action(1, 'resize').rect('panel', box(40, 300));
+    expect(evaluate(scenario(need(origin)), t.events)).toEqual([]);
   });
 
   const fits: Requirement = { kind: 'geometry-fits', target: 'panel', insetPx: 8, tolerancePx: 2 };
@@ -205,7 +230,7 @@ describe('cleanup', () => {
 });
 
 describe('acknowledgements', () => {
-  const actions = [{ type: 'press', key: 'Escape', at: 0, ack: { key: 'panel', equals: 'closing', withinMs: 50 } }] as never;
+  const actions = [{ type: 'press', key: 'Escape', at: 0, ack: { key: 'panel', withinMs: 50 } }] as never;
 
   it('passes when the state changes in time', () => {
     const t = trace().at(0).action(0, 'press').at(16).state('panel', 'closing');
@@ -220,6 +245,18 @@ describe('acknowledgements', () => {
   it('fails when the state changes too late', () => {
     const t = trace().at(0).action(0, 'press').at(300).state('panel', 'closing');
     expect(evaluate(scenario({ actions }), t.events)[0]?.category).toBe('missed-ack');
+  });
+
+  it('accepts any listed value', () => {
+    const list = [{ type: 'press', key: 'Escape', at: 0, ack: { key: 'panel', oneOf: ['closing', 'closed'], withinMs: 50 } }] as never;
+    const t = trace().at(0).action(0, 'press').at(16).state('panel', 'closed');
+    expect(evaluate(scenario({ actions: list }), t.events)).toEqual([]);
+  });
+
+  it('rejects a change to an unlisted value', () => {
+    const list = [{ type: 'press', key: 'Escape', at: 0, ack: { key: 'panel', oneOf: ['closing'], withinMs: 50 } }] as never;
+    const t = trace().at(0).action(0, 'press').at(16).state('panel', 'stuck');
+    expect(evaluate(scenario({ actions: list }), t.events)[0]?.category).toBe('missed-ack');
   });
 
   it('fails when a declared wait timed out', () => {

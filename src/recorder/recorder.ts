@@ -486,6 +486,7 @@ function createRecorder() {
     return { busy, nextDue: Number.isFinite(soonest) ? round(soonest - t0) : null };
   };
 
+  let ambient: Record<string, number> = {};
   let unsubscribe: (() => void) | null = null;
   let probe: { hits: { timer: boolean; frame: boolean }; el: Element; waapi: Animation; before: { perf: number; date: number } } | null = null;
 
@@ -494,6 +495,7 @@ function createRecorder() {
       config = next;
     },
     start() {
+      ambient = counts();
       t0 = performance.now();
       lastSeek = t0;
       running = true;
@@ -517,10 +519,20 @@ function createRecorder() {
     settle,
     sample,
     mark(e: PendingEvent) {
+      // An action starts a new tick. Without this, an action and the sample
+      // before it would count as simultaneous, and the state before the action
+      // could never be read back.
+      if (e.k === 'action' && e.phase === 'start') tickNo += 1;
       push(e);
     },
+    /** Counts above the level at `start`, which leaves out Playwright's own listeners. */
     checkpoint() {
-      push({ k: 'resources', counts: counts() });
+      const out: Record<string, number> = {};
+      for (const [key, count] of Object.entries(counts())) {
+        const extra = count - (ambient[key] ?? 0);
+        if (extra > 0) out[key] = extra;
+      }
+      push({ k: 'resources', counts: out });
     },
     state(): Record<string, Primitive> {
       return Object.fromEntries(lastState);

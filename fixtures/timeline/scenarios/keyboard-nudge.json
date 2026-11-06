@@ -47,7 +47,6 @@
       "note": "nudge right",
       "ack": {
         "key": "value",
-        "equals": 35,
         "withinMs": 50
       }
     }

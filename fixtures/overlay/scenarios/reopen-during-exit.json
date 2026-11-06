@@ -79,9 +79,9 @@
     },
     {
       "at": 460,
-      "type": "activate",
-      "target": "trigger",
-      "note": "reopen"
+      "type": "press",
+      "key": "Enter",
+      "note": "reopen from the keyboard"
     }
   ],
   "cleanup": []

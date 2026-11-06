@@ -56,7 +56,9 @@
       "note": "press the handle",
       "ack": {
         "key": "dragging",
-        "equals": true,
+        "oneOf": [
+          true
+        ],
         "withinMs": 50
       }
     },

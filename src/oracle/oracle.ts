@@ -107,10 +107,23 @@ function isCleanupEra(events: TraceEvent[], e: At): boolean {
 
 const FOCUS_MOVING: ReadonlySet<string> = new Set(['focus', 'activate', 'press', 'pointerDown', 'type']);
 
+/**
+ * True if the event happened while an action that may move focus was running.
+ * Only the action in progress can excuse a focus change: an earlier `type` says
+ * nothing about focus lost during a later resize.
+ */
+function duringFocusAction(events: TraceEvent[], at: At): boolean {
+  const all = only(events, 'action');
+  return all.some((a) => {
+    if (a.phase !== 'start' || !FOCUS_MOVING.has(a.type)) return false;
+    const end = all.find((b) => b.phase === 'end' && b.index === a.index && b.cleanup === a.cleanup);
+    return a.seq < at.seq && (end === undefined || at.seq < end.seq);
+  });
+}
+
 function focusStaysOn(s: Scenario, r: Extract<Requirement, { kind: 'focus-stays-on' }>, events: TraceEvent[]): Violation[] {
   const traceId = s.targets[r.target]!.traceId!;
   const state = stateTimeline(events);
-  const actions = starts(events);
   let held: { node: number } | null = null;
   for (const f of only(events, 'focus')) {
     if (isCleanupEra(events, f)) break;
@@ -122,10 +135,7 @@ function focusStaysOn(s: Scenario, r: Extract<Requirement, { kind: 'focus-stays-
       continue;
     }
     if (!held) continue;
-    const previous = only(events, 'focus').filter((p) => p.seq < f.seq && p.ref?.traceId === traceId).at(-1)!;
-    const moved = actions.some((a) => a.seq > previous.seq && a.seq < f.seq && FOCUS_MOVING.has(a.type));
-    const stillHolds = holdsAt(state, r.whileState, f.tick);
-    if (!moved && stillHolds) {
+    if (!duringFocusAction(events, f) && holdsAt(state, r.whileState, f.tick)) {
       const where = f.ref ? (f.ref.traceId ?? f.ref.tag) : 'the page body';
       return [violation(r.kind, 'lost-focus', `${r.target} lost focus to ${where} at ${f.t} ms with no user action.`, f, r.target)];
     }
@@ -146,12 +156,17 @@ function focusRestored(s: Scenario, r: Extract<Requirement, { kind: 'focus-resto
     if (holds && !wasHolding) {
       // Only closes that a scenario action caused count. The first render does not.
       if (actionEnds.some((a) => a.seq < st.seq) && !isCleanupEra(events, st)) {
+        // Judged where the state stops holding or at the deadline, whichever is
+        // first. If the user reopens at once, focus moving on is correct.
+        const ended = keyed.find((x) => x.seq > st.seq && !holdsAt(state, r.whenState, x.tick));
+        const untilTick = ended ? ended.tick : Infinity;
         const deadline = st.t + r.withinMs;
-        const atDeadline = focus.filter((f) => f.t <= deadline).at(-1);
-        const after = events.filter((e) => e.seq >= st.seq && e.t <= deadline).at(-1) ?? st;
-        if (atDeadline?.ref?.traceId !== traceId || atDeadline.ref.hidden) {
-          const where = atDeadline?.ref ? (atDeadline.ref.traceId ?? atDeadline.ref.tag) : 'the page body';
-          return [violation(r.kind, 'lost-focus', `Focus should return to ${r.to}, but it was on ${where} ${r.withinMs} ms later.`, after, r.to)];
+        const inWindow = (e: At): boolean => e.tick < untilTick && e.t <= deadline;
+        const held = focus.filter(inWindow).at(-1);
+        const after = events.filter((e) => e.seq >= st.seq && inWindow(e)).at(-1) ?? st;
+        if (held?.ref?.traceId !== traceId || held.ref.hidden) {
+          const where = held?.ref ? (held.ref.traceId ?? held.ref.tag) : 'the page body';
+          return [violation(r.kind, 'lost-focus', `Focus should return to ${r.to}, but it was on ${where} at ${after.t} ms.`, after, r.to)];
         }
       }
     }
@@ -214,8 +229,10 @@ function geometryOrigin(r: Extract<Requirement, { kind: 'geometry-origin' }>, ev
     const previous = samples[i - 1];
     if (!g.rect || previous?.rect) continue;
     const anchor = geometry.filter((a) => a.target === r.anchor && a.seq < g.seq && a.rect).at(-1);
-    // The rect when the target stopped moving is the last one before it vanished or the run ended.
-    const stop = samples.slice(i).findIndex((x) => !x.rect);
+    // Where the entrance ended: the last rect before the target vanished or the
+    // next action began. A later resize moves it for a different reason.
+    const next = starts(events).find((a) => a.seq > g.seq)?.seq ?? Infinity;
+    const stop = samples.slice(i).findIndex((x) => !x.rect || x.seq > next);
     const rest = stop === -1 ? samples.slice(i) : samples.slice(i, i + stop);
     const final = rest.at(-1)?.rect;
     if (!anchor?.rect || !final) continue;
@@ -335,11 +352,11 @@ function acks(s: Scenario, events: TraceEvent[]): Violation[] {
     const action = s.actions[a.index];
     const ack = action?.ack;
     if (ack) {
-      const hit = states.find((st) => st.seq > a.seq && st.key === ack.key && st.value === ack.equals && st.t <= a.t + ack.withinMs);
+      const accepts = (v: Primitive): boolean => ack.oneOf === undefined || ack.oneOf.includes(v);
+      const hit = states.find((st) => st.seq > a.seq && st.key === ack.key && accepts(st.value) && st.t <= a.t + ack.withinMs);
       if (!hit) {
-        out.push(
-          violation('action-acknowledged', 'missed-ack', `"${a.label}" at ${a.t} ms did not set ${ack.key} to ${fmt(ack.equals)} within ${ack.withinMs} ms.`, a, ack.key),
-        );
+        const want = ack.oneOf ? `set ${ack.key} to ${ack.oneOf.map(fmt).join(' or ')}` : `change ${ack.key}`;
+        out.push(violation('action-acknowledged', 'missed-ack', `"${a.label}" at ${a.t} ms did not ${want} within ${ack.withinMs} ms.`, a, ack.key));
         break;
       }
     }
