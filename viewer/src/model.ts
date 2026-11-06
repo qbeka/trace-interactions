@@ -231,7 +231,7 @@ const entries = (state: Record<string, unknown>): string =>
 
 export function requirementStatus(index: number, side: RunSide): 'held' | 'broken' | 'not exercised' | 'not run' {
   if (side.status === 'invalid') return 'not run';
-  const status = side.requirements.find((r) => r.index === index)?.status ?? 'not-exercised';
+  const status = side.requirements?.find((r) => r.index === index)?.status ?? 'not-exercised';
   return status === 'not-exercised' ? 'not exercised' : status;
 }
 

@@ -63,6 +63,8 @@ function shape(run: RunOutput): string {
     .flatMap((e) => {
       if (e.k === 'action' || e.k === 'unsupported') return [];
       const { seq: _seq, tick: _tick, ...rest } = e;
+      // A browser's running counter, not behavior. Firefox raises it between runs.
+      if (e.k === 'event') return [JSON.stringify({ ...rest, pointerId: 0 })];
       if (e.k === 'focus' && e.ref) return [JSON.stringify({ ...rest, ref: { ...e.ref, node: 0 } })];
       if (e.k === 'geometry') return [JSON.stringify({ ...rest, node: 0 })];
       return [JSON.stringify(rest)];

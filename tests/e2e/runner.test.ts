@@ -184,6 +184,31 @@ describe('clock contract', () => {
   });
 });
 
+describe('sockets', () => {
+  it('stops a socket to another origin', async () => {
+    const { createServer } = await import('node:http');
+    const hits: string[] = [];
+    const make = (name: string) => new Promise<{ port: number; close: () => void }>((ok) => {
+      const s = createServer();
+      s.on('upgrade', (_req, socket) => { hits.push(name); socket.destroy(); });
+      s.listen(0, '127.0.0.1', () => ok({ port: (s.address() as { port: number }).port, close: () => { s.closeAllConnections(); s.close(); } }));
+    });
+    const same = await make('same');
+    const other = await make('other');
+    const page = await servePage(`${ADAPTER}${button}<script>
+      new WebSocket('ws://127.0.0.1:' + location.port + '/a');
+      new WebSocket('ws://127.0.0.1:${other.port}/b');
+    </script>`);
+    const pagePort = new URL(page.url).port;
+    same.close();
+    await runScenario({ browser, url: page.url, scenario: plainScenario(), stateAllowlist: [] });
+    await page.close();
+    other.close();
+    expect(pagePort).not.toBe('');
+    expect(hits).not.toContain('other');
+  });
+});
+
 describe('privacy', () => {
   it('does not store text a page hides in attributes', async () => {
     const server = await servePage(`${ADAPTER}<input role="value=hunter2" data-trace-id="my secret note" aria-label="Go" id="in"><button data-trace-id="go">Go</button>`);

@@ -304,15 +304,44 @@ describe('cases the first review found', () => {
     expect(evaluate(scenario(need(origin)), t.events)[0]?.category).toBe('geometry-discontinuity');
   });
 
-  it('does not let a late answer to one action acknowledge the next', () => {
+  it('accepts an asynchronous answer after an unrelated action', () => {
     const actions = [
-      { type: 'activate', target: 'trigger', at: 0 },
-      { type: 'activate', target: 'trigger', at: 100, ack: { key: 'panel', withinMs: 500 } },
+      { type: 'activate', target: 'trigger', at: 0, ack: { key: 'panel', withinMs: 500 } },
+      { type: 'focus', target: 'input', at: 50 },
     ] as never;
-    const t = trace().at(0).action(0, 'activate').state('panel', 'closing').at(100);
-    t.add({ k: 'action', phase: 'start', index: 1, cleanup: false, type: 'activate', label: 'second' });
-    t.add({ k: 'action', phase: 'start', index: 2, cleanup: false, type: 'press', label: 'third' }).at(200).state('panel', 'closed');
+    const t = trace().at(0).action(0, 'activate').at(50).action(1, 'focus').at(120).state('panel', 'open');
+    expect(evaluate(scenario({ actions }), t.events)).toEqual([]);
+  });
+
+  it('ends the search at a later action on the same key', () => {
+    const actions = [
+      { type: 'activate', target: 'trigger', at: 0, ack: { key: 'panel', withinMs: 500 } },
+      { type: 'activate', target: 'trigger', at: 50, requests: { panel: 'closed' } },
+    ] as never;
+    const t = trace().at(0).action(0, 'activate').at(50).action(1, 'activate').at(120).state('panel', 'closed');
     expect(evaluate(scenario({ actions }), t.events)[0]?.category).toBe('missed-ack');
+  });
+
+  it('does not let typing into a field excuse that field losing focus', () => {
+    const stays: Requirement = { kind: 'focus-stays-on', target: 'input', whileState: { panel: 'open' } };
+    const actions = [{ type: 'type', target: 'input', text: 'x', at: 0 }] as never;
+    const t = trace().state('panel', 'open').at(0).focus('input', 1).at(10);
+    t.add({ k: 'action', phase: 'start', index: 0, cleanup: false, type: 'type', label: 'type' }).focus(null);
+    t.add({ k: 'action', phase: 'end', index: 0, cleanup: false, type: 'type', label: 'type' });
+    expect(evaluate(scenario(need(stays, actions)), t.events)[0]?.category).toBe('lost-focus');
+  });
+
+  it('accepts a reference removed while its target animates out', () => {
+    const rel: Requirement = { kind: 'relationship-resolves', from: 'trigger', attribute: 'aria-controls', to: 'panel' };
+    const t = trace().at(1).add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 1, missing: 0, resolved: 'panel' }).rect('panel', box(0));
+    t.at(10).add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: null, matches: 0, missing: 0, resolved: null }).rect('panel', box(4));
+    expect(evaluate(scenario(need(rel)), t.events)).toEqual([]);
+  });
+
+  it('says plainly when an id is ambiguous', () => {
+    const rel: Requirement = { kind: 'relationship-resolves', from: 'trigger', attribute: 'aria-controls', to: 'panel' };
+    const t = trace().add({ k: 'relation', from: 'trigger', attribute: 'aria-controls', id: 'p', matches: 2, missing: 0, resolved: 'panel' });
+    expect(evaluate(scenario(need(rel)), t.events)[0]?.sentence).toMatch(/ambiguous/);
   });
 
   it('flags pointer capture still held after a cancel', () => {

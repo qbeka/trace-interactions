@@ -23,7 +23,8 @@ export const Target = z
   .strictObject({
     role: z.string().min(1).optional(),
     name: z.string().min(1).optional(),
-    traceId: z.string().min(1).optional(),
+    // Attributes in any other shape are dropped by the recorder as possible user text.
+    traceId: z.string().regex(/^[\w:.-]{1,64}$/, 'a traceId may use letters, digits, _ : . - and at most 64 characters').optional(),
   })
   .refine((t) => t.role !== undefined || t.traceId !== undefined, {
     message: 'a target needs a role or a traceId',

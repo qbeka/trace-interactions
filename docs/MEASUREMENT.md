@@ -114,3 +114,15 @@ is measured again on the final code.
   WebKit failures happened during a long idle period. The cause is unproven.
 - **Scoring.** A build that fails to run a scenario because of input is listed as invalid,
   and it never counts as a detection.
+
+## Revision 3
+
+The reviewer rechecked revision 2 and found regressions in my fixes. These changes come
+before the final run, and everything except the one holdout run is measured again.
+
+- An acknowledgement search now ends at a later action on the same key, not at any action.
+- A reference removed while its target animates out is no longer a failure.
+- Typing into a field no longer excuses that field losing focus.
+- `traceId` values are restricted to the shape the recorder keeps.
+- The difference control ignores `pointerId`, a counter that Firefox raises between runs.
+- `trace run` refuses to clear a folder that is not a Trace run. Same-origin sockets pass.

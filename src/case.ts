@@ -1,4 +1,4 @@
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import type { Browser } from 'playwright';
 import { compare, type Comparison } from './compare.ts';
@@ -6,6 +6,7 @@ import { runScenario, type RunOutput } from './runner/run.ts';
 import { sha256 } from './runner/environment.ts';
 import type { ServedBuild } from './runner/registry.ts';
 import type { Scenario } from './scenario/schema.ts';
+import { InvalidScenario } from './scenario/validate.ts';
 
 export interface CaseOptions {
   browser: Browser;
@@ -32,11 +33,26 @@ export function writeJson(path: string, value: unknown): void {
   writeFileSync(path, JSON.stringify(value, null, 2) + '\n');
 }
 
-/** A new run replaces the old one, so a report can never mix evidence from two runs. */
+const RUN_FILES = ['raw', 'screenshots', 'report', 'reduced.scenario.json', 'reduction.json', 'reduction.progress.json'];
+
+/**
+ * A new run replaces the old one, so a report can never mix evidence from two runs.
+ * It deletes only what a Trace run wrote: a folder holding these names without a
+ * Trace manifest may belong to someone else, so that is refused.
+ */
 export function clearRun(dir: string): void {
-  for (const name of ['raw', 'screenshots', 'report', 'reduced.scenario.json', 'reduction.json', 'reduction.progress.json']) {
-    rmSync(join(dir, name), { recursive: true, force: true });
-  }
+  const present = RUN_FILES.filter((name) => existsSync(join(dir, name)));
+  if (present.length === 0) return;
+  const manifest = join(dir, 'manifest.json');
+  const isRun = existsSync(manifest) && (() => {
+    try {
+      return JSON.parse(readFileSync(manifest, 'utf8')).schema === 'trace.run/1';
+    } catch {
+      return false;
+    }
+  })();
+  if (!isRun) throw new InvalidScenario(`${dir} is not a Trace run folder and already holds ${present[0]}. Choose an empty --out.`);
+  for (const name of RUN_FILES) rmSync(join(dir, name), { recursive: true, force: true });
 }
 
 /** Hash of the behavior a run showed, for comparing repeated runs. Ignores sequence numbers. */

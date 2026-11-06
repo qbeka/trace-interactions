@@ -34,6 +34,11 @@ describe('scenario contract', () => {
     expect(() => parseScenario(s)).toThrow(/needs a traceId/);
   });
 
+  it('rejects a traceId the recorder would drop', () => {
+    const s = scenario({ targets: { trigger: { traceId: 'main trigger' } } });
+    expect(() => parseScenario(s)).toThrow(InvalidScenario);
+  });
+
   it('rejects a pointer up with no pointer down', () => {
     const problem = sequenceProblem([{ type: 'pointerUp', at: 0 }], {});
     expect(problem?.reason).toMatch(/no pointer down/);

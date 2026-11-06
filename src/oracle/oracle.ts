@@ -119,10 +119,13 @@ const FOCUS_MOVING: ReadonlySet<string> = new Set(['focus', 'activate', 'press',
  * Only the action in progress can excuse a focus change: an earlier `type` says
  * nothing about focus lost during a later resize.
  */
-function duringFocusAction(events: TraceEvent[], at: At): boolean {
+function duringFocusAction(s: Scenario, events: TraceEvent[], at: At, target: string): boolean {
   const all = only(events, 'action');
   return all.some((a) => {
     if (a.phase !== 'start' || !FOCUS_MOVING.has(a.type)) return false;
+    // Typing into a field gives no reason for that same field to lose focus.
+    const action = a.cleanup ? undefined : s.actions[a.index];
+    if (action?.type === 'type' && action.target === target) return false;
     const end = all.find((b) => b.phase === 'end' && b.index === a.index && b.cleanup === a.cleanup);
     return a.seq < at.seq && (end === undefined || at.seq < end.seq);
   });
@@ -143,7 +146,7 @@ function focusStaysOn(s: Scenario, r: Extract<Requirement, { kind: 'focus-stays-
       continue;
     }
     if (!held) continue;
-    if (!duringFocusAction(events, f) && holdsAt(state, r.whileState, f.tick)) {
+    if (!duringFocusAction(s, events, f, r.target) && holdsAt(state, r.whileState, f.tick)) {
       const where = f.ref ? (f.ref.traceId ?? f.ref.tag) : 'the page body';
       return [violation(r.kind, 'lost-focus', `${r.target} lost focus to ${where} at ${f.t} ms with no user action.`, f, r.target)];
     }
@@ -315,26 +318,31 @@ function singleInteractive(r: Extract<Requirement, { kind: 'single-interactive' 
 function relationshipResolves(s: Scenario, r: Extract<Requirement, { kind: 'relationship-resolves' }>, events: TraceEvent[], judged: Judged): Violation[] {
   const want = s.targets[r.to]!.traceId!;
   const relations = only(events, 'relation').filter((x) => x.from === r.from && x.attribute === r.attribute);
-  const broken = (rel: Of<'relation'>, at: At): Violation =>
-    violation(
-      r.kind,
-      'duplicate-interactive',
-      `${r.attribute} on ${r.from} points at "${rel.id ?? 'nothing'}", which matched ${rel.matches} element(s) and resolved to ${rel.resolved || 'an unmarked element'}, not ${r.to}.`,
-      at,
-      r.to,
-    );
+  const broken = (rel: Of<'relation'>, at: At): Violation => {
+    const found = rel.matches > 1 ? `which matched ${rel.matches} elements, so the reference is ambiguous` : `which resolved to ${rel.resolved || 'nothing marked'}, not ${r.to}`;
+    return violation(r.kind, 'duplicate-interactive', `${r.attribute} on ${r.from} points at "${rel.id ?? 'nothing'}", ${found}.`, at, r.to);
+  };
   for (const rel of relations) {
     if (rel.matches > 1) return [broken(rel, rel)];
   }
   // While the target exists, the reference must reach it. While it does not, an
-  // unresolved id is normal, such as aria-controls on a closed panel.
+  // unresolved id is normal, such as aria-controls on a closed panel. A reference
+  // absent when the target appears is a bug. One removed later may be an exit: the
+  // attribute can leave on close while the element animates out.
+  let present = false;
   for (const g of only(events, 'geometry')) {
-    if (g.target !== r.to || !g.rect) continue;
+    if (g.target !== r.to) continue;
+    const appearing = !present && g.rect !== null;
+    present = g.rect !== null;
+    if (!g.rect) continue;
     const rel = relations.filter((x) => x.tick <= g.tick).at(-1);
     if (!rel) continue;
     judged.n += 1;
-    const resolved = (rel.resolved ?? '').split(' ');
-    if (rel.id === null || rel.missing > 0 || !resolved.includes(want)) return [broken(rel, g)];
+    if (rel.id === null) {
+      if (appearing) return [broken(rel, g)];
+      continue;
+    }
+    if (rel.missing > 0 || !(rel.resolved ?? '').split(' ').includes(want)) return [broken(rel, g)];
   }
   return [];
 }
@@ -395,9 +403,15 @@ function acks(s: Scenario, events: TraceEvent[]): Violation[] {
     const ack = action?.ack;
     if (ack) {
       const accepts = (v: Primitive): boolean => ack.oneOf === undefined || ack.oneOf.includes(v);
-      // Only this action can acknowledge itself: a late answer to an earlier action
-      // must not count, so the search ends where the next action starts.
-      const next = starts(events).find((m) => m.seq > a.seq)?.seq ?? Infinity;
+      // The answer may be asynchronous, so an unrelated action does not end the
+      // search. A later action on the same key does: from then on a change could be
+      // the answer to it instead. An earlier action's late answer can still count,
+      // because a trace cannot say which action caused a change.
+      const next = starts(events).find((m) => {
+        if (m.seq <= a.seq) return false;
+        const later = s.actions[m.index];
+        return later?.ack?.key === ack.key || later?.requests?.[ack.key] !== undefined;
+      })?.seq ?? Infinity;
       const hit = states.find((st) => st.seq > a.seq && st.seq < next && st.key === ack.key && accepts(st.value) && st.t <= a.t + ack.withinMs);
       if (!hit) {
         const want = ack.oneOf ? `set ${ack.key} to ${ack.oneOf.map(fmt).join(' or ')}` : `change ${ack.key}`;

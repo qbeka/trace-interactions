@@ -155,6 +155,16 @@ describe('trust boundaries', () => {
     expect(JSON.parse(readFileSync(join(out, 'report', 'report.json'), 'utf8')).cases.map((c: { id: string }) => c.id)).toEqual(['original']);
   });
 
+  it('refuses to clear a folder that is not a Trace run', async () => {
+    const out = temp();
+    mkdirSync(join(out, 'report'));
+    writeFileSync(join(out, 'report', 'mine.txt'), 'keep me');
+    const r = await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline', 'overlay@correct', '--candidate', 'overlay@correct', '--out', out]);
+    expect(r.code).toBe(2);
+    expect(r.out).toMatch(/not a Trace run folder/);
+    expect(readFileSync(join(out, 'report', 'mine.txt'), 'utf8')).toBe('keep me');
+  });
+
   it('refuses to resume from progress that belongs to something else', async () => {
     const out = temp();
     await cli(['run', scenarioPath('overlay', 'escape-dismisses'), '--baseline', 'overlay@correct', '--candidate', 'overlay@no-restore', '--out', out, '--no-screenshots']);

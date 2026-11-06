@@ -228,13 +228,16 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
     page.setDefaultTimeout(ACTION_TIMEOUT_MS);
     page.setDefaultNavigationTimeout(NAVIGATION_TIMEOUT_MS);
     // Ordinary requests and sockets to another origin are stopped, so a stray call
-    // cannot change a run. This is a guard, not a sandbox: a same-origin redirect
-    // is followed without passing through here.
+    // cannot change a run. This is a guard, not a sandbox: a same-origin redirect is
+    // followed without passing through here, and a Worker's socket is not caught.
     await context.route(/^https?:/, (route) => {
       const u = new URL(route.request().url());
       return u.origin === new URL(url).origin ? route.continue() : route.abort();
     });
-    await context.routeWebSocket(/.*/, (socket) => socket.close());
+    await context.routeWebSocket(/.*/, (socket) => {
+      if (new URL(socket.url()).hostname === new URL(url).hostname && new URL(socket.url()).port === new URL(url).port) socket.connectToServer();
+      else socket.close();
+    });
 
     await page.goto(url, { waitUntil: 'load' });
     const adapter = await page
