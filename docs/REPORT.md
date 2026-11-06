@@ -283,6 +283,8 @@ cover the larger changes.
 | Oracle, reducer, control and trust fixes | `9f5868e`, `9af1d42` | The two reviews |
 | Exported reports drop local paths | after `9af1d42` | A report is made to be shared. This touches only the export step, so no measured result depends on it. The 861,282 byte report was measured before this change and would now be a few hundred bytes smaller |
 
+The project page and the report's move to Geist Serif also came after `9af1d42`. Neither touches the runner, recorder, oracle or reducer, so no measured result depends on them.
+
 The history was rewritten once before the first public push, to remove working notes and
 local paths from demo reports. Commit hashes in the saved results and in these docs were
 updated to match, and that is the only edit to any saved result. The source at the measured
