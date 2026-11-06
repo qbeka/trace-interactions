@@ -1,0 +1,41 @@
+{
+  "name": "trace-interactions",
+  "version": "0.1.0",
+  "description": "Local interaction regression tool for React components. Replays a declared action sequence on two builds, checks behavior, and reduces failures.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Qendrim Beka",
+  "private": true,
+  "packageManager": "pnpm@12.10.1",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "bin": {
+    "trace": "dist/cli.js"
+  },
+  "scripts": {
+    "trace": "tsx src/cli.ts",
+    "build:fixtures": "tsx scripts/build-fixtures.ts"
+  },
+  "dependencies": {
+    "playwright": "1.65.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "esbuild": "0.28.2",
+    "geist": "1.9.1",
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.6",
+    "vitest": "5.1.0"
+  }
+}
