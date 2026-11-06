@@ -1,0 +1,42 @@
+{
+  "schema": "trace.reduction/1",
+  "fingerprint": "geometry-discontinuity/geometry-origin/panel",
+  "fixture": {
+    "id": "inspector",
+    "version": "1"
+  },
+  "seed": 2,
+  "originalActions": 14,
+  "reducedActions": 4,
+  "attempts": 26,
+  "outcomes": {
+    "fails": 6,
+    "passes": 5,
+    "invalid": 13,
+    "unstable": 0,
+    "other-failure": 2
+  },
+  "stopped": "minimal",
+  "oneMinimal": true,
+  "originalReproduction": {
+    "reproduced": 3,
+    "runs": 3
+  },
+  "reducedReproduction": {
+    "reproduced": 10,
+    "runs": 10
+  },
+  "baselineReproduction": {
+    "reproduced": 0,
+    "runs": 3
+  },
+  "distinctBehaviors": 1,
+  "keptIndices": [
+    0,
+    9,
+    10,
+    11
+  ],
+  "status": "reduced",
+  "elapsedMs": 65015
+}

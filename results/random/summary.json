@@ -1,0 +1,36 @@
+{
+  "inspector": {
+    "seeds": 100,
+    "invalidStatic": 0,
+    "invalidRun": 7,
+    "crashed": 0,
+    "completed": 93,
+    "flagged": 0,
+    "reasons": {
+      "target \"…\" is not on the page": 7
+    }
+  },
+  "overlay": {
+    "seeds": 100,
+    "invalidStatic": 0,
+    "invalidRun": 7,
+    "crashed": 0,
+    "completed": 93,
+    "flagged": 0,
+    "reasons": {
+      "target \"…\" is not on the page": 5,
+      "not actionable: locator.click: Timeout 2": 2
+    }
+  },
+  "timeline": {
+    "seeds": 100,
+    "invalidStatic": 7,
+    "invalidRun": 4,
+    "crashed": 0,
+    "completed": 89,
+    "flagged": 0,
+    "reasons": {
+      "a touch pointer cannot move while it is ": 4
+    }
+  }
+}

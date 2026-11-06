@@ -1,0 +1,108 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "long-session-reduced",
+  "description": "A longer editing session with a resize between opens.",
+  "fixture": {
+    "id": "inspector",
+    "version": "1"
+  },
+  "seed": 2,
+  "initialState": {},
+  "viewport": {
+    "width": 1000,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Inspect",
+      "traceId": "trigger"
+    },
+    "panel": {
+      "traceId": "panel"
+    },
+    "nameInput": {
+      "role": "textbox",
+      "name": "Name",
+      "traceId": "name-input"
+    },
+    "close": {
+      "role": "button",
+      "name": "Done",
+      "traceId": "close"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "latest-request-wins",
+      "key": "panel",
+      "terminal": [
+        "open",
+        "closed"
+      ]
+    },
+    {
+      "kind": "focus-valid"
+    },
+    {
+      "kind": "geometry-origin",
+      "target": "panel",
+      "anchor": "trigger",
+      "tolerancePx": 4
+    },
+    {
+      "kind": "geometry-fits",
+      "target": "panel",
+      "insetPx": 8,
+      "tolerancePx": 2
+    },
+    {
+      "kind": "single-interactive",
+      "target": "panel"
+    }
+  ],
+  "actions": [
+    {
+      "type": "activate",
+      "target": "trigger",
+      "at": 0,
+      "note": "open",
+      "requests": {
+        "panel": "open"
+      }
+    },
+    {
+      "type": "press",
+      "key": "Escape",
+      "target": "nameInput",
+      "at": 3200,
+      "note": "close with Escape",
+      "requests": {
+        "panel": "closed"
+      }
+    },
+    {
+      "type": "resize",
+      "width": 920,
+      "height": 640,
+      "at": 3600,
+      "note": "widen"
+    },
+    {
+      "type": "activate",
+      "target": "trigger",
+      "at": 4000,
+      "note": "reopen",
+      "requests": {
+        "panel": "open"
+      }
+    }
+  ],
+  "cleanup": []
+}

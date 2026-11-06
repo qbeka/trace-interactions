@@ -1,0 +1,101 @@
+{
+  "rows": [
+    {
+      "fixture": "inspector",
+      "build": "stale-origin",
+      "chosen": {
+        "seed": 1,
+        "fingerprint": "geometry-discontinuity/geometry-origin/panel",
+        "scanned": 1,
+        "invalid": 0
+      },
+      "fingerprint": "geometry-discontinuity/geometry-origin/panel",
+      "originalActions": 14,
+      "reducedActions": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "elapsedMs": {
+        "median": 65015,
+        "min": 61709,
+        "max": 65316,
+        "n": 5
+      },
+      "attempts": [
+        26,
+        26,
+        26,
+        26,
+        26
+      ],
+      "outcomes": {
+        "fails": 6,
+        "passes": 5,
+        "invalid": 13,
+        "unstable": 0,
+        "other-failure": 2
+      },
+      "reproduction": [
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        }
+      ],
+      "baselineReproduction": [
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        }
+      ],
+      "oneMinimal": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "status": [
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced"
+      ]
+    }
+  ]
+}
