@@ -1,5 +1,6 @@
 import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { homedir } from 'node:os';
+import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { ReportCase, ReportData, RunSide } from '../../viewer/src/types.ts';
 import type { RunOutput } from '../runner/run.ts';
@@ -34,6 +35,21 @@ async function loadCase(dir: string, id: ReportCase['id'], manifest: { baseline:
   };
 }
 
+/**
+ * A report is made to be passed around, so it must not carry the folder layout
+ * of the machine that made it. Works on the serialized report, which covers
+ * every field at once, including ones added later. The longer prefix goes first
+ * because the working directory usually sits inside the home directory.
+ */
+export function withoutLocalPaths(body: string, cwd = process.cwd(), home = homedir()): string {
+  const escaped = (path: string) => JSON.stringify(path + sep).slice(1, -1);
+  const prefixes: [string, string][] = [[cwd, '.'], [home, '~']];
+  return prefixes
+    .filter(([path]) => path.length > 1)
+    .sort(([a], [b]) => b.length - a.length)
+    .reduce((text, [path, name]) => text.replaceAll(escaped(path), `${name}${sep}`), body);
+}
+
 /** Beside the bundled CLI when installed, under dist when run from source. */
 async function viewerDir(): Promise<string> {
   const here = dirname(fileURLToPath(import.meta.url));
@@ -66,7 +82,7 @@ export async function exportReport(dir: string): Promise<string> {
   await mkdir(out, { recursive: true });
   await cp(viewer, out, { recursive: true });
   if (await exists(join(run, 'screenshots'))) await cp(join(run, 'screenshots'), join(out, 'screenshots'), { recursive: true });
-  const body = JSON.stringify(data);
+  const body = withoutLocalPaths(JSON.stringify(data));
   await writeFile(join(out, 'report.json'), body);
   // `<` is escaped so nothing in a trace can close a script tag.
   await writeFile(join(out, 'report.data.js'), `window.__TRACE_REPORT__=${body.replace(/</g, '\\u003c')};\n`);
