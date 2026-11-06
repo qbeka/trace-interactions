@@ -3,7 +3,7 @@
   --bad: #b4561a;
   --bad-text: #96460f;
   --desk: #eeece6;
-  --stage-height: clamp(520px, calc(100svh - 168px), 640px);
+  --stage-height: clamp(520px, calc(100svh - 156px), 640px);
   --rail-width: 352px;
 }
 
@@ -141,7 +141,8 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--f
 }
 .step.is-jump span { color: var(--bad-text); }
 .step.is-jump.is-good span { color: var(--forest); }
-.step.is-jump[aria-current='true'] span { font-weight: 500; }
+.step.is-jump[aria-current='true'] span { font-weight: 500; color: #7a380b; }
+.step.is-jump.is-good[aria-current='true'] span { color: var(--forest); }
 
 /* Every recorded attempt, one column each, with the steps it kept */
 .attempts { position: absolute; top: 0; right: 8px; width: min(182px, calc(100% - 158px)); height: 100%; pointer-events: none; }

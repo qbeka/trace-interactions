@@ -32,13 +32,16 @@ async function seek(page: Page, ms: number): Promise<void> {
   const page = await context.newPage();
   await page.goto(`${demo.url}index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
-  await page.evaluate(() => {
-    document.documentElement.style.scrollBehavior = 'auto';
-    window.scrollTo(0, document.getElementById('replay')!.offsetTop - 32);
-  });
-  await pause(page, 300);
+  await page.evaluate(() => document.fonts.ready);
+  await pause(page, 800);
   await page.screenshot({ path: join(assets, 'cover.png') });
   await context.close();
+}
+if (process.argv.includes('--cover')) {
+  await browser.close();
+  await demo.close();
+  await fixture.close();
+  process.exit(0);
 }
 
 async function record(name: string, run: (page: Page) => Promise<void>): Promise<void> {

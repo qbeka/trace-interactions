@@ -84,6 +84,12 @@ function want(names: string[]): void {
   pump();
 }
 
+/** Everything else, behind what the current run needs, so a switch never waits. */
+function wantLater(names: string[]): void {
+  queue = [...new Set([...queue, ...names.filter((n) => !images.has(n))])];
+  pump();
+}
+
 /* One pane: a canvas of screenshots, and marks drawn in the same coordinates. */
 interface View { x: number; y: number; w: number; h: number; scale: number }
 class Stage {
@@ -180,14 +186,16 @@ class Stage {
     const on = time >= jump.t && time < jump.settled;
     const start = this.bad ? jump.broken : jump.trigger;
     for (const node of [this.guide, this.start]) show(node, on);
-    show(this.span, on && this.bad);
-    show(this.label, on && this.bad);
+    // The bracket marks the first frames only, before the panel grows across it.
+    const bracket = on && this.bad && time < jump.t + 48;
+    show(this.span, bracket);
+    show(this.label, bracket);
     if (on) {
       const left = jump.trigger.x;
       const below = jump.trigger.y + jump.trigger.h + 7 * unit;
       set(this.guide, { x1: left, y1: 0, x2: left, y2: this.view.h });
       set(this.start, { x: start.x - 1, y: start.y - 1, width: start.w + 2, height: start.h + 2, rx: 3 });
-      if (this.bad) {
+      if (bracket) {
         const cap = 4 * unit;
         set(this.span, { d: `M${left} ${below - cap}V${below + cap}M${left} ${below}H${start.x}M${start.x} ${below - cap}V${below + cap}` });
         set(this.label, { x: (left + start.x) / 2, y: below + 16 * unit });
@@ -500,6 +508,7 @@ function play(): void {
   if (calm()) return playCuts();
   last = performance.now();
   want(upcoming());
+  draw();
   raf = requestAnimationFrame(tick);
 }
 
@@ -585,3 +594,4 @@ top.layout();
 bottom.layout();
 setMode(mode);
 status.textContent = '';
+wantLater(Object.values(data.runs).flatMap((run) => run.frames.map((f) => f.f)));
