@@ -1,0 +1,29 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "reopen-during-close",
+  "description": "Reopen the inspector while it is still closing.",
+  "fixture": { "id": "inspector", "version": "1" },
+  "seed": 1,
+  "initialState": {},
+  "viewport": { "width": 900, "height": 640, "deviceScaleFactor": 1 },
+  "timing": { "mode": "controlled", "stepMs": 16, "settleMs": 500 },
+  "targets": {
+    "trigger": { "role": "button", "name": "Inspect", "traceId": "trigger" },
+    "panel": { "traceId": "panel" },
+    "nameInput": { "role": "textbox", "name": "Name", "traceId": "name-input" },
+    "close": { "role": "button", "name": "Done", "traceId": "close" }
+  },
+  "requirements": [
+    { "kind": "latest-request-wins", "key": "panel", "terminal": ["open", "closed"] },
+    { "kind": "focus-valid" },
+    { "kind": "focus-restored", "to": "trigger", "whenState": { "panel": "closed" }, "withinMs": 400 },
+    { "kind": "geometry-continuous", "target": "panel", "maxStepPx": 160 },
+    { "kind": "single-interactive", "target": "panel" }
+  ],
+  "actions": [
+    { "at": 0, "type": "activate", "target": "trigger", "requests": { "panel": "open" }, "ack": { "key": "panel", "equals": "open", "withinMs": 500 } },
+    { "at": 400, "type": "activate", "target": "close", "requests": { "panel": "closed" } },
+    { "at": 500, "type": "activate", "target": "trigger", "requests": { "panel": "open" } }
+  ],
+  "cleanup": []
+}

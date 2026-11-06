@@ -1,0 +1,21 @@
+{
+  "schema": "trace.fixture/1",
+  "id": "inspector",
+  "version": "1",
+  "stateAllowlist": ["panel", "narrow", "titleLength", "mounted"],
+  "clock": { "channels": ["timers", "frames", "animations"] },
+  "source": "fixtures/inspector",
+  "builds": {
+    "correct": { "dir": ".build/fixtures/inspector/correct" },
+    "stale-completion": { "dir": ".build/fixtures/inspector/stale-completion" },
+    "stale-origin": { "dir": ".build/fixtures/inspector/stale-origin" },
+    "stale-resize": { "dir": ".build/fixtures/inspector/stale-resize" },
+    "remount-on-breakpoint": { "dir": ".build/fixtures/inspector/remount-on-breakpoint" },
+    "leak-observer": { "dir": ".build/fixtures/inspector/leak-observer" },
+    "escape-ignored": { "dir": ".build/fixtures/inspector/escape-ignored" },
+    "legit-slow": { "dir": ".build/fixtures/inspector/legit-slow" },
+    "legit-fade": { "dir": ".build/fixtures/inspector/legit-fade" },
+    "legit-restyle": { "dir": ".build/fixtures/inspector/legit-restyle" },
+    "legit-wide": { "dir": ".build/fixtures/inspector/legit-wide" }
+  }
+}

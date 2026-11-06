@@ -1,0 +1,20 @@
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { background: #fbf8f4; color: #111511; font: 15px/1.45 system-ui, sans-serif; }
+.stage { position: relative; height: 100%; overflow: hidden; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #11151117; }
+.trigger { padding: 6px 14px; border-radius: 999px; border: 1px solid #1115112e; background: #fff; font: inherit; }
+.outline { list-style: none; margin: 0; padding: 8px 16px; }
+.outline li { padding: 8px 0; border-bottom: 1px solid #11151117; }
+.outline .selected { color: #1d3a2a; }
+.panel { position: absolute; top: 72px; right: 16px; width: min(420px, calc(100% - 32px)); padding: 16px; background: #fff; border: 1px solid #1115112e; border-radius: 12px; }
+.panel.sheet { top: auto; bottom: 16px; }
+.panel h2 { margin: 0 0 12px; font-size: 17px; font-weight: 500; }
+.panel label { display: grid; gap: 4px; margin-bottom: 12px; color: #444944; }
+.panel input { padding: 8px; font: inherit; border: 1px solid #1115112e; border-radius: 6px; }
+.removed { padding: 16px; color: #5a5e5a; }
+.panel.wide { width: min(520px, calc(100% - 32px)); }
+.stage.restyled { background: #f2efe9; font-size: 16px; }
+.stage.restyled .panel { border-radius: 4px; padding: 22px; background: #fbfaf7; }
+.stage.restyled .trigger { border-radius: 4px; background: #1d3a2a; color: #fff; }
+.panel.leaving { pointer-events: none; }
