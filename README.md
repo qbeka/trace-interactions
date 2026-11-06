@@ -9,27 +9,15 @@ each one in a sentence, with two aligned replays that show where the builds part
 
 ![A Trace report. Two stages show the same four actions on two builds. The candidate's panel starts 80 px from its trigger.](docs/assets/cover.png)
 
-Watch the [20 second demo](docs/assets/trace-demo.mp4) or the
-[67 second walkthrough](docs/assets/trace-walkthrough.mp4). The walkthrough has captions and no voice.
-There is no hosted demo yet. `pnpm demo` builds the same reports locally.
+## See a report
 
-| | |
-|---|---|
-| **What Trace adds** | On the tuned corpus, a control that flags any recorded difference also found every seeded bug, and it flagged 9 of 13 clean builds. Trace flagged 0 of 13. On held-out legitimate changes the gap is smaller: 1 of 3 against 2 of 3. |
-| **Seeded bugs, tuned corpus** | 18 of 18 caught in the right category, on Chromium, Firefox and WebKit |
-| **Clean builds, tuned corpus** | 0 of 13 flagged on all three browsers |
-| **Holdout, run once on an earlier oracle** | 6 of 6 seeded bugs caught, and 1 of 4 clean builds wrongly flagged |
-| **Random sessions on correct builds** | 300 seeded, 5 invalid, 295 completed, 2 flagged. Both are a real bug in my own "correct" fixture. |
-| **Reduction** | 18 actions to 2 on 3 generated sessions, and 14 to 4 on a written one. Reproduced in 10 of 10 fresh runs, 0 of 3 on the baseline. |
-| **Reduction reach** | 2 of 5 planned generated workloads found no usable session |
-| **Recording cost** | 60 ms more main thread work across a 14 action, 5.4 s scenario (49 to 71 ms over 7 rounds). Across 3 runs of this experiment the median was 46 to 60 ms. |
+No install needed. Clone the repository and open
+[demo/regression/index.html](demo/regression/index.html) in a browser. `Space` plays, `[` and
+`]` step by action, `F` jumps to the failure, and `R` switches between the reduced and
+original sequence.
 
-Measured on one Apple M5 Pro Mac. The first corpus run missed 5 seeded bugs, mislabeled
-1 and flagged 3 clean builds, and the oracle and 7 scenarios changed because of it. An
-independent review then found more problems, including requirements that passed without
-checking anything, and a control I had blinded. These counts describe this small corpus.
-They are not an accuracy claim about other code.
-[What the numbers leave out](#what-the-numbers-leave-out) has the details.
+You can also watch the [20 second demo](docs/assets/trace-demo.mp4) or the
+[67 second walkthrough](docs/assets/trace-walkthrough.mp4), which has captions and no voice.
 
 ## Run it
 
@@ -47,7 +35,7 @@ pnpm exec playwright install chromium firefox webkit
 pnpm build
 ```
 
-Run the same session on a good build and a broken one.
+Run one session on a good build and a broken one.
 
 ```bash
 pnpm trace run fixtures/inspector/scenarios/long-session.json --baseline inspector@correct --candidate inspector@stale-origin --out .trace/demo
@@ -58,7 +46,7 @@ REGRESSION: panel appeared 80 px away from trigger at 4000 ms. It should start a
 Report: .trace/demo/report/index.html
 ```
 
-Shrink it, then replay the small version.
+Shrink the failure to the actions that cause it. This takes about a minute.
 
 ```bash
 pnpm trace reduce .trace/demo
@@ -67,26 +55,24 @@ pnpm trace reduce .trace/demo
 ```text
 REDUCED: 14 actions to 4, in 26 attempts and 61.2 s.
 Reproduced in 10 of 10 runs. Baseline showed it in 0 of 3.
-Attempts: 6 fails, 5 passes, 13 invalid, 0 unstable, 2 other-failure. Stopped: minimal.
 ```
 
-```bash
-pnpm trace replay .trace/demo
-```
-
-Read the report. It is a static folder, and it also opens from `file://`.
+Open the report at <http://127.0.0.1:5175>.
 
 ```bash
 pnpm trace serve .trace/demo/report
 ```
 
-Open <http://127.0.0.1:5175>. In the report, `Space` plays, `[` and `]` step by action,
-`F` jumps to the failure, and `R` switches between the reduced and original sequence.
+## Use it on your component
 
-## A short example
+1. Add `data-trace-id` to the elements you care about, and set `window.__traceFixture` on a
+   test page so Trace can read your component's state.
+2. Write a scenario: what the user does, and what must stay true.
+3. Add both builds to a fixture manifest, then register it with `pnpm trace fixtures add path/to/fixture.json`.
+4. Run `pnpm trace run my.scenario.json --baseline tabs@main --candidate tabs@branch`.
 
-A scenario says what a user does and what must stay true. Requirements live in the
-scenario, not in a baseline, so a bug both builds share still fails.
+A scenario looks like this. Requirements live in the scenario, not in a baseline, so a bug
+both builds share still fails.
 
 ```json
 {
@@ -114,10 +100,10 @@ scenario, not in a baseline, so a bug both builds share still fails.
 }
 ```
 
-[docs/SCENARIOS.md](docs/SCENARIOS.md) covers every action, every requirement, and how to
-register your own fixture.
+[docs/SCENARIOS.md](docs/SCENARIOS.md) covers every action, every requirement and fixture
+registration.
 
-## What a run gives you
+## What a run tells you
 
 | Verdict | Meaning | Exit code |
 |---|---|---|
@@ -133,117 +119,51 @@ press that lands off target is never reported as a regression.
 
 ## Results
 
-The measured numbers come from saved runs with manifests, at commit `3a66aaf`, except the
-one holdout run. See [docs/REPORT.md](docs/REPORT.md).
+Measured on one Apple M5 Pro Mac, on a corpus I wrote. These counts describe that corpus.
+They are not an accuracy claim about other code.
 
-### Detection
-
-Each build is compared with its fixture's correct build across all of that fixture's
-scenarios. Counts are from the final code on Chromium.
-
-| Detector | Tuned corpus: seeded caught | Tuned corpus: clean flagged | Combobox: seeded caught | Combobox: clean flagged |
+| Detector | Tuned corpus: seeded bugs caught | Tuned corpus: clean builds flagged | Holdout fixture: seeded caught | Holdout fixture: clean flagged |
 |---|---|---|---|---|
 | **Trace** | 18 of 18 | 0 of 13 | 6 of 6 | 1 of 4 |
 | Any recorded difference (control) | 18 of 18 | 9 of 13 | 6 of 6 | 2 of 4 |
 | Final screenshot difference (control) | 11 of 18 | 5 of 13 | 2 of 6 | 0 of 4 |
 
-So Trace does not find more of these bugs than a full comparison of two traces. Its
-requirements reject most legitimate changes, and they can fail a bug both builds share,
-which no comparison can. Clean builds include 3 identical ones in the tuned corpus and 1 in the combobox set.
-On legitimate changes alone, Trace flagged 0 of 10 and 1 of 3.
+So Trace does not find more of these bugs than comparing two full traces. Its requirements
+reject most legitimate changes, and they can fail a bug both builds share, which no
+comparison can.
 
-The screenshot control compares two captures from one run on one machine, which is its
-best case. Runs: [Chromium](results/corpus-chromium/summary.json),
-[Firefox](results/corpus-firefox/summary.json), [WebKit](results/corpus-webkit/summary.json),
-[combobox on final code](results/holdout-final-oracle/summary.json),
-[the one holdout run](results/holdout/summary.json).
+| Measurement | Result |
+|---|---|
+| Browsers | Same tuned result on Chromium, Firefox and WebKit |
+| Random sessions on correct builds | 300 seeded, 295 completed, 2 flagged. Both are a real bug in my own fixture. |
+| Reduction | 18 actions to 2 on 3 generated sessions, 14 to 4 on a written one. Reproduced in 10 of 10 fresh runs, 0 of 3 on the baseline. |
+| Recording cost | 60 ms more main thread work across a 14 action, 5.4 s scenario. 46 to 60 ms across 3 runs. |
 
-### Recording cost
+The full method, raw runs and failures are in [docs/REPORT.md](docs/REPORT.md).
 
-Chromium's own counters, read from outside the page, over 7 rounds after 2 warmup rounds,
-with a new browser for each run. Scenario: `long-session`, 14 actions, 5.4 s.
+## Limits
 
-| Recording level | Main thread work added | Script time added |
-|---|---|---|
-| Timestamps only (performance pass) | 4.9 ms (range -2.3 to 12.2) | 0.1 ms (range -0.7 to 1.7) |
-| Full trace (diagnostic pass) | 60.5 ms (range 49.2 to 70.6), 54 percent | 24.9 ms (range 22.1 to 28.1) |
+- **The corpus is small and I wrote it.** The 18 of 18 is tuned: the first run caught 12.
+- **The holdout ran once, on an earlier oracle.** No result tests the final oracle on unseen code.
+- **Trace only finds what a scenario reaches.** A requirement never reached says `not exercised`.
+- **Controlled time has gaps.** Each run lists what it does not hold.
+- **Nobody else has used it.**
 
-The control did 111 ms of main thread work in that 5.4 s, so percentages look large because
-the page is mostly idle. Numbers move between runs: three runs of this experiment gave
-medians of 46 to 60 ms for full recording and 4.9 to 11.4 ms for timestamps, with the
-timestamp range crossing zero in two of them. Treat the timestamp level as small and
-poorly resolved. [Raw samples](results/overhead/raw.json).
+[docs/LIMITS.md](docs/LIMITS.md) has the complete list.
 
-## What the numbers leave out
-
-- **The corpus is small and I wrote it.** It has 4 fixture families and 41 builds, with
-  one seeded bug per failure category in the holdout. It says nothing about how many real
-  bugs Trace would catch.
-- **The 18 of 18 is tuned.** Oracle and scenario changes came from reading this corpus.
-- **The holdout is one run on an earlier oracle.** It ran once, at commit `432cf66`. The
-  oracle changed afterward, and the rerun on final code is a regression check, not a
-  second holdout. No result here tests the final oracle on unseen code.
-- **Labels came first, with one exception.** The detector had already run on 2 inspector
-  builds before `corpus/labels.json` was committed.
-- **The holdout false alarm is a real limit.** A wider list reached the viewport edge at
-  360 px wide, against a declared 8 px inset. The oracle did what the requirement said,
-  but I had labeled that build a legitimate change. A numeric requirement can fail a
-  design change.
-- **Trace only finds what a scenario reaches.** Most seeded bugs were caught by exactly one
-  scenario. Random sessions never reached 2 of 5 reduction targets. A requirement the run
-  never reached says `not exercised`, for example a focus requirement on a target that
-  never had focus. That status is per requirement: one judged occurrence makes it `held`,
-  even if another was skipped.
-- **Random sessions use a reduced requirement list.** They carry no acknowledgements and
-  leave out 4 requirement kinds. Applying a fixture's fixed requirements to random sessions
-  fails correct builds: 23 of 26 on timeline in the review, because a transient state is
-  judged before it settles unless the scenario sets `settledMs`. So the result covers false
-  alarms from these checks only.
-- **Some leaks are invisible.** The ledger counts listeners on `window` and `document`,
-  observers, timers, frames and idle callbacks. It misses `document.body` listeners,
-  `matchMedia`, `visualViewport` and `BroadcastChannel`. A component already mounted at load
-  has no count from before mount, so that scenario reports `not exercised`.
-- **Controlled time has gaps.** It holds timers, frames, `Date`, `performance` and
-  animations. It does not hold `ResizeObserver` delivery, React's scheduler, workers,
-  compositor scrolling, media, network, `crypto` randomness or rasterization. Each run
-  reports this list. See [docs/RESEARCH.md](docs/RESEARCH.md).
-- **Animation starts are rounded.** An animation started by a timer inside a step is
-  adopted at the end of that step, 16 ms by default.
-- **Cancel is synthetic on Firefox and WebKit.** Only Chromium has a real input path for
-  `pointercancel`. Those runs say so. A reducer that deletes the cancel also switches
-  Chromium from touch to mouse input.
-- **WebKit input depends on the machine.** On a run during a long idle period, WebKit put
-  every press far off target, on a reviewer's rerun of this exact corpus. The cause is
-  unproven, and I could not reproduce it with the display awake. Such a run is now invalid
-  instead of a quiet pass. The final run held the display awake.
-- **Corpus numbers come from one repetition.** Verdicts repeated across the runs I made, but
-  recorded event order at equal times can swap between runs.
-- **Timings are lab numbers from one machine.** They are not INP. `input-to-render` is the
-  next frame the page observed, not a frame shown on screen.
-- **What a report contains.** The recorder keeps no text or input values, and it drops
-  attributes that do not look like identifiers. An allowlisted state key can still carry
-  text, as the combobox's `resultsFor` does, and reports include the scenario's typed text
-  and unmasked screenshots. Use synthetic data.
-- **Automated accessibility checks passed, and that is all.** axe found no serious issues
-  on the report. That does not establish full accessibility.
-- **Nobody else has used it.** There is a task script and a self-review in
-  [docs/USABILITY.md](docs/USABILITY.md), and no user research.
-
-## Tests and benchmarks
+## Commands
 
 | Command | What it does | Time here |
 |---|---|---|
 | `pnpm check` | Type checks everything | Under 1 s |
-| `pnpm test` | 117 unit tests, including 920 valid model-generated sequences from 2,000 seeds, for one requirement kind | Under 1 s |
+| `pnpm test` | 125 unit tests | Under 1 s |
 | `pnpm test:e2e` | 65 real browser tests on all three engines | About 5 minutes |
-| `pnpm bench:smoke` | One good pair and one seeded failure. Target under 60 s | 3.9 s |
-| `pnpm bench` | The full measurement. Budget 50 minutes | 42 minutes |
-| `pnpm demo` | Builds the static demo into `demo/` | About 80 s |
+| `pnpm bench:smoke` | One good pair and one seeded failure | About 4 s |
+| `pnpm bench` | The full measurement | 42 minutes |
+| `pnpm demo` | Rebuilds the static demo in `demo/` | About 80 s |
 | `pnpm verify:artifacts` | Checks saved results against their hashes | Under 1 s |
 
-The plan was frozen in [docs/MEASUREMENT.md](docs/MEASUREMENT.md) before the final run.
-
-## Architecture
+## How it works
 
 ```
 scenario.json ──> runner ──> two browsers, one action list
@@ -269,13 +189,13 @@ scenario.json ──> runner ──> two browsers, one action list
 | `corpus` | Expected labels for each build |
 | `bench`, `results` | Reproducible measurements and raw data |
 
-The design choices are in [docs/DESIGN.md](docs/DESIGN.md), and what the primary sources
-say, including where Trace differs, is in [docs/RESEARCH.md](docs/RESEARCH.md).
+Design choices are in [docs/DESIGN.md](docs/DESIGN.md), the primary sources in
+[docs/RESEARCH.md](docs/RESEARCH.md), and the frozen plan in
+[docs/MEASUREMENT.md](docs/MEASUREMENT.md).
 
 Trace does not check out repositories, run remote code or test sites off this machine.
 `trace.fixtures.json` can name build commands, so treat it like code in the repository you
-run Trace from. A saved run folder is data. It cannot add a command, though its build name
-selects one you already registered.
+run Trace from. Reports include a scenario's typed text and screenshots, so use synthetic data.
 
 Trace is not a general test runner, and it does not replace Playwright Trace Viewer. It
 adds requirements, comparison and reduction for interrupted interactions.
