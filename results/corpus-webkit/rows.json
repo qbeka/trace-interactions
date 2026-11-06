@@ -1,0 +1,1638 @@
+[
+  {
+    "fixture": "inspector",
+    "build": "correct",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 783,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "correct",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2187,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "correct",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 596,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "correct",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 986,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "correct",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 641,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-completion",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 774,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-completion",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2175,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-completion",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 598,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-completion",
+    "scenario": "reopen-during-close",
+    "verdict": "regression",
+    "categories": [
+      "geometry-discontinuity",
+      "stale-final-state",
+      "lost-focus"
+    ],
+    "sentence": "panel jumped 310 px in one sample at 500 ms. The limit is 160 px.",
+    "ms": 994,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-completion",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 649,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-origin",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 791,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-origin",
+    "scenario": "long-session",
+    "verdict": "regression",
+    "categories": [
+      "geometry-discontinuity"
+    ],
+    "sentence": "panel appeared 80 px away from trigger at 4000 ms. It should start at trigger or at its final position.",
+    "ms": 2184,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-origin",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 599,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-origin",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 983,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-origin",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 649,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-resize",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 783,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-resize",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2214,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-resize",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 638,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-resize",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 987,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "stale-resize",
+    "scenario": "resize-while-editing",
+    "verdict": "regression",
+    "categories": [
+      "geometry-discontinuity"
+    ],
+    "sentence": "panel overflows the 420x640 viewport by 22 px after the resize.",
+    "ms": 652,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "remount-on-breakpoint",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 809,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "remount-on-breakpoint",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2208,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "remount-on-breakpoint",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 592,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "remount-on-breakpoint",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 988,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "remount-on-breakpoint",
+    "scenario": "resize-while-editing",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "nameInput lost focus to the page body at 816 ms with no user action.",
+    "ms": 645,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "leak-observer",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 777,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "leak-observer",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2211,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "leak-observer",
+    "scenario": "remove-while-open",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "1 observer:ResizeObserver still active after removal. There were 0 before mount.",
+    "ms": 609,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "leak-observer",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 977,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "leak-observer",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 639,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "escape-ignored",
+    "scenario": "escape-closes",
+    "verdict": "regression",
+    "categories": [
+      "missed-ack"
+    ],
+    "sentence": "\"press Escape\" at 400 ms did not set panel to closing or closed within 50 ms.",
+    "ms": 561,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "escape-ignored",
+    "scenario": "long-session",
+    "verdict": "diverged",
+    "categories": [],
+    "sentence": "The scenario ran on the baseline but could not finish on the candidate at action 13: target \"nameInput\" is not on the page.",
+    "ms": 1857,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "escape-ignored",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 608,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "escape-ignored",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 985,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "escape-ignored",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 663,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-slow",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1042,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-slow",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2855,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-slow",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 745,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-slow",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1264,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-slow",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 808,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-fade",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 773,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-fade",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2212,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-fade",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 590,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-fade",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1008,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-fade",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 674,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-restyle",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 800,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-restyle",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2195,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-restyle",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 600,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-restyle",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 992,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-restyle",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 655,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-wide",
+    "scenario": "escape-closes",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 801,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-wide",
+    "scenario": "long-session",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 2215,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-wide",
+    "scenario": "remove-while-open",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 599,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-wide",
+    "scenario": "reopen-during-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 1004,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "inspector",
+    "build": "legit-wide",
+    "scenario": "resize-while-editing",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 675,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "correct",
+    "scenario": "escape-dismisses",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 609,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "correct",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 714,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "correct",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 706,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "correct",
+    "scenario": "reopen-during-exit",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 670,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "no-restore",
+    "scenario": "escape-dismisses",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus should return to trigger, but it was on the page body at 900 ms.",
+    "ms": 655,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "no-restore",
+    "scenario": "open-and-cancel",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus should return to trigger, but it was on the page body at 1200 ms.",
+    "ms": 728,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "no-restore",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 749,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "no-restore",
+    "scenario": "reopen-during-exit",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus should return to trigger, but it was on the page body at 960 ms.",
+    "ms": 691,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "stale-restore",
+    "scenario": "escape-dismisses",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus should return to trigger, but it was on the page body at 900 ms.",
+    "ms": 607,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "stale-restore",
+    "scenario": "open-and-cancel",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus should return to trigger, but it was on the page body at 1200 ms.",
+    "ms": 735,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "stale-restore",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 721,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "stale-restore",
+    "scenario": "reopen-during-exit",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus should return to trigger, but it was on the page body at 960 ms.",
+    "ms": 736,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "hidden-clone-focus",
+    "scenario": "escape-dismisses",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus moved to a hidden or inert element (dialog-input) at 0 ms.",
+    "ms": 611,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "hidden-clone-focus",
+    "scenario": "open-and-cancel",
+    "verdict": "diverged",
+    "categories": [],
+    "sentence": "The scenario ran on the baseline but could not finish on the candidate at action 2: target \"password\" matches 2 elements.",
+    "ms": 416,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "hidden-clone-focus",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 751,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "hidden-clone-focus",
+    "scenario": "reopen-during-exit",
+    "verdict": "regression",
+    "categories": [
+      "lost-focus"
+    ],
+    "sentence": "Focus moved to a hidden or inert element (dialog-input) at 0 ms.",
+    "ms": 681,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "live-exit-clone",
+    "scenario": "escape-dismisses",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 639,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "live-exit-clone",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 742,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "live-exit-clone",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 719,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "live-exit-clone",
+    "scenario": "reopen-during-exit",
+    "verdict": "regression",
+    "categories": [
+      "duplicate-interactive"
+    ],
+    "sentence": "2 live copies of dialog existed at 460 ms.",
+    "ms": 723,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "duplicate-id",
+    "scenario": "escape-dismisses",
+    "verdict": "regression",
+    "categories": [
+      "duplicate-interactive"
+    ],
+    "sentence": "aria-labelledby on dialog points at \"dialog-title\", which matched 2 element(s) and resolved to an unmarked element, not title.",
+    "ms": 627,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "duplicate-id",
+    "scenario": "open-and-cancel",
+    "verdict": "regression",
+    "categories": [
+      "duplicate-interactive"
+    ],
+    "sentence": "aria-labelledby on dialog points at \"dialog-title\", which matched 2 element(s) and resolved to an unmarked element, not title.",
+    "ms": 710,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "duplicate-id",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 722,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "duplicate-id",
+    "scenario": "reopen-during-exit",
+    "verdict": "regression",
+    "categories": [
+      "duplicate-interactive"
+    ],
+    "sentence": "aria-labelledby on dialog points at \"dialog-title\", which matched 2 element(s) and resolved to an unmarked element, not title.",
+    "ms": 695,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "listener-leak",
+    "scenario": "escape-dismisses",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 641,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "listener-leak",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 745,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "listener-leak",
+    "scenario": "remove-after-close",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "1 document:keydown still active after removal. There were 0 before mount.",
+    "ms": 750,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "listener-leak",
+    "scenario": "reopen-during-exit",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 685,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "escape-ignored",
+    "scenario": "escape-dismisses",
+    "verdict": "regression",
+    "categories": [
+      "missed-ack"
+    ],
+    "sentence": "\"press Escape\" at 400 ms did not set dialog to closing or closed within 50 ms.",
+    "ms": 466,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "escape-ignored",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 743,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "escape-ignored",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 589,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "escape-ignored",
+    "scenario": "reopen-during-exit",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 678,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-restyle",
+    "scenario": "escape-dismisses",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 636,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-restyle",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 721,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-restyle",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 729,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-restyle",
+    "scenario": "reopen-during-exit",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 667,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-large",
+    "scenario": "escape-dismisses",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 612,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-large",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 716,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-large",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 738,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-large",
+    "scenario": "reopen-during-exit",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 697,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-instant",
+    "scenario": "escape-dismisses",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 466,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-instant",
+    "scenario": "open-and-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 589,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-instant",
+    "scenario": "remove-after-close",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 556,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "overlay",
+    "build": "legit-instant",
+    "scenario": "reopen-during-exit",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 694,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "correct",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 438,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "correct",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 460,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "correct",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 328,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "correct",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 480,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "correct",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 584,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "drag-stuck-on-cancel",
+    "scenario": "cancel-drag",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "dragging was still true after pointerCancel at 600 ms. It should be false.",
+    "ms": 406,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "drag-stuck-on-cancel",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 458,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "drag-stuck-on-cancel",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 275,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "drag-stuck-on-cancel",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 450,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "drag-stuck-on-cancel",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 568,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "cancel-keeps-preview",
+    "scenario": "cancel-drag",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "value was still 80 after pointerCancel at 600 ms. It should be 30.",
+    "ms": 409,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "cancel-keeps-preview",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 467,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "cancel-keeps-preview",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 280,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "cancel-keeps-preview",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 451,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "cancel-keeps-preview",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 583,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "window-listener-leak",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 391,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "window-listener-leak",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 451,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "window-listener-leak",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 300,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "window-listener-leak",
+    "scenario": "remove-after-cancel",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "1 window:pointermove still active after removal. There were 0 before mount.",
+    "ms": 460,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "window-listener-leak",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 565,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "raf-leak",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 400,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "raf-leak",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 853,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "raf-leak",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 322,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "raf-leak",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 458,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "raf-leak",
+    "scenario": "remove-after-release",
+    "verdict": "regression",
+    "categories": [
+      "incomplete-cleanup"
+    ],
+    "sentence": "1 timer:frame still active after removal. There were 0 before mount.",
+    "ms": 1335,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "keyboard-ignored",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 431,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "keyboard-ignored",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 491,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "keyboard-ignored",
+    "scenario": "keyboard-nudge",
+    "verdict": "regression",
+    "categories": [
+      "missed-ack"
+    ],
+    "sentence": "\"nudge right\" at 100 ms did not change value within 50 ms.",
+    "ms": 300,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "keyboard-ignored",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 441,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "keyboard-ignored",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 567,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-restyle",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 401,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-restyle",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 458,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-restyle",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 316,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-restyle",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 475,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-restyle",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 559,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-thick-handle",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 392,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-thick-handle",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 458,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-thick-handle",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 291,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-thick-handle",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 450,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-thick-handle",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 558,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-fine-steps",
+    "scenario": "cancel-drag",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 393,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-fine-steps",
+    "scenario": "drag-and-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 457,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-fine-steps",
+    "scenario": "keyboard-nudge",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 276,
+    "traceDiff": true,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-fine-steps",
+    "scenario": "remove-after-cancel",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 436,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  },
+  {
+    "fixture": "timeline",
+    "build": "legit-fine-steps",
+    "scenario": "remove-after-release",
+    "verdict": "pass",
+    "categories": [],
+    "sentence": "Both builds met every declared requirement.",
+    "ms": 581,
+    "traceDiff": false,
+    "screenshotDiffPixels": null
+  }
+]

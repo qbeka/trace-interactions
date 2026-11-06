@@ -1,0 +1,2696 @@
+{
+  "off": [
+    {
+      "run": 2,
+      "wallMs": 5392,
+      "medians": {},
+      "taskMs": 74.085,
+      "scriptMs": 9.717,
+      "samples": []
+    },
+    {
+      "run": 3,
+      "wallMs": 5390,
+      "medians": {},
+      "taskMs": 73.361,
+      "scriptMs": 10.125,
+      "samples": []
+    },
+    {
+      "run": 4,
+      "wallMs": 5379,
+      "medians": {},
+      "taskMs": 67.62700000000001,
+      "scriptMs": 9.27,
+      "samples": []
+    },
+    {
+      "run": 5,
+      "wallMs": 5375,
+      "medians": {},
+      "taskMs": 70.637,
+      "scriptMs": 9.77,
+      "samples": []
+    },
+    {
+      "run": 6,
+      "wallMs": 5383,
+      "medians": {},
+      "taskMs": 70.955,
+      "scriptMs": 9.518,
+      "samples": []
+    },
+    {
+      "run": 7,
+      "wallMs": 5377,
+      "medians": {},
+      "taskMs": 71.861,
+      "scriptMs": 9.869,
+      "samples": []
+    },
+    {
+      "run": 8,
+      "wallMs": 5382,
+      "medians": {},
+      "taskMs": 72.357,
+      "scriptMs": 10.014000000000001,
+      "samples": []
+    }
+  ],
+  "stamps": [
+    {
+      "run": 2,
+      "wallMs": 5402,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 1.3,
+        "input-to-render": 13.5
+      },
+      "taskMs": 77.522,
+      "scriptMs": 10.299000000000001,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 89.80000001192093,
+          "handler": 90.80000001192093,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 89.80000001192093,
+          "handler": 90.90000003576279,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 89.80000001192093,
+          "handler": 91,
+          "commit": 124.30000001192093,
+          "render": 138.80000001192093
+        },
+        {
+          "name": "keydown",
+          "input": 461.5,
+          "handler": 461.7000000476837,
+          "commit": 462.80000001192093,
+          "render": 472.30000001192093
+        },
+        {
+          "name": "keydown",
+          "input": 462.80000001192093,
+          "handler": 462.80000001192093,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 463.30000001192093,
+          "handler": 463.30000001192093,
+          "commit": 463.5,
+          "render": 472.30000001192093
+        },
+        {
+          "name": "keydown",
+          "input": 858.1000000238419,
+          "handler": 858.2000000476837,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1059.4000000357628,
+          "handler": 1059.4000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1060.1000000238419,
+          "handler": 1060.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1272.9000000357628,
+          "handler": 1273.1000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1272.9000000357628,
+          "handler": 1273.4000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1272.9000000357628,
+          "handler": 1273.4000000357628,
+          "commit": 1290.2000000476837,
+          "render": 1305.300000011921
+        },
+        {
+          "name": "pointerdown",
+          "input": 1674.9000000357628,
+          "handler": 1675,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1674.9000000357628,
+          "handler": 1675.1000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1674.9000000357628,
+          "handler": 1675.2000000476837,
+          "commit": 1688.9000000357628,
+          "render": 1707.1000000238419
+        },
+        {
+          "name": "keydown",
+          "input": 2458.800000011921,
+          "handler": 2458.900000035763,
+          "commit": 2459.600000023842,
+          "render": 2472.300000011921
+        },
+        {
+          "name": "keydown",
+          "input": 2459.7000000476837,
+          "handler": 2459.7000000476837,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2460.100000023842,
+          "handler": 2460.100000023842,
+          "commit": 2460.300000011921,
+          "render": 2472.300000011921
+        },
+        {
+          "name": "keydown",
+          "input": 3260.5,
+          "handler": 3260.600000023842,
+          "commit": 3272.100000023842,
+          "render": 3288.5
+        },
+        {
+          "name": "pointerdown",
+          "input": 4073.100000023842,
+          "handler": 4073.400000035763,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4073.100000023842,
+          "handler": 4073.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4073.100000023842,
+          "handler": 4073.5,
+          "commit": 4088.900000035763,
+          "render": 4105.200000047684
+        },
+        {
+          "name": "keydown",
+          "input": 4859.900000035763,
+          "handler": 4860.100000023842,
+          "commit": 4860.900000035763,
+          "render": 4872.300000011921
+        },
+        {
+          "name": "keydown",
+          "input": 4860.900000035763,
+          "handler": 4861,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4861.600000023842,
+          "handler": 4861.600000023842,
+          "commit": 4861.700000047684,
+          "render": 4872.300000011921
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "wallMs": 5383,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 1.2,
+        "input-to-render": 12
+      },
+      "taskMs": 79.63700000000001,
+      "scriptMs": 10.059000000000001,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 73.30000001192093,
+          "handler": 74.19999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 73.30000001192093,
+          "handler": 74.40000003576279,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 73.30000001192093,
+          "handler": 74.5,
+          "commit": 111.40000003576279,
+          "render": 122.5
+        },
+        {
+          "name": "keydown",
+          "input": 445,
+          "handler": 445.10000002384186,
+          "commit": 446.19999998807907,
+          "render": 455.9000000357628
+        },
+        {
+          "name": "keydown",
+          "input": 446.4000000357628,
+          "handler": 446.4000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 447.10000002384186,
+          "handler": 447.10000002384186,
+          "commit": 447.4000000357628,
+          "render": 455.9000000357628
+        },
+        {
+          "name": "keydown",
+          "input": 841.8000000119209,
+          "handler": 841.9000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042,
+          "handler": 1042,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.300000011921,
+          "handler": 1042.4000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1256.5,
+          "handler": 1256.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1256.5,
+          "handler": 1256.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1256.5,
+          "handler": 1256.800000011921,
+          "commit": 1272.4000000357628,
+          "render": 1288.9000000357628
+        },
+        {
+          "name": "pointerdown",
+          "input": 1656.4000000357628,
+          "handler": 1656.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1656.4000000357628,
+          "handler": 1656.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1656.4000000357628,
+          "handler": 1656.699999988079,
+          "commit": 1672.5,
+          "render": 1688.9000000357628
+        },
+        {
+          "name": "keydown",
+          "input": 2443.900000035763,
+          "handler": 2444.100000023842,
+          "commit": 2444.800000011921,
+          "render": 2455.900000035763
+        },
+        {
+          "name": "keydown",
+          "input": 2444.900000035763,
+          "handler": 2445,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2445.300000011921,
+          "handler": 2445.300000011921,
+          "commit": 2445.5,
+          "render": 2455.900000035763
+        },
+        {
+          "name": "keydown",
+          "input": 3242.400000035763,
+          "handler": 3242.400000035763,
+          "commit": 3255.5,
+          "render": 3272.900000035763
+        },
+        {
+          "name": "pointerdown",
+          "input": 4056.300000011921,
+          "handler": 4056.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4056.300000011921,
+          "handler": 4056.600000023842,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4056.300000011921,
+          "handler": 4056.600000023842,
+          "commit": 4072.5,
+          "render": 4088.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 4843.900000035763,
+          "handler": 4843.900000035763,
+          "commit": 4844.800000011921,
+          "render": 4855.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 4844.900000035763,
+          "handler": 4844.900000035763,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4845.400000035763,
+          "handler": 4845.400000035763,
+          "commit": 4845.600000023842,
+          "render": 4855.699999988079
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "wallMs": 5384,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 1.3,
+        "input-to-render": 11.9
+      },
+      "taskMs": 84.105,
+      "scriptMs": 10.41,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 75,
+          "handler": 76,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 75.09999996423721,
+          "handler": 76.29999995231628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 75.09999996423721,
+          "handler": 76.29999995231628,
+          "commit": 114.59999996423721,
+          "render": 123.5
+        },
+        {
+          "name": "keydown",
+          "input": 446.19999998807907,
+          "handler": 446.39999997615814,
+          "commit": 447.5,
+          "render": 457
+        },
+        {
+          "name": "keydown",
+          "input": 447.5,
+          "handler": 447.5999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 448.0999999642372,
+          "handler": 448.19999998807907,
+          "commit": 448.2999999523163,
+          "render": 457
+        },
+        {
+          "name": "keydown",
+          "input": 842.8999999761581,
+          "handler": 843,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.5,
+          "handler": 1043.5999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.7999999523163,
+          "handler": 1043.7999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1257.699999988079,
+          "handler": 1257.8999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1257.699999988079,
+          "handler": 1258.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1257.699999988079,
+          "handler": 1258.199999988079,
+          "commit": 1273.7999999523163,
+          "render": 1290
+        },
+        {
+          "name": "pointerdown",
+          "input": 1657.5999999642372,
+          "handler": 1657.7999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1657.5999999642372,
+          "handler": 1657.8999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1657.5999999642372,
+          "handler": 1657.8999999761581,
+          "commit": 1673.7999999523163,
+          "render": 1690.199999988079
+        },
+        {
+          "name": "keydown",
+          "input": 2446.699999988079,
+          "handler": 2446.699999988079,
+          "commit": 2447.599999964237,
+          "render": 2457
+        },
+        {
+          "name": "keydown",
+          "input": 2447.699999988079,
+          "handler": 2447.7999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2448.599999964237,
+          "handler": 2448.699999988079,
+          "commit": 2448.7999999523163,
+          "render": 2457
+        },
+        {
+          "name": "keydown",
+          "input": 3244.599999964237,
+          "handler": 3244.699999988079,
+          "commit": 3256.7999999523163,
+          "render": 3273.399999976158
+        },
+        {
+          "name": "pointerdown",
+          "input": 4057.5,
+          "handler": 4057.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4057.5,
+          "handler": 4057.899999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4057.5,
+          "handler": 4057.899999976158,
+          "commit": 4073.699999988079,
+          "render": 4090.099999964237
+        },
+        {
+          "name": "keydown",
+          "input": 4845.099999964237,
+          "handler": 4845.199999988079,
+          "commit": 4845.899999976158,
+          "render": 4857
+        },
+        {
+          "name": "keydown",
+          "input": 4846,
+          "handler": 4846,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4846.5,
+          "handler": 4846.5,
+          "commit": 4846.699999988079,
+          "render": 4857
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "wallMs": 5384,
+      "medians": {
+        "input-to-handler": 0.1,
+        "input-to-commit": 1.3,
+        "input-to-render": 14.3
+      },
+      "taskMs": 84.087,
+      "scriptMs": 10.004000000000001,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 75.89999997615814,
+          "handler": 76.79999995231628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 75.89999997615814,
+          "handler": 77.09999996423721,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 75.89999997615814,
+          "handler": 77.19999998807907,
+          "commit": 115,
+          "render": 124.59999996423721
+        },
+        {
+          "name": "keydown",
+          "input": 445.19999998807907,
+          "handler": 445.2999999523163,
+          "commit": 446.5,
+          "render": 458.0999999642372
+        },
+        {
+          "name": "keydown",
+          "input": 446.5999999642372,
+          "handler": 446.69999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 447.19999998807907,
+          "handler": 447.19999998807907,
+          "commit": 447.39999997615814,
+          "render": 458.0999999642372
+        },
+        {
+          "name": "keydown",
+          "input": 844.5,
+          "handler": 844.5999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043,
+          "handler": 1043,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.2999999523163,
+          "handler": 1043.2999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1258.7999999523163,
+          "handler": 1259.0999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1258.8999999761581,
+          "handler": 1259.3999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1258.8999999761581,
+          "handler": 1259.3999999761581,
+          "commit": 1274.699999988079,
+          "render": 1291.0999999642372
+        },
+        {
+          "name": "pointerdown",
+          "input": 1658.5999999642372,
+          "handler": 1658.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1658.5999999642372,
+          "handler": 1658.7999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1658.5999999642372,
+          "handler": 1658.7999999523163,
+          "commit": 1674.7999999523163,
+          "render": 1691.199999988079
+        },
+        {
+          "name": "keydown",
+          "input": 2443.699999988079,
+          "handler": 2443.699999988079,
+          "commit": 2444.599999964237,
+          "render": 2458
+        },
+        {
+          "name": "keydown",
+          "input": 2444.599999964237,
+          "handler": 2444.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2445.099999964237,
+          "handler": 2445.099999964237,
+          "commit": 2445.199999988079,
+          "render": 2458
+        },
+        {
+          "name": "keydown",
+          "input": 3246.2999999523163,
+          "handler": 3246.399999976158,
+          "commit": 3257.7999999523163,
+          "render": 3274.399999976158
+        },
+        {
+          "name": "pointerdown",
+          "input": 4058.699999988079,
+          "handler": 4058.899999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4058.699999988079,
+          "handler": 4059,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4058.699999988079,
+          "handler": 4059,
+          "commit": 4074.699999988079,
+          "render": 4091.099999964237
+        },
+        {
+          "name": "keydown",
+          "input": 4846.299999952316,
+          "handler": 4846.299999952316,
+          "commit": 4847.099999964237,
+          "render": 4857.899999976158
+        },
+        {
+          "name": "keydown",
+          "input": 4847.099999964237,
+          "handler": 4847.099999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4847.5,
+          "handler": 4847.5,
+          "commit": 4847.699999988079,
+          "render": 4857.899999976158
+        }
+      ]
+    },
+    {
+      "run": 6,
+      "wallMs": 5382,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 1.2,
+        "input-to-render": 11.6
+      },
+      "taskMs": 78.60700000000001,
+      "scriptMs": 10.081,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 73.30000001192093,
+          "handler": 74.19999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 73.30000001192093,
+          "handler": 74.40000003576279,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 73.30000001192093,
+          "handler": 74.40000003576279,
+          "commit": 110.10000002384186,
+          "render": 122.40000003576279
+        },
+        {
+          "name": "keydown",
+          "input": 445.60000002384186,
+          "handler": 445.69999998807907,
+          "commit": 446.80000001192093,
+          "render": 455.80000001192093
+        },
+        {
+          "name": "keydown",
+          "input": 447,
+          "handler": 447,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 447.5,
+          "handler": 447.5,
+          "commit": 447.69999998807907,
+          "render": 455.80000001192093
+        },
+        {
+          "name": "keydown",
+          "input": 840,
+          "handler": 840.1000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042,
+          "handler": 1042.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.300000011921,
+          "handler": 1042.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1256.300000011921,
+          "handler": 1256.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1256.5,
+          "handler": 1256.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1256.5,
+          "handler": 1256.9000000357628,
+          "commit": 1272.5,
+          "render": 1288.9000000357628
+        },
+        {
+          "name": "pointerdown",
+          "input": 1656.6000000238419,
+          "handler": 1656.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1656.6000000238419,
+          "handler": 1656.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1656.6000000238419,
+          "handler": 1656.800000011921,
+          "commit": 1672.6000000238419,
+          "render": 1688.9000000357628
+        },
+        {
+          "name": "keydown",
+          "input": 2444.600000023842,
+          "handler": 2444.600000023842,
+          "commit": 2445.400000035763,
+          "render": 2455.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 2445.5,
+          "handler": 2445.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2446,
+          "handler": 2446,
+          "commit": 2446.199999988079,
+          "render": 2455.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 3244.900000035763,
+          "handler": 3245,
+          "commit": 3255.699999988079,
+          "render": 3272.199999988079
+        },
+        {
+          "name": "pointerdown",
+          "input": 4056.100000023842,
+          "handler": 4056.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4056.199999988079,
+          "handler": 4056.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4056.199999988079,
+          "handler": 4056.5,
+          "commit": 4072.600000023842,
+          "render": 4088.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 4844.199999988079,
+          "handler": 4844.199999988079,
+          "commit": 4845,
+          "render": 4855.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 4845.100000023842,
+          "handler": 4845.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4845.800000011921,
+          "handler": 4845.800000011921,
+          "commit": 4846,
+          "render": 4855.800000011921
+        }
+      ]
+    },
+    {
+      "run": 7,
+      "wallMs": 5393,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 1.2,
+        "input-to-render": 11.9
+      },
+      "taskMs": 79.74000000000001,
+      "scriptMs": 10.136,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 74.10000002384186,
+          "handler": 75,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 74.10000002384186,
+          "handler": 75.19999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 74.10000002384186,
+          "handler": 75.19999998807907,
+          "commit": 111.30000001192093,
+          "render": 123.19999998807907
+        },
+        {
+          "name": "keydown",
+          "input": 444.80000001192093,
+          "handler": 445,
+          "commit": 446,
+          "render": 456.69999998807907
+        },
+        {
+          "name": "keydown",
+          "input": 446,
+          "handler": 446,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 446.39999997615814,
+          "handler": 446.5,
+          "commit": 446.69999998807907,
+          "render": 456.69999998807907
+        },
+        {
+          "name": "keydown",
+          "input": 841.8999999761581,
+          "handler": 842,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.3999999761581,
+          "handler": 1043.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.6000000238419,
+          "handler": 1043.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1257.199999988079,
+          "handler": 1257.3999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1257.199999988079,
+          "handler": 1257.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1257.199999988079,
+          "handler": 1257.6000000238419,
+          "commit": 1273.3999999761581,
+          "render": 1289.6000000238419
+        },
+        {
+          "name": "pointerdown",
+          "input": 1657.199999988079,
+          "handler": 1657.3999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1657.300000011921,
+          "handler": 1657.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1657.300000011921,
+          "handler": 1657.5,
+          "commit": 1673.300000011921,
+          "render": 1689.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 2447,
+          "handler": 2447.100000023842,
+          "commit": 2448,
+          "render": 2456.600000023842
+        },
+        {
+          "name": "keydown",
+          "input": 2448,
+          "handler": 2448,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2448.5,
+          "handler": 2448.5,
+          "commit": 2448.699999988079,
+          "render": 2456.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 3246,
+          "handler": 3246,
+          "commit": 3256.399999976158,
+          "render": 3273
+        },
+        {
+          "name": "pointerdown",
+          "input": 4057,
+          "handler": 4057.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4057,
+          "handler": 4057.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4057,
+          "handler": 4057.300000011921,
+          "commit": 4073.300000011921,
+          "render": 4089.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 4846.600000023842,
+          "handler": 4846.699999988079,
+          "commit": 4847.5,
+          "render": 4856.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 4847.600000023842,
+          "handler": 4847.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4848.300000011921,
+          "handler": 4848.300000011921,
+          "commit": 4848.5,
+          "render": 4856.699999988079
+        }
+      ]
+    },
+    {
+      "run": 8,
+      "wallMs": 5380,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 1.1,
+        "input-to-render": 12.4
+      },
+      "taskMs": 73.04500000000002,
+      "scriptMs": 9.844999999999999,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 74.59999996423721,
+          "handler": 75.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 74.59999996423721,
+          "handler": 75.69999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 74.59999996423721,
+          "handler": 75.69999998807907,
+          "commit": 107,
+          "render": 123.59999996423721
+        },
+        {
+          "name": "keydown",
+          "input": 445.80000001192093,
+          "handler": 445.89999997615814,
+          "commit": 446.89999997615814,
+          "render": 457.0999999642372
+        },
+        {
+          "name": "keydown",
+          "input": 446.89999997615814,
+          "handler": 447,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 447.39999997615814,
+          "handler": 447.39999997615814,
+          "commit": 447.5999999642372,
+          "render": 457.0999999642372
+        },
+        {
+          "name": "keydown",
+          "input": 843.3000000119209,
+          "handler": 843.3999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.199999988079,
+          "handler": 1043.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.5,
+          "handler": 1043.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1257.8999999761581,
+          "handler": 1258.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1257.8999999761581,
+          "handler": 1258.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1257.8999999761581,
+          "handler": 1258.3999999761581,
+          "commit": 1273.8999999761581,
+          "render": 1290.0999999642372
+        },
+        {
+          "name": "pointerdown",
+          "input": 1657.699999988079,
+          "handler": 1657.8999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1657.699999988079,
+          "handler": 1658,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1657.699999988079,
+          "handler": 1658,
+          "commit": 1673.5999999642372,
+          "render": 1690.300000011921
+        },
+        {
+          "name": "keydown",
+          "input": 2444.699999988079,
+          "handler": 2444.800000011921,
+          "commit": 2445.5,
+          "render": 2457.099999964237
+        },
+        {
+          "name": "keydown",
+          "input": 2445.599999964237,
+          "handler": 2445.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2446.099999964237,
+          "handler": 2446.099999964237,
+          "commit": 2446.199999988079,
+          "render": 2457.099999964237
+        },
+        {
+          "name": "keydown",
+          "input": 3245.199999988079,
+          "handler": 3245.300000011921,
+          "commit": 3256.899999976158,
+          "render": 3273.5
+        },
+        {
+          "name": "pointerdown",
+          "input": 4057.5,
+          "handler": 4057.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4057.5,
+          "handler": 4057.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4057.5,
+          "handler": 4057.800000011921,
+          "commit": 4073.800000011921,
+          "render": 4090.199999988079
+        },
+        {
+          "name": "keydown",
+          "input": 4845.199999988079,
+          "handler": 4845.300000011921,
+          "commit": 4846,
+          "render": 4857
+        },
+        {
+          "name": "keydown",
+          "input": 4846,
+          "handler": 4846.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4846.599999964237,
+          "handler": 4846.599999964237,
+          "commit": 4846.800000011921,
+          "render": 4857
+        }
+      ]
+    }
+  ],
+  "full": [
+    {
+      "run": 2,
+      "wallMs": 5403,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 0.4,
+        "input-to-render": 11.3
+      },
+      "taskMs": 131.875,
+      "scriptMs": 28.410999999999998,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 74.60000002384186,
+          "handler": 75.60000002384186,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 74.60000002384186,
+          "handler": 75.80000001192093,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 74.60000002384186,
+          "handler": 75.80000001192093,
+          "commit": 119.5,
+          "render": 123.40000003576279
+        },
+        {
+          "name": "keydown",
+          "input": 444.80000001192093,
+          "handler": 444.9000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 446.10000002384186,
+          "handler": 446.10000002384186,
+          "commit": 446.4000000357628,
+          "render": 457.10000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 446.7000000476837,
+          "handler": 446.80000001192093,
+          "commit": 446.9000000357628,
+          "render": 457.10000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 842.7000000476837,
+          "handler": 842.7000000476837,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.6000000238419,
+          "handler": 1042.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.9000000357628,
+          "handler": 1043,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1274.1000000238419,
+          "handler": 1274.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1274.1000000238419,
+          "handler": 1274.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1274.1000000238419,
+          "handler": 1274.5,
+          "commit": 1290.2000000476837,
+          "render": 1306.6000000238419
+        },
+        {
+          "name": "pointerdown",
+          "input": 1674.1000000238419,
+          "handler": 1674.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1674.1000000238419,
+          "handler": 1674.4000000357628,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1674.1000000238419,
+          "handler": 1674.4000000357628,
+          "commit": 1690.2000000476837,
+          "render": 1706.6000000238419
+        },
+        {
+          "name": "keydown",
+          "input": 2444.900000035763,
+          "handler": 2445,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2445.600000023842,
+          "handler": 2445.7000000476837,
+          "commit": 2446,
+          "render": 2456.900000035763
+        },
+        {
+          "name": "keydown",
+          "input": 2446.2000000476837,
+          "handler": 2446.2000000476837,
+          "commit": 2446.300000011921,
+          "render": 2456.900000035763
+        },
+        {
+          "name": "keydown",
+          "input": 3246.100000023842,
+          "handler": 3246.2000000476837,
+          "commit": 3256.800000011921,
+          "render": 3273.2000000476837
+        },
+        {
+          "name": "pointerdown",
+          "input": 4074.2000000476837,
+          "handler": 4074.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4074.300000011921,
+          "handler": 4074.600000023842,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4074.300000011921,
+          "handler": 4074.600000023842,
+          "commit": 4090.2000000476837,
+          "render": 4106.600000023842
+        },
+        {
+          "name": "keydown",
+          "input": 4844.900000035763,
+          "handler": 4845,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4845.900000035763,
+          "handler": 4846,
+          "commit": 4846.200000047684,
+          "render": 4856.900000035763
+        },
+        {
+          "name": "keydown",
+          "input": 4846.600000023842,
+          "handler": 4846.600000023842,
+          "commit": 4846.800000011921,
+          "render": 4856.900000035763
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "wallMs": 5397,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 0.4,
+        "input-to-render": 10.9
+      },
+      "taskMs": 123.59200000000001,
+      "scriptMs": 29.186,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 74.89999997615814,
+          "handler": 75.69999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 74.89999997615814,
+          "handler": 75.89999997615814,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 74.89999997615814,
+          "handler": 75.89999997615814,
+          "commit": 108.30000001192093,
+          "render": 124
+        },
+        {
+          "name": "keydown",
+          "input": 446.10000002384186,
+          "handler": 446.19999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 447.10000002384186,
+          "handler": 447.19999998807907,
+          "commit": 447.5,
+          "render": 456.60000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 447.60000002384186,
+          "handler": 447.69999998807907,
+          "commit": 447.89999997615814,
+          "render": 456.60000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 842.6999999880791,
+          "handler": 842.8999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.3999999761581,
+          "handler": 1043.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.699999988079,
+          "handler": 1043.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1275.1000000238419,
+          "handler": 1275.3999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1275.1000000238419,
+          "handler": 1275.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1275.1000000238419,
+          "handler": 1275.6000000238419,
+          "commit": 1291.199999988079,
+          "render": 1306.6000000238419
+        },
+        {
+          "name": "pointerdown",
+          "input": 1674.300000011921,
+          "handler": 1674.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1674.3999999761581,
+          "handler": 1674.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1674.3999999761581,
+          "handler": 1674.6000000238419,
+          "commit": 1690.300000011921,
+          "render": 1706.6000000238419
+        },
+        {
+          "name": "keydown",
+          "input": 2447.100000023842,
+          "handler": 2447.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2447.899999976158,
+          "handler": 2448,
+          "commit": 2448.199999988079,
+          "render": 2457.600000023842
+        },
+        {
+          "name": "keydown",
+          "input": 2448.800000011921,
+          "handler": 2448.899999976158,
+          "commit": 2449.199999988079,
+          "render": 2457.600000023842
+        },
+        {
+          "name": "keydown",
+          "input": 3245,
+          "handler": 3245.100000023842,
+          "commit": 3256.399999976158,
+          "render": 3274.100000023842
+        },
+        {
+          "name": "pointerdown",
+          "input": 4074.699999988079,
+          "handler": 4074.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4074.699999988079,
+          "handler": 4075,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4074.699999988079,
+          "handler": 4075,
+          "commit": 4090.899999976158,
+          "render": 4106.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 4845.800000011921,
+          "handler": 4845.899999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4846.399999976158,
+          "handler": 4846.399999976158,
+          "commit": 4846.600000023842,
+          "render": 4857.300000011921
+        },
+        {
+          "name": "keydown",
+          "input": 4846.800000011921,
+          "handler": 4846.800000011921,
+          "commit": 4847.100000023842,
+          "render": 4857.399999976158
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "wallMs": 5415,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 0.3,
+        "input-to-render": 10.2
+      },
+      "taskMs": 120.549,
+      "scriptMs": 27.812,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 91.19999998807907,
+          "handler": 92.09999996423721,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 91.19999998807907,
+          "handler": 92.39999997615814,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 91.19999998807907,
+          "handler": 92.39999997615814,
+          "commit": 127.79999995231628,
+          "render": 140.19999998807907
+        },
+        {
+          "name": "keydown",
+          "input": 462.89999997615814,
+          "handler": 463,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 464,
+          "handler": 464,
+          "commit": 464.19999998807907,
+          "render": 473.7999999523163
+        },
+        {
+          "name": "keydown",
+          "input": 464.39999997615814,
+          "handler": 464.5,
+          "commit": 464.5999999642372,
+          "render": 473.7999999523163
+        },
+        {
+          "name": "keydown",
+          "input": 859.2999999523163,
+          "handler": 859.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1059.199999988079,
+          "handler": 1059.2999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1059.5,
+          "handler": 1059.5999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1290.8999999761581,
+          "handler": 1291.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1291,
+          "handler": 1291.3999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1291,
+          "handler": 1291.3999999761581,
+          "commit": 1307.199999988079,
+          "render": 1323.3999999761581
+        },
+        {
+          "name": "pointerdown",
+          "input": 1690.699999988079,
+          "handler": 1691,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1690.7999999523163,
+          "handler": 1691.0999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1690.7999999523163,
+          "handler": 1691.0999999642372,
+          "commit": 1706.8999999761581,
+          "render": 1723.3999999761581
+        },
+        {
+          "name": "keydown",
+          "input": 2462.7999999523163,
+          "handler": 2462.899999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2463.5,
+          "handler": 2463.599999964237,
+          "commit": 2463.699999988079,
+          "render": 2473.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 2463.899999976158,
+          "handler": 2463.899999976158,
+          "commit": 2464.099999964237,
+          "render": 2473.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 3262.399999976158,
+          "handler": 3262.5,
+          "commit": 3273.599999964237,
+          "render": 3290
+        },
+        {
+          "name": "pointerdown",
+          "input": 4091,
+          "handler": 4091.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4091,
+          "handler": 4091.399999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4091,
+          "handler": 4091.399999976158,
+          "commit": 4107,
+          "render": 4123.299999952316
+        },
+        {
+          "name": "keydown",
+          "input": 4863,
+          "handler": 4863.099999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4863.799999952316,
+          "handler": 4863.799999952316,
+          "commit": 4864.099999964237,
+          "render": 4873.799999952316
+        },
+        {
+          "name": "keydown",
+          "input": 4864.299999952316,
+          "handler": 4864.299999952316,
+          "commit": 4864.5,
+          "render": 4873.799999952316
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "wallMs": 5395,
+      "medians": {
+        "input-to-handler": 0.1,
+        "input-to-commit": 0.3,
+        "input-to-render": 11.4
+      },
+      "taskMs": 114.254,
+      "scriptMs": 25.482999999999997,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 74,
+          "handler": 74.89999997615814,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 74.09999996423721,
+          "handler": 75.19999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 74.09999996423721,
+          "handler": 75.29999995231628,
+          "commit": 112,
+          "render": 123.29999995231628
+        },
+        {
+          "name": "keydown",
+          "input": 445.5999999642372,
+          "handler": 445.69999998807907,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 446.69999998807907,
+          "handler": 446.69999998807907,
+          "commit": 446.89999997615814,
+          "render": 457
+        },
+        {
+          "name": "keydown",
+          "input": 447.0999999642372,
+          "handler": 447.19999998807907,
+          "commit": 447.2999999523163,
+          "render": 457
+        },
+        {
+          "name": "keydown",
+          "input": 842.6999999880791,
+          "handler": 842.7999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.5999999642372,
+          "handler": 1042.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.8999999761581,
+          "handler": 1042.8999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1273.7999999523163,
+          "handler": 1274,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1273.7999999523163,
+          "handler": 1274.2999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1273.7999999523163,
+          "handler": 1274.2999999523163,
+          "commit": 1290,
+          "render": 1306.5
+        },
+        {
+          "name": "pointerdown",
+          "input": 1673.8999999761581,
+          "handler": 1674.0999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1673.8999999761581,
+          "handler": 1674.0999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1673.8999999761581,
+          "handler": 1674.199999988079,
+          "commit": 1690.0999999642372,
+          "render": 1706.5
+        },
+        {
+          "name": "keydown",
+          "input": 2445.199999988079,
+          "handler": 2445.2999999523163,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2445.899999976158,
+          "handler": 2445.899999976158,
+          "commit": 2446.199999988079,
+          "render": 2456.599999964237
+        },
+        {
+          "name": "keydown",
+          "input": 2446.399999976158,
+          "handler": 2446.399999976158,
+          "commit": 2446.5,
+          "render": 2456.599999964237
+        },
+        {
+          "name": "keydown",
+          "input": 3244.399999976158,
+          "handler": 3244.5,
+          "commit": 3256.599999964237,
+          "render": 3273
+        },
+        {
+          "name": "pointerdown",
+          "input": 4073.7999999523163,
+          "handler": 4074,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4073.7999999523163,
+          "handler": 4074.099999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4073.7999999523163,
+          "handler": 4074.099999964237,
+          "commit": 4089.899999976158,
+          "render": 4106.299999952316
+        },
+        {
+          "name": "keydown",
+          "input": 4844.5,
+          "handler": 4844.599999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4845.199999988079,
+          "handler": 4845.199999988079,
+          "commit": 4845.399999976158,
+          "render": 4856.599999964237
+        },
+        {
+          "name": "keydown",
+          "input": 4845.599999964237,
+          "handler": 4845.699999988079,
+          "commit": 4845.799999952316,
+          "render": 4856.599999964237
+        }
+      ]
+    },
+    {
+      "run": 6,
+      "wallMs": 5398,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 0.3,
+        "input-to-render": 11.7
+      },
+      "taskMs": 116.133,
+      "scriptMs": 26.842000000000002,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 73.19999998807907,
+          "handler": 74.09999996423721,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 73.19999998807907,
+          "handler": 74.39999997615814,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 73.19999998807907,
+          "handler": 74.39999997615814,
+          "commit": 111.5,
+          "render": 121.80000001192093
+        },
+        {
+          "name": "keydown",
+          "input": 443.89999997615814,
+          "handler": 444,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 444.80000001192093,
+          "handler": 445,
+          "commit": 445.0999999642372,
+          "render": 455.39999997615814
+        },
+        {
+          "name": "keydown",
+          "input": 445.30000001192093,
+          "handler": 445.39999997615814,
+          "commit": 445.5,
+          "render": 455.39999997615814
+        },
+        {
+          "name": "keydown",
+          "input": 839.3000000119209,
+          "handler": 839.3000000119209,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1041.699999988079,
+          "handler": 1041.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1041.8999999761581,
+          "handler": 1041.8999999761581,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1272.800000011921,
+          "handler": 1273.0999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1272.800000011921,
+          "handler": 1273.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1272.800000011921,
+          "handler": 1273.3999999761581,
+          "commit": 1288.699999988079,
+          "render": 1306.300000011921
+        },
+        {
+          "name": "pointerdown",
+          "input": 1672.300000011921,
+          "handler": 1672.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1672.300000011921,
+          "handler": 1672.5999999642372,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1672.300000011921,
+          "handler": 1672.5999999642372,
+          "commit": 1688.5,
+          "render": 1704.8999999761581
+        },
+        {
+          "name": "keydown",
+          "input": 2443.5,
+          "handler": 2443.599999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2444.199999988079,
+          "handler": 2444.199999988079,
+          "commit": 2444.399999976158,
+          "render": 2455.199999988079
+        },
+        {
+          "name": "keydown",
+          "input": 2444.599999964237,
+          "handler": 2444.699999988079,
+          "commit": 2444.699999988079,
+          "render": 2455.199999988079
+        },
+        {
+          "name": "keydown",
+          "input": 3242.599999964237,
+          "handler": 3242.699999988079,
+          "commit": 3255.199999988079,
+          "render": 3271.599999964237
+        },
+        {
+          "name": "pointerdown",
+          "input": 4072.399999976158,
+          "handler": 4072.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4072.399999976158,
+          "handler": 4072.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4072.399999976158,
+          "handler": 4072.800000011921,
+          "commit": 4088.5,
+          "render": 4104.899999976158
+        },
+        {
+          "name": "keydown",
+          "input": 4842.599999964237,
+          "handler": 4842.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4843.699999988079,
+          "handler": 4843.699999988079,
+          "commit": 4843.899999976158,
+          "render": 4855.399999976158
+        },
+        {
+          "name": "keydown",
+          "input": 4844.199999988079,
+          "handler": 4844.300000011921,
+          "commit": 4844.5,
+          "render": 4855.399999976158
+        }
+      ]
+    },
+    {
+      "run": 7,
+      "wallMs": 5400,
+      "medians": {
+        "input-to-handler": 0.2,
+        "input-to-commit": 0.3,
+        "input-to-render": 11
+      },
+      "taskMs": 121.254,
+      "scriptMs": 28.72,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 75.39999997615814,
+          "handler": 76.39999997615814,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 75.39999997615814,
+          "handler": 76.59999996423721,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 75.39999997615814,
+          "handler": 76.69999998807907,
+          "commit": 111.80000001192093,
+          "render": 124.59999996423721
+        },
+        {
+          "name": "keydown",
+          "input": 448.19999998807907,
+          "handler": 448.39999997615814,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 449.39999997615814,
+          "handler": 449.39999997615814,
+          "commit": 449.69999998807907,
+          "render": 458.19999998807907
+        },
+        {
+          "name": "keydown",
+          "input": 450,
+          "handler": 450.0999999642372,
+          "commit": 450.30000001192093,
+          "render": 458.19999998807907
+        },
+        {
+          "name": "keydown",
+          "input": 843.5999999642372,
+          "handler": 843.6999999880791,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.199999988079,
+          "handler": 1042.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1042.5,
+          "handler": 1042.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1276,
+          "handler": 1276.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1276,
+          "handler": 1276.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1276,
+          "handler": 1276.5,
+          "commit": 1291.5,
+          "render": 1307.800000011921
+        },
+        {
+          "name": "pointerdown",
+          "input": 1675.5999999642372,
+          "handler": 1675.699999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1675.5999999642372,
+          "handler": 1675.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1675.5999999642372,
+          "handler": 1675.8999999761581,
+          "commit": 1691.300000011921,
+          "render": 1707.800000011921
+        },
+        {
+          "name": "keydown",
+          "input": 2447.5,
+          "handler": 2447.599999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2448.399999976158,
+          "handler": 2448.399999976158,
+          "commit": 2448.599999964237,
+          "render": 2458
+        },
+        {
+          "name": "keydown",
+          "input": 2448.800000011921,
+          "handler": 2449,
+          "commit": 2449.099999964237,
+          "render": 2458
+        },
+        {
+          "name": "keydown",
+          "input": 3245.599999964237,
+          "handler": 3245.800000011921,
+          "commit": 3257.800000011921,
+          "render": 3274.300000011921
+        },
+        {
+          "name": "pointerdown",
+          "input": 4075.099999964237,
+          "handler": 4075.399999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4075.099999964237,
+          "handler": 4075.399999976158,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4075.099999964237,
+          "handler": 4075.399999976158,
+          "commit": 4091.300000011921,
+          "render": 4107.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 4846.5,
+          "handler": 4846.599999964237,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4847,
+          "handler": 4847.099999964237,
+          "commit": 4847.300000011921,
+          "render": 4858
+        },
+        {
+          "name": "keydown",
+          "input": 4847.5,
+          "handler": 4847.599999964237,
+          "commit": 4847.699999988079,
+          "render": 4858
+        }
+      ]
+    },
+    {
+      "run": 8,
+      "wallMs": 5398,
+      "medians": {
+        "input-to-handler": 0.1,
+        "input-to-commit": 0.3,
+        "input-to-render": 11.8
+      },
+      "taskMs": 120.908,
+      "scriptMs": 28.003,
+      "samples": [
+        {
+          "name": "pointerdown",
+          "input": 75.69999998807907,
+          "handler": 76.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 75.69999998807907,
+          "handler": 76.80000001192093,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 75.69999998807907,
+          "handler": 76.89999997615814,
+          "commit": 110.5,
+          "render": 124.60000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 447.69999998807907,
+          "handler": 447.80000001192093,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 448.89999997615814,
+          "handler": 448.89999997615814,
+          "commit": 449.10000002384186,
+          "render": 459.60000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 449.39999997615814,
+          "handler": 449.5,
+          "commit": 449.69999998807907,
+          "render": 459.60000002384186
+        },
+        {
+          "name": "keydown",
+          "input": 845.1000000238419,
+          "handler": 845.1999999880791,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1043.8999999761581,
+          "handler": 1044,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 1044.1000000238419,
+          "handler": 1044.1000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerdown",
+          "input": 1275.3999999761581,
+          "handler": 1275.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1275.3999999761581,
+          "handler": 1275.800000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1275.3999999761581,
+          "handler": 1275.800000011921,
+          "commit": 1291.3999999761581,
+          "render": 1307.699999988079
+        },
+        {
+          "name": "pointerdown",
+          "input": 1675.300000011921,
+          "handler": 1675.5,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 1675.300000011921,
+          "handler": 1675.6000000238419,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 1675.300000011921,
+          "handler": 1675.6000000238419,
+          "commit": 1691.300000011921,
+          "render": 1707.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 2447.100000023842,
+          "handler": 2447.199999988079,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 2447.899999976158,
+          "handler": 2448,
+          "commit": 2448.199999988079,
+          "render": 2458.100000023842
+        },
+        {
+          "name": "keydown",
+          "input": 2448.5,
+          "handler": 2448.5,
+          "commit": 2448.800000011921,
+          "render": 2458.100000023842
+        },
+        {
+          "name": "keydown",
+          "input": 3246.600000023842,
+          "handler": 3246.699999988079,
+          "commit": 3258,
+          "render": 3274.399999976158
+        },
+        {
+          "name": "pointerdown",
+          "input": 4075,
+          "handler": 4075.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "pointerup",
+          "input": 4075,
+          "handler": 4075.300000011921,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "click",
+          "input": 4075,
+          "handler": 4075.300000011921,
+          "commit": 4091.300000011921,
+          "render": 4107.699999988079
+        },
+        {
+          "name": "keydown",
+          "input": 4845.5,
+          "handler": 4845.600000023842,
+          "commit": null,
+          "render": null
+        },
+        {
+          "name": "keydown",
+          "input": 4846.100000023842,
+          "handler": 4846.199999988079,
+          "commit": 4846.399999976158,
+          "render": 4857.899999976158
+        },
+        {
+          "name": "keydown",
+          "input": 4846.5,
+          "handler": 4846.600000023842,
+          "commit": 4846.699999988079,
+          "render": 4857.899999976158
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "kept": [
+    16,
+    17
+  ],
+  "granularity": 2,
+  "attempts": [
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        16,
+        17
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        17
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        16
+      ],
+      "outcome": "passes"
+    }
+  ]
+}

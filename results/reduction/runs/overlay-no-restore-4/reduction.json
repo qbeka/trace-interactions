@@ -1,0 +1,40 @@
+{
+  "schema": "trace.reduction/1",
+  "fingerprint": "lost-focus/focus-restored/trigger",
+  "fixture": {
+    "id": "overlay",
+    "version": "1"
+  },
+  "seed": 1,
+  "originalActions": 18,
+  "reducedActions": 2,
+  "attempts": 17,
+  "outcomes": {
+    "fails": 6,
+    "passes": 4,
+    "invalid": 7,
+    "unstable": 0,
+    "other-failure": 0
+  },
+  "stopped": "minimal",
+  "oneMinimal": true,
+  "originalReproduction": {
+    "reproduced": 3,
+    "runs": 3
+  },
+  "reducedReproduction": {
+    "reproduced": 10,
+    "runs": 10
+  },
+  "baselineReproduction": {
+    "reproduced": 0,
+    "runs": 3
+  },
+  "distinctBehaviors": 1,
+  "keptIndices": [
+    9,
+    15
+  ],
+  "status": "reduced",
+  "elapsedMs": 40064
+}

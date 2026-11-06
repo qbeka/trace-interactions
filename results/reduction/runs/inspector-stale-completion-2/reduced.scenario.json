@@ -1,0 +1,85 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "inspector-random-4-reduced",
+  "description": "Generated session, seed 4.",
+  "fixture": {
+    "id": "inspector",
+    "version": "1"
+  },
+  "seed": 4,
+  "initialState": {},
+  "viewport": {
+    "width": 1000,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Inspect",
+      "traceId": "trigger"
+    },
+    "panel": {
+      "traceId": "panel"
+    },
+    "nameInput": {
+      "role": "textbox",
+      "name": "Name",
+      "traceId": "name-input"
+    },
+    "close": {
+      "role": "button",
+      "name": "Done",
+      "traceId": "close"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "latest-request-wins",
+      "key": "panel",
+      "terminal": [
+        "open",
+        "closed"
+      ]
+    },
+    {
+      "kind": "focus-valid"
+    },
+    {
+      "kind": "geometry-fits",
+      "target": "panel",
+      "insetPx": 8,
+      "tolerancePx": 2
+    },
+    {
+      "kind": "single-interactive",
+      "target": "panel"
+    }
+  ],
+  "actions": [
+    {
+      "at": 2260,
+      "type": "activate",
+      "target": "trigger",
+      "requests": {
+        "panel": "open"
+      },
+      "note": "open"
+    },
+    {
+      "at": 2300,
+      "type": "activate",
+      "target": "close",
+      "requests": {
+        "panel": "closed"
+      },
+      "note": "press Done"
+    }
+  ],
+  "cleanup": []
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "overlay-random-1-reduced",
+  "description": "Generated session, seed 1.",
+  "fixture": {
+    "id": "overlay",
+    "version": "1"
+  },
+  "seed": 1,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "trigger": {
+      "role": "button",
+      "name": "Archive project",
+      "traceId": "trigger"
+    },
+    "dialog": {
+      "role": "dialog",
+      "name": "Archive project",
+      "traceId": "dialog"
+    },
+    "password": {
+      "traceId": "dialog-input"
+    },
+    "title": {
+      "traceId": "title"
+    },
+    "cancel": {
+      "role": "button",
+      "name": "Cancel",
+      "traceId": "cancel"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "latest-request-wins",
+      "key": "dialog",
+      "terminal": [
+        "open",
+        "closed"
+      ]
+    },
+    {
+      "kind": "focus-valid"
+    },
+    {
+      "kind": "focus-restored",
+      "to": "trigger",
+      "whenState": {
+        "dialog": "closed"
+      },
+      "withinMs": 400
+    },
+    {
+      "kind": "single-interactive",
+      "target": "dialog"
+    },
+    {
+      "kind": "relationship-resolves",
+      "from": "dialog",
+      "attribute": "aria-labelledby",
+      "to": "title"
+    }
+  ],
+  "actions": [
+    {
+      "at": 1780,
+      "type": "activate",
+      "target": "trigger",
+      "requests": {
+        "dialog": "open"
+      },
+      "note": "open"
+    },
+    {
+      "at": 2280,
+      "type": "activate",
+      "target": "cancel",
+      "requests": {
+        "dialog": "closed"
+      },
+      "note": "cancel"
+    }
+  ],
+  "cleanup": []
+}

@@ -1,0 +1,322 @@
+{
+  "rows": [
+    {
+      "fixture": "inspector",
+      "build": "stale-completion",
+      "chosen": {
+        "seed": 4,
+        "fingerprint": "stale-final-state/latest-request-wins/panel",
+        "scanned": 4,
+        "invalid": 3
+      },
+      "fingerprint": "stale-final-state/latest-request-wins/panel",
+      "originalActions": 18,
+      "reducedActions": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "elapsedMs": {
+        "median": 29451,
+        "min": 29231,
+        "max": 29658,
+        "n": 5
+      },
+      "attempts": [
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "outcomes": {
+        "fails": 4,
+        "passes": 4,
+        "invalid": 1,
+        "unstable": 0,
+        "other-failure": 0
+      },
+      "reproduction": [
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        }
+      ],
+      "baselineReproduction": [
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        }
+      ],
+      "oneMinimal": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "status": [
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced"
+      ]
+    },
+    {
+      "fixture": "inspector",
+      "build": "stale-resize",
+      "chosen": null,
+      "scanned": 60,
+      "invalid": 5
+    },
+    {
+      "fixture": "overlay",
+      "build": "no-restore",
+      "chosen": {
+        "seed": 1,
+        "fingerprint": "lost-focus/focus-restored/trigger",
+        "scanned": 1,
+        "invalid": 0
+      },
+      "fingerprint": "lost-focus/focus-restored/trigger",
+      "originalActions": 18,
+      "reducedActions": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "elapsedMs": {
+        "median": 40198,
+        "min": 40064,
+        "max": 40277,
+        "n": 5
+      },
+      "attempts": [
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "outcomes": {
+        "fails": 6,
+        "passes": 4,
+        "invalid": 7,
+        "unstable": 0,
+        "other-failure": 0
+      },
+      "reproduction": [
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        }
+      ],
+      "baselineReproduction": [
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        }
+      ],
+      "oneMinimal": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "status": [
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced"
+      ]
+    },
+    {
+      "fixture": "overlay",
+      "build": "live-exit-clone",
+      "chosen": null,
+      "scanned": 60,
+      "invalid": 59
+    },
+    {
+      "fixture": "timeline",
+      "build": "drag-stuck-on-cancel",
+      "chosen": {
+        "seed": 2,
+        "fingerprint": "incomplete-cleanup/transient-cleared/dragging",
+        "scanned": 2,
+        "invalid": 1
+      },
+      "fingerprint": "incomplete-cleanup/transient-cleared/dragging",
+      "originalActions": 18,
+      "reducedActions": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "elapsedMs": {
+        "median": 12513,
+        "min": 12479,
+        "max": 12564,
+        "n": 5
+      },
+      "attempts": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "outcomes": {
+        "fails": 3,
+        "passes": 1,
+        "invalid": 1,
+        "unstable": 0,
+        "other-failure": 0
+      },
+      "reproduction": [
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        },
+        {
+          "reproduced": 10,
+          "runs": 10
+        }
+      ],
+      "baselineReproduction": [
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        },
+        {
+          "reproduced": 0,
+          "runs": 3
+        }
+      ],
+      "oneMinimal": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "status": [
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced",
+        "reduced"
+      ]
+    }
+  ],
+  "report": {
+    "scenarioActions": 18,
+    "events": 764,
+    "traceBytes": 102956,
+    "bytesPerEvent": 135,
+    "reportBytes": 859513,
+    "generationMs": {
+      "median": 4.5,
+      "min": 4,
+      "max": 4.7,
+      "n": 5
+    }
+  }
+}

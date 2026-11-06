@@ -1,0 +1,83 @@
+{
+  "kept": [
+    10,
+    11
+  ],
+  "granularity": 2,
+  "attempts": [
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "passes"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        12,
+        13
+      ],
+      "outcome": "passes"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        11
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10
+      ],
+      "outcome": "passes"
+    },
+    {
+      "kept": [
+        10,
+        11
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        10
+      ],
+      "outcome": "passes"
+    }
+  ]
+}

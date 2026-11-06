@@ -1,0 +1,69 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "timeline-random-2-reduced",
+  "description": "Generated session, seed 2.",
+  "fixture": {
+    "id": "timeline",
+    "version": "1"
+  },
+  "seed": 2,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 420,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 500
+  },
+  "targets": {
+    "handle": {
+      "role": "slider",
+      "name": "Playhead",
+      "traceId": "handle"
+    },
+    "track": {
+      "traceId": "track"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "transient-cleared",
+      "after": "pointerCancel",
+      "state": {
+        "dragging": false
+      }
+    },
+    {
+      "kind": "transient-cleared",
+      "after": "pointerUp",
+      "state": {
+        "dragging": false
+      }
+    },
+    {
+      "kind": "focus-valid"
+    }
+  ],
+  "actions": [
+    {
+      "at": 2300,
+      "type": "pointerDown",
+      "point": {
+        "space": "target-fraction",
+        "target": "handle",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "note": "press the handle"
+    },
+    {
+      "at": 2620,
+      "type": "pointerCancel",
+      "note": "cancel"
+    }
+  ],
+  "cleanup": []
+}

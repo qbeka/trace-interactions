@@ -1,0 +1,158 @@
+{
+  "kept": [
+    9,
+    15
+  ],
+  "granularity": 2,
+  "attempts": [
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "outcome": "passes"
+    },
+    {
+      "kept": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        14,
+        15,
+        16,
+        17
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        16,
+        17
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11,
+        14,
+        15
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        14,
+        15
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        11
+      ],
+      "outcome": "passes"
+    },
+    {
+      "kept": [
+        11,
+        14,
+        15
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        14,
+        15
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        9,
+        10,
+        15
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        15
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        10
+      ],
+      "outcome": "passes"
+    },
+    {
+      "kept": [
+        10,
+        15
+      ],
+      "outcome": "invalid"
+    },
+    {
+      "kept": [
+        9,
+        15
+      ],
+      "outcome": "fails"
+    },
+    {
+      "kept": [
+        9
+      ],
+      "outcome": "passes"
+    }
+  ]
+}
