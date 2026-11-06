@@ -19,9 +19,9 @@
         4
       ],
       "elapsedMs": {
-        "median": 60971,
-        "min": 60954,
-        "max": 60974,
+        "median": 60798,
+        "min": 60735,
+        "max": 61530,
         "n": 5
       },
       "attempts": [

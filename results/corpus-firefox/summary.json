@@ -18,8 +18,8 @@
     "traceDiff": {
       "truePositives": 18,
       "falseNegatives": 0,
-      "falsePositives": 13,
-      "trueNegatives": 0
+      "falsePositives": 9,
+      "trueNegatives": 4
     },
     "finalScreenshot": {
       "truePositives": 0,

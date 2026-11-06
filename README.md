@@ -15,14 +15,14 @@ There is no hosted demo yet. `pnpm demo` builds the same reports locally.
 
 | | |
 |---|---|
-| **What Trace adds** | It separates bugs from legitimate changes. A control that flags any recorded difference found every seeded bug and also flagged 9 of 13 clean builds. Trace flagged 0 of 13. |
+| **What Trace adds** | On the tuned corpus, a control that flags any recorded difference also found every seeded bug, and it flagged 9 of 13 clean builds. Trace flagged 0 of 13. On held-out legitimate changes the gap is smaller: 1 of 3 against 2 of 3. |
 | **Seeded bugs, tuned corpus** | 18 of 18 caught in the right category, on Chromium, Firefox and WebKit |
 | **Clean builds, tuned corpus** | 0 of 13 flagged on all three browsers |
 | **Holdout, run once on an earlier oracle** | 6 of 6 seeded bugs caught, and 1 of 4 clean builds wrongly flagged |
 | **Random sessions on correct builds** | 300 seeded, 5 invalid, 295 completed, 2 flagged. Both are a real bug in my own "correct" fixture. |
 | **Reduction** | 18 actions to 2 on 3 generated sessions, and 14 to 4 on a written one. Reproduced in 10 of 10 fresh runs, 0 of 3 on the baseline. |
 | **Reduction reach** | 2 of 5 planned generated workloads found no usable session |
-| **Recording cost** | 46 ms more main thread work across a 14 action, 5.4 s scenario (42 to 79 ms over 7 rounds), which is 63 percent of a mostly idle page |
+| **Recording cost** | 60 ms more main thread work across a 14 action, 5.4 s scenario (49 to 71 ms over 7 rounds). Across 3 runs of this experiment the median was 46 to 60 ms. |
 
 Measured on one Apple M5 Pro Mac. The first corpus run missed 5 seeded bugs, mislabeled
 1 and flagged 3 clean builds, and the oracle and 7 scenarios changed because of it. An
@@ -133,7 +133,8 @@ press that lands off target is never reported as a regression.
 
 ## Results
 
-Every number links to a saved run with a manifest. See [docs/REPORT.md](docs/REPORT.md).
+The measured numbers come from saved runs with manifests, at commit `3a66aaf`, except the
+one holdout run. See [docs/REPORT.md](docs/REPORT.md).
 
 ### Detection
 
@@ -146,9 +147,9 @@ scenarios. Counts are from the final code on Chromium.
 | Any recorded difference (control) | 18 of 18 | 9 of 13 | 6 of 6 | 2 of 4 |
 | Final screenshot difference (control) | 11 of 18 | 5 of 13 | 2 of 6 | 0 of 4 |
 
-So Trace does not find more of these bugs than a full comparison of two traces. It
-rejects legitimate changes, and it can fail a bug both builds share, which no comparison
-can. Clean builds include 3 identical ones in the tuned corpus and 1 in the combobox set.
+So Trace does not find more of these bugs than a full comparison of two traces. Its
+requirements reject most legitimate changes, and they can fail a bug both builds share,
+which no comparison can. Clean builds include 3 identical ones in the tuned corpus and 1 in the combobox set.
 On legitimate changes alone, Trace flagged 0 of 10 and 1 of 3.
 
 The screenshot control compares two captures from one run on one machine, which is its
@@ -164,12 +165,13 @@ with a new browser for each run. Scenario: `long-session`, 14 actions, 5.4 s.
 
 | Recording level | Main thread work added | Script time added |
 |---|---|---|
-| Timestamps only (performance pass) | 11.4 ms (range 3.5 to 18.5), 16 percent | 0.4 ms (range -0.4 to 3.5) |
-| Full trace (diagnostic pass) | 46.1 ms (range 42.3 to 78.6), 63 percent | 17.0 ms (range 15.0 to 27.7) |
+| Timestamps only (performance pass) | 4.9 ms (range -2.3 to 12.2) | 0.1 ms (range -0.7 to 1.7) |
+| Full trace (diagnostic pass) | 60.5 ms (range 49.2 to 70.6), 54 percent | 24.9 ms (range 22.1 to 28.1) |
 
-The control did 73 ms of main thread work in that 5.4 s, so the percentages look large
-because the page is mostly idle. An earlier run of the same experiment measured the
-timestamp level at 5.9 ms with a range crossing zero, so treat that level as small and
+The control did 111 ms of main thread work in that 5.4 s, so percentages look large because
+the page is mostly idle. Numbers move between runs: three runs of this experiment gave
+medians of 46 to 60 ms for full recording and 4.9 to 11.4 ms for timestamps, with the
+timestamp range crossing zero in two of them. Treat the timestamp level as small and
 poorly resolved. [Raw samples](results/overhead/raw.json).
 
 ## What the numbers leave out
@@ -188,13 +190,15 @@ poorly resolved. [Raw samples](results/overhead/raw.json).
   but I had labeled that build a legitimate change. A numeric requirement can fail a
   design change.
 - **Trace only finds what a scenario reaches.** Most seeded bugs were caught by exactly one
-  scenario. Random sessions never reached 2 of 5 reduction targets. Requirements a run
-  did not reach now say `not exercised`, but a bug in an unreached path still passes.
+  scenario. Random sessions never reached 2 of 5 reduction targets. A requirement the run
+  never reached says `not exercised`, for example a focus requirement on a target that
+  never had focus. That status is per requirement: one judged occurrence makes it `held`,
+  even if another was skipped.
 - **Random sessions use a reduced requirement list.** They carry no acknowledgements and
-  leave out 4 requirement kinds, because those need scenario-specific values. Applying a
-  fixture's own fixed requirements to random sessions fails correct builds for that
-  reason, as the review showed on timeline. So the result covers false alarms from these
-  checks only.
+  leave out 4 requirement kinds. Applying a fixture's fixed requirements to random sessions
+  fails correct builds: 23 of 26 on timeline in the review, because a transient state is
+  judged before it settles unless the scenario sets `settledMs`. So the result covers false
+  alarms from these checks only.
 - **Some leaks are invisible.** The ledger counts listeners on `window` and `document`,
   observers, timers, frames and idle callbacks. It misses `document.body` listeners,
   `matchMedia`, `visualViewport` and `BroadcastChannel`. A component already mounted at load
@@ -212,9 +216,8 @@ poorly resolved. [Raw samples](results/overhead/raw.json).
   every press far off target, on a reviewer's rerun of this exact corpus. The cause is
   unproven, and I could not reproduce it with the display awake. Such a run is now invalid
   instead of a quiet pass. The final run held the display awake.
-- **Corpus numbers come from one repetition.** Verdicts repeat, but recorded event order at
-  equal times can swap between runs. That swap is why the difference control flagged 13 of
-  13 clean builds on Firefox, including identical ones.
+- **Corpus numbers come from one repetition.** Verdicts repeated across the runs I made, but
+  recorded event order at equal times can swap between runs.
 - **Timings are lab numbers from one machine.** They are not INP. `input-to-render` is the
   next frame the page observed, not a frame shown on screen.
 - **What a report contains.** The recorder keeps no text or input values, and it drops
@@ -231,8 +234,8 @@ poorly resolved. [Raw samples](results/overhead/raw.json).
 | Command | What it does | Time here |
 |---|---|---|
 | `pnpm check` | Type checks everything | Under 1 s |
-| `pnpm test` | Unit tests, including 920 valid model-generated sequences from 2,000 seeds, for one requirement kind | Under 1 s |
-| `pnpm test:e2e` | Real browser tests on all three engines | About 5 minutes |
+| `pnpm test` | 117 unit tests, including 920 valid model-generated sequences from 2,000 seeds, for one requirement kind | Under 1 s |
+| `pnpm test:e2e` | 65 real browser tests on all three engines | About 5 minutes |
 | `pnpm bench:smoke` | One good pair and one seeded failure. Target under 60 s | 3.9 s |
 | `pnpm bench` | The full measurement. Budget 50 minutes | 42 minutes |
 | `pnpm demo` | Builds the static demo into `demo/` | About 80 s |
@@ -271,7 +274,8 @@ say, including where Trace differs, is in [docs/RESEARCH.md](docs/RESEARCH.md).
 
 Trace does not check out repositories, run remote code or test sites off this machine.
 `trace.fixtures.json` can name build commands, so treat it like code in the repository you
-run Trace from. A saved run folder is data, and it cannot choose those commands.
+run Trace from. A saved run folder is data. It cannot add a command, though its build name
+selects one you already registered.
 
 Trace is not a general test runner, and it does not replace Playwright Trace Viewer. It
 adds requirements, comparison and reduction for interrupted interactions.

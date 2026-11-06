@@ -19,9 +19,9 @@
         2
       ],
       "elapsedMs": {
-        "median": 29135,
-        "min": 29113,
-        "max": 29171,
+        "median": 29522,
+        "min": 29488,
+        "max": 29541,
         "n": 5
       },
       "attempts": [
@@ -123,9 +123,9 @@
         2
       ],
       "elapsedMs": {
-        "median": 40042,
-        "min": 39868,
-        "max": 40251,
+        "median": 40037,
+        "min": 39806,
+        "max": 40360,
         "n": 5
       },
       "attempts": [
@@ -227,9 +227,9 @@
         2
       ],
       "elapsedMs": {
-        "median": 12526,
-        "min": 12518,
-        "max": 12543,
+        "median": 12769,
+        "min": 12738,
+        "max": 12791,
         "n": 5
       },
       "attempts": [
@@ -311,11 +311,11 @@
     "events": 764,
     "traceBytes": 103242,
     "bytesPerEvent": 135,
-    "reportBytes": 861281,
+    "reportBytes": 861282,
     "generationMs": {
-      "median": 4.2,
-      "min": 3.7,
-      "max": 6,
+      "median": 4,
+      "min": 3.8,
+      "max": 6.1,
       "n": 5
     }
   }

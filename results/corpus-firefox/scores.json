@@ -9,7 +9,7 @@
     "outcome": "tn",
     "scenarios": 5,
     "invalid": 0,
-    "traceDiffFlag": true,
+    "traceDiffFlag": false,
     "screenshotFlag": false
   },
   {
@@ -166,7 +166,7 @@
     "outcome": "tn",
     "scenarios": 4,
     "invalid": 0,
-    "traceDiffFlag": true,
+    "traceDiffFlag": false,
     "screenshotFlag": false
   },
   {
@@ -284,7 +284,7 @@
     "outcome": "tn",
     "scenarios": 4,
     "invalid": 0,
-    "traceDiffFlag": true,
+    "traceDiffFlag": false,
     "screenshotFlag": false
   },
   {
@@ -323,7 +323,7 @@
     "outcome": "tn",
     "scenarios": 5,
     "invalid": 0,
-    "traceDiffFlag": true,
+    "traceDiffFlag": false,
     "screenshotFlag": false
   },
   {

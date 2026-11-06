@@ -86,9 +86,14 @@ Requirements do not depend on the baseline. Each maps to one failure category.
 
 An action `ack` and a timed-out `waitFor` report as `missed-ack`.
 
+`transient-cleared` judges just before the next action. If a state settles over time, set
+`settledMs`, or a fast next action will read it too early. `geometry-fits` also takes
+`settledMs`, with a default of 100.
+
 Each requirement ends as `held`, `broken` or `not exercised`. The last means the run never
 reached what it checks, such as a focus requirement on a target that never had focus, or a
-leak check with no count from before mount. To test for leaks, start with
+leak check with no count from before mount. The status covers the whole requirement: one
+judged occurrence makes it `held`, even if another was skipped. To test for leaks, start with
 `"initialState": { "mounted": false }` and mount with `requestState`, or there is nothing
 to compare against. A state key the page never publishes makes the scenario invalid, so a
 typo cannot pass as `held`.

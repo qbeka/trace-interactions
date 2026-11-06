@@ -4,21 +4,21 @@
     "seed": 1001,
     "outcome": "clean",
     "violations": [],
-    "ms": 2306
+    "ms": 2321
   },
   {
     "fixture": "inspector",
     "seed": 1002,
     "outcome": "clean",
     "violations": [],
-    "ms": 2664
+    "ms": 2675
   },
   {
     "fixture": "inspector",
     "seed": 1003,
     "outcome": "clean",
     "violations": [],
-    "ms": 3029
+    "ms": 3047
   },
   {
     "fixture": "inspector",
@@ -39,7 +39,7 @@
     "seed": 1006,
     "outcome": "clean",
     "violations": [],
-    "ms": 3246
+    "ms": 3252
   },
   {
     "fixture": "inspector",
@@ -53,14 +53,14 @@
     "seed": 1008,
     "outcome": "clean",
     "violations": [],
-    "ms": 2510
+    "ms": 2515
   },
   {
     "fixture": "inspector",
     "seed": 1009,
     "outcome": "clean",
     "violations": [],
-    "ms": 3884
+    "ms": 3899
   },
   {
     "fixture": "inspector",
@@ -74,77 +74,77 @@
     "seed": 1011,
     "outcome": "clean",
     "violations": [],
-    "ms": 2831
+    "ms": 2844
   },
   {
     "fixture": "inspector",
     "seed": 1012,
     "outcome": "clean",
     "violations": [],
-    "ms": 3598
+    "ms": 3620
   },
   {
     "fixture": "inspector",
     "seed": 1013,
     "outcome": "clean",
     "violations": [],
-    "ms": 3230
+    "ms": 3248
   },
   {
     "fixture": "inspector",
     "seed": 1014,
     "outcome": "clean",
     "violations": [],
-    "ms": 2371
+    "ms": 2385
   },
   {
     "fixture": "inspector",
     "seed": 1015,
     "outcome": "clean",
     "violations": [],
-    "ms": 2727
+    "ms": 2742
   },
   {
     "fixture": "inspector",
     "seed": 1016,
     "outcome": "clean",
     "violations": [],
-    "ms": 3047
+    "ms": 3060
   },
   {
     "fixture": "inspector",
     "seed": 1017,
     "outcome": "clean",
     "violations": [],
-    "ms": 3652
+    "ms": 3667
   },
   {
     "fixture": "inspector",
     "seed": 1018,
     "outcome": "clean",
     "violations": [],
-    "ms": 2492
+    "ms": 2503
   },
   {
     "fixture": "inspector",
     "seed": 1019,
     "outcome": "clean",
     "violations": [],
-    "ms": 1533
+    "ms": 1552
   },
   {
     "fixture": "inspector",
     "seed": 1020,
     "outcome": "clean",
     "violations": [],
-    "ms": 2157
+    "ms": 2177
   },
   {
     "fixture": "inspector",
     "seed": 1021,
     "outcome": "clean",
     "violations": [],
-    "ms": 2914
+    "ms": 2930
   },
   {
     "fixture": "inspector",
@@ -158,21 +158,21 @@
     "seed": 1023,
     "outcome": "clean",
     "violations": [],
-    "ms": 2727
+    "ms": 2741
   },
   {
     "fixture": "inspector",
     "seed": 1024,
     "outcome": "clean",
     "violations": [],
-    "ms": 3177
+    "ms": 3192
   },
   {
     "fixture": "inspector",
     "seed": 1025,
     "outcome": "clean",
     "violations": [],
-    "ms": 2604
+    "ms": 2601
   },
   {
     "fixture": "inspector",
@@ -186,469 +186,469 @@
     "seed": 1027,
     "outcome": "clean",
     "violations": [],
-    "ms": 3149
+    "ms": 3165
   },
   {
     "fixture": "inspector",
     "seed": 1028,
     "outcome": "clean",
     "violations": [],
-    "ms": 3414
+    "ms": 3437
   },
   {
     "fixture": "inspector",
     "seed": 1029,
     "outcome": "clean",
     "violations": [],
-    "ms": 2176
+    "ms": 2189
   },
   {
     "fixture": "inspector",
     "seed": 1030,
     "outcome": "clean",
     "violations": [],
-    "ms": 2439
+    "ms": 2452
   },
   {
     "fixture": "inspector",
     "seed": 1031,
     "outcome": "clean",
     "violations": [],
-    "ms": 2973
+    "ms": 2989
   },
   {
     "fixture": "inspector",
     "seed": 1032,
     "outcome": "clean",
     "violations": [],
-    "ms": 2607
+    "ms": 2624
   },
   {
     "fixture": "inspector",
     "seed": 1033,
     "outcome": "clean",
     "violations": [],
-    "ms": 2709
+    "ms": 2726
   },
   {
     "fixture": "inspector",
     "seed": 1034,
     "outcome": "clean",
     "violations": [],
-    "ms": 2988
+    "ms": 2997
   },
   {
     "fixture": "inspector",
     "seed": 1035,
     "outcome": "clean",
     "violations": [],
-    "ms": 2830
+    "ms": 2840
   },
   {
     "fixture": "inspector",
     "seed": 1036,
     "outcome": "clean",
     "violations": [],
-    "ms": 2390
+    "ms": 2408
   },
   {
     "fixture": "inspector",
     "seed": 1037,
     "outcome": "clean",
     "violations": [],
-    "ms": 2740
+    "ms": 2760
   },
   {
     "fixture": "inspector",
     "seed": 1038,
     "outcome": "clean",
     "violations": [],
-    "ms": 2699
+    "ms": 2705
   },
   {
     "fixture": "inspector",
     "seed": 1039,
     "outcome": "clean",
     "violations": [],
-    "ms": 2486
+    "ms": 2492
   },
   {
     "fixture": "inspector",
     "seed": 1040,
     "outcome": "clean",
     "violations": [],
-    "ms": 2610
+    "ms": 2629
   },
   {
     "fixture": "inspector",
     "seed": 1041,
     "outcome": "clean",
     "violations": [],
-    "ms": 3133
+    "ms": 3148
   },
   {
     "fixture": "inspector",
     "seed": 1042,
     "outcome": "clean",
     "violations": [],
-    "ms": 2642
+    "ms": 2655
   },
   {
     "fixture": "inspector",
     "seed": 1043,
     "outcome": "clean",
     "violations": [],
-    "ms": 2674
+    "ms": 2677
   },
   {
     "fixture": "inspector",
     "seed": 1044,
     "outcome": "clean",
     "violations": [],
-    "ms": 2521
+    "ms": 2536
   },
   {
     "fixture": "inspector",
     "seed": 1045,
     "outcome": "clean",
     "violations": [],
-    "ms": 3233
+    "ms": 3246
   },
   {
     "fixture": "inspector",
     "seed": 1046,
     "outcome": "clean",
     "violations": [],
-    "ms": 2158
+    "ms": 2160
   },
   {
     "fixture": "inspector",
     "seed": 1047,
     "outcome": "clean",
     "violations": [],
-    "ms": 2953
+    "ms": 2958
   },
   {
     "fixture": "inspector",
     "seed": 1048,
     "outcome": "clean",
     "violations": [],
-    "ms": 3484
+    "ms": 3501
   },
   {
     "fixture": "inspector",
     "seed": 1049,
     "outcome": "clean",
     "violations": [],
-    "ms": 3001
+    "ms": 3012
   },
   {
     "fixture": "inspector",
     "seed": 1050,
     "outcome": "clean",
     "violations": [],
-    "ms": 2291
+    "ms": 2306
   },
   {
     "fixture": "inspector",
     "seed": 1051,
     "outcome": "clean",
     "violations": [],
-    "ms": 3549
+    "ms": 3561
   },
   {
     "fixture": "inspector",
     "seed": 1052,
     "outcome": "clean",
     "violations": [],
-    "ms": 2913
+    "ms": 2917
   },
   {
     "fixture": "inspector",
     "seed": 1053,
     "outcome": "clean",
     "violations": [],
-    "ms": 2277
+    "ms": 2278
   },
   {
     "fixture": "inspector",
     "seed": 1054,
     "outcome": "clean",
     "violations": [],
-    "ms": 2707
+    "ms": 2734
   },
   {
     "fixture": "inspector",
     "seed": 1055,
     "outcome": "clean",
     "violations": [],
-    "ms": 2592
+    "ms": 2604
   },
   {
     "fixture": "inspector",
     "seed": 1056,
     "outcome": "clean",
     "violations": [],
-    "ms": 2210
+    "ms": 2222
   },
   {
     "fixture": "inspector",
     "seed": 1057,
     "outcome": "clean",
     "violations": [],
-    "ms": 2797
+    "ms": 2815
   },
   {
     "fixture": "inspector",
     "seed": 1058,
     "outcome": "clean",
     "violations": [],
-    "ms": 2661
+    "ms": 2659
   },
   {
     "fixture": "inspector",
     "seed": 1059,
     "outcome": "clean",
     "violations": [],
-    "ms": 2082
+    "ms": 2089
   },
   {
     "fixture": "inspector",
     "seed": 1060,
     "outcome": "clean",
     "violations": [],
-    "ms": 2447
+    "ms": 2460
   },
   {
     "fixture": "inspector",
     "seed": 1061,
     "outcome": "clean",
     "violations": [],
-    "ms": 2616
+    "ms": 2626
   },
   {
     "fixture": "inspector",
     "seed": 1062,
     "outcome": "clean",
     "violations": [],
-    "ms": 2389
+    "ms": 2403
   },
   {
     "fixture": "inspector",
     "seed": 1063,
     "outcome": "clean",
     "violations": [],
-    "ms": 2447
+    "ms": 2457
   },
   {
     "fixture": "inspector",
     "seed": 1064,
     "outcome": "clean",
     "violations": [],
-    "ms": 2849
+    "ms": 2859
   },
   {
     "fixture": "inspector",
     "seed": 1065,
     "outcome": "clean",
     "violations": [],
-    "ms": 2344
+    "ms": 2354
   },
   {
     "fixture": "inspector",
     "seed": 1066,
     "outcome": "clean",
     "violations": [],
-    "ms": 3081
+    "ms": 3087
   },
   {
     "fixture": "inspector",
     "seed": 1067,
     "outcome": "clean",
     "violations": [],
-    "ms": 2766
+    "ms": 2778
   },
   {
     "fixture": "inspector",
     "seed": 1068,
     "outcome": "clean",
     "violations": [],
-    "ms": 2783
+    "ms": 2793
   },
   {
     "fixture": "inspector",
     "seed": 1069,
     "outcome": "clean",
     "violations": [],
-    "ms": 2978
+    "ms": 2991
   },
   {
     "fixture": "inspector",
     "seed": 1070,
     "outcome": "clean",
     "violations": [],
-    "ms": 2168
+    "ms": 2175
   },
   {
     "fixture": "inspector",
     "seed": 1071,
     "outcome": "clean",
     "violations": [],
-    "ms": 2832
+    "ms": 2841
   },
   {
     "fixture": "inspector",
     "seed": 1072,
     "outcome": "clean",
     "violations": [],
-    "ms": 3170
+    "ms": 3193
   },
   {
     "fixture": "inspector",
     "seed": 1073,
     "outcome": "clean",
     "violations": [],
-    "ms": 3366
+    "ms": 3349
   },
   {
     "fixture": "inspector",
     "seed": 1074,
     "outcome": "clean",
     "violations": [],
-    "ms": 3273
+    "ms": 3288
   },
   {
     "fixture": "inspector",
     "seed": 1075,
     "outcome": "clean",
     "violations": [],
-    "ms": 1688
+    "ms": 1699
   },
   {
     "fixture": "inspector",
     "seed": 1076,
     "outcome": "clean",
     "violations": [],
-    "ms": 2644
+    "ms": 2662
   },
   {
     "fixture": "inspector",
     "seed": 1077,
     "outcome": "clean",
     "violations": [],
-    "ms": 2548
+    "ms": 2561
   },
   {
     "fixture": "inspector",
     "seed": 1078,
     "outcome": "clean",
     "violations": [],
-    "ms": 3047
+    "ms": 3073
   },
   {
     "fixture": "inspector",
     "seed": 1079,
     "outcome": "clean",
     "violations": [],
-    "ms": 3081
+    "ms": 3064
   },
   {
     "fixture": "inspector",
     "seed": 1080,
     "outcome": "clean",
     "violations": [],
-    "ms": 2276
+    "ms": 2280
   },
   {
     "fixture": "inspector",
     "seed": 1081,
     "outcome": "clean",
     "violations": [],
-    "ms": 1404
+    "ms": 1414
   },
   {
     "fixture": "inspector",
     "seed": 1082,
     "outcome": "clean",
     "violations": [],
-    "ms": 3435
+    "ms": 3444
   },
   {
     "fixture": "inspector",
     "seed": 1083,
     "outcome": "clean",
     "violations": [],
-    "ms": 2487
+    "ms": 2485
   },
   {
     "fixture": "inspector",
     "seed": 1084,
     "outcome": "clean",
     "violations": [],
-    "ms": 2583
+    "ms": 2596
   },
   {
     "fixture": "inspector",
     "seed": 1085,
     "outcome": "clean",
     "violations": [],
-    "ms": 1988
+    "ms": 2000
   },
   {
     "fixture": "inspector",
     "seed": 1086,
     "outcome": "clean",
     "violations": [],
-    "ms": 2742
+    "ms": 2764
   },
   {
     "fixture": "inspector",
     "seed": 1087,
     "outcome": "clean",
     "violations": [],
-    "ms": 2679
+    "ms": 2688
   },
   {
     "fixture": "inspector",
     "seed": 1088,
     "outcome": "clean",
     "violations": [],
-    "ms": 3248
+    "ms": 3254
   },
   {
     "fixture": "inspector",
     "seed": 1089,
     "outcome": "clean",
     "violations": [],
-    "ms": 3063
+    "ms": 3078
   },
   {
     "fixture": "inspector",
     "seed": 1090,
     "outcome": "clean",
     "violations": [],
-    "ms": 2225
+    "ms": 2240
   },
   {
     "fixture": "inspector",
     "seed": 1091,
     "outcome": "clean",
     "violations": [],
-    "ms": 2579
+    "ms": 2589
   },
   {
     "fixture": "inspector",
     "seed": 1092,
     "outcome": "clean",
     "violations": [],
-    "ms": 2950
+    "ms": 3083
   },
   {
     "fixture": "inspector",
     "seed": 1093,
     "outcome": "clean",
     "violations": [],
-    "ms": 2525
+    "ms": 2584
   },
   {
     "fixture": "inspector",
@@ -662,49 +662,49 @@
     "seed": 1095,
     "outcome": "clean",
     "violations": [],
-    "ms": 2175
+    "ms": 2187
   },
   {
     "fixture": "inspector",
     "seed": 1096,
     "outcome": "clean",
     "violations": [],
-    "ms": 3107
+    "ms": 3124
   },
   {
     "fixture": "inspector",
     "seed": 1097,
     "outcome": "clean",
     "violations": [],
-    "ms": 1307
+    "ms": 1305
   },
   {
     "fixture": "inspector",
     "seed": 1098,
     "outcome": "clean",
     "violations": [],
-    "ms": 2551
+    "ms": 2561
   },
   {
     "fixture": "inspector",
     "seed": 1099,
     "outcome": "clean",
     "violations": [],
-    "ms": 3362
+    "ms": 3366
   },
   {
     "fixture": "inspector",
     "seed": 1100,
     "outcome": "clean",
     "violations": [],
-    "ms": 3646
+    "ms": 3642
   },
   {
     "fixture": "overlay",
     "seed": 1001,
     "outcome": "clean",
     "violations": [],
-    "ms": 2783
+    "ms": 2798
   },
   {
     "fixture": "overlay",
@@ -713,175 +713,175 @@
     "violations": [
       "dialog ended as \"closing\", but the latest request was \"closed\"."
     ],
-    "ms": 2093
+    "ms": 2096
   },
   {
     "fixture": "overlay",
     "seed": 1003,
     "outcome": "clean",
     "violations": [],
-    "ms": 1997
+    "ms": 2012
   },
   {
     "fixture": "overlay",
     "seed": 1004,
     "outcome": "clean",
     "violations": [],
-    "ms": 2498
+    "ms": 2513
   },
   {
     "fixture": "overlay",
     "seed": 1005,
     "outcome": "clean",
     "violations": [],
-    "ms": 2781
+    "ms": 2800
   },
   {
     "fixture": "overlay",
     "seed": 1006,
     "outcome": "clean",
     "violations": [],
-    "ms": 1381
+    "ms": 1396
   },
   {
     "fixture": "overlay",
     "seed": 1007,
     "outcome": "clean",
     "violations": [],
-    "ms": 2695
+    "ms": 2718
   },
   {
     "fixture": "overlay",
     "seed": 1008,
     "outcome": "clean",
     "violations": [],
-    "ms": 2125
+    "ms": 2140
   },
   {
     "fixture": "overlay",
     "seed": 1009,
     "outcome": "clean",
     "violations": [],
-    "ms": 2463
+    "ms": 2479
   },
   {
     "fixture": "overlay",
     "seed": 1010,
     "outcome": "clean",
     "violations": [],
-    "ms": 2190
+    "ms": 2212
   },
   {
     "fixture": "overlay",
     "seed": 1011,
     "outcome": "clean",
     "violations": [],
-    "ms": 2546
+    "ms": 2563
   },
   {
     "fixture": "overlay",
     "seed": 1012,
     "outcome": "clean",
     "violations": [],
-    "ms": 2150
+    "ms": 2159
   },
   {
     "fixture": "overlay",
     "seed": 1013,
     "outcome": "clean",
     "violations": [],
-    "ms": 1808
+    "ms": 1820
   },
   {
     "fixture": "overlay",
     "seed": 1014,
     "outcome": "clean",
     "violations": [],
-    "ms": 2179
+    "ms": 2195
   },
   {
     "fixture": "overlay",
     "seed": 1015,
     "outcome": "clean",
     "violations": [],
-    "ms": 2294
+    "ms": 2308
   },
   {
     "fixture": "overlay",
     "seed": 1016,
     "outcome": "clean",
     "violations": [],
-    "ms": 2586
+    "ms": 2595
   },
   {
     "fixture": "overlay",
     "seed": 1017,
     "outcome": "clean",
     "violations": [],
-    "ms": 2757
+    "ms": 2765
   },
   {
     "fixture": "overlay",
     "seed": 1018,
     "outcome": "clean",
     "violations": [],
-    "ms": 2102
+    "ms": 2117
   },
   {
     "fixture": "overlay",
     "seed": 1019,
     "outcome": "clean",
     "violations": [],
-    "ms": 1824
+    "ms": 1839
   },
   {
     "fixture": "overlay",
     "seed": 1020,
     "outcome": "clean",
     "violations": [],
-    "ms": 2252
+    "ms": 2259
   },
   {
     "fixture": "overlay",
     "seed": 1021,
     "outcome": "clean",
     "violations": [],
-    "ms": 2269
+    "ms": 2276
   },
   {
     "fixture": "overlay",
     "seed": 1022,
     "outcome": "clean",
     "violations": [],
-    "ms": 2461
+    "ms": 2476
   },
   {
     "fixture": "overlay",
     "seed": 1023,
     "outcome": "clean",
     "violations": [],
-    "ms": 2364
+    "ms": 2380
   },
   {
     "fixture": "overlay",
     "seed": 1024,
     "outcome": "clean",
     "violations": [],
-    "ms": 2572
+    "ms": 2591
   },
   {
     "fixture": "overlay",
     "seed": 1025,
     "outcome": "clean",
     "violations": [],
-    "ms": 2313
+    "ms": 2322
   },
   {
     "fixture": "overlay",
     "seed": 1026,
     "outcome": "clean",
     "violations": [],
-    "ms": 1808
+    "ms": 1821
   },
   {
     "fixture": "overlay",
@@ -895,7 +895,7 @@
     "seed": 1028,
     "outcome": "clean",
     "violations": [],
-    "ms": 1859
+    "ms": 1863
   },
   {
     "fixture": "overlay",
@@ -909,84 +909,84 @@
     "seed": 1030,
     "outcome": "clean",
     "violations": [],
-    "ms": 2244
+    "ms": 2264
   },
   {
     "fixture": "overlay",
     "seed": 1031,
     "outcome": "clean",
     "violations": [],
-    "ms": 2391
+    "ms": 2396
   },
   {
     "fixture": "overlay",
     "seed": 1032,
     "outcome": "clean",
     "violations": [],
-    "ms": 2791
+    "ms": 2785
   },
   {
     "fixture": "overlay",
     "seed": 1033,
     "outcome": "clean",
     "violations": [],
-    "ms": 2381
+    "ms": 2387
   },
   {
     "fixture": "overlay",
     "seed": 1034,
     "outcome": "clean",
     "violations": [],
-    "ms": 2434
+    "ms": 2436
   },
   {
     "fixture": "overlay",
     "seed": 1035,
     "outcome": "clean",
     "violations": [],
-    "ms": 2177
+    "ms": 2195
   },
   {
     "fixture": "overlay",
     "seed": 1036,
     "outcome": "clean",
     "violations": [],
-    "ms": 2344
+    "ms": 2352
   },
   {
     "fixture": "overlay",
     "seed": 1037,
     "outcome": "clean",
     "violations": [],
-    "ms": 2628
+    "ms": 2650
   },
   {
     "fixture": "overlay",
     "seed": 1038,
     "outcome": "clean",
     "violations": [],
-    "ms": 2070
+    "ms": 2074
   },
   {
     "fixture": "overlay",
     "seed": 1039,
     "outcome": "clean",
     "violations": [],
-    "ms": 3004
+    "ms": 3017
   },
   {
     "fixture": "overlay",
     "seed": 1040,
     "outcome": "clean",
     "violations": [],
-    "ms": 2351
+    "ms": 2370
   },
   {
     "fixture": "overlay",
     "seed": 1041,
     "outcome": "clean",
     "violations": [],
-    "ms": 2156
+    "ms": 2176
   },
   {
     "fixture": "overlay",
@@ -1000,140 +1000,140 @@
     "seed": 1043,
     "outcome": "clean",
     "violations": [],
-    "ms": 3221
+    "ms": 3215
   },
   {
     "fixture": "overlay",
     "seed": 1044,
     "outcome": "clean",
     "violations": [],
-    "ms": 2499
+    "ms": 2514
   },
   {
     "fixture": "overlay",
     "seed": 1045,
     "outcome": "clean",
     "violations": [],
-    "ms": 2056
+    "ms": 2066
   },
   {
     "fixture": "overlay",
     "seed": 1046,
     "outcome": "clean",
     "violations": [],
-    "ms": 2148
+    "ms": 2157
   },
   {
     "fixture": "overlay",
     "seed": 1047,
     "outcome": "clean",
     "violations": [],
-    "ms": 2705
+    "ms": 2721
   },
   {
     "fixture": "overlay",
     "seed": 1048,
     "outcome": "clean",
     "violations": [],
-    "ms": 2849
+    "ms": 2864
   },
   {
     "fixture": "overlay",
     "seed": 1049,
     "outcome": "clean",
     "violations": [],
-    "ms": 1955
+    "ms": 1965
   },
   {
     "fixture": "overlay",
     "seed": 1050,
     "outcome": "clean",
     "violations": [],
-    "ms": 1983
+    "ms": 1988
   },
   {
     "fixture": "overlay",
     "seed": 1051,
     "outcome": "clean",
     "violations": [],
-    "ms": 1419
+    "ms": 1431
   },
   {
     "fixture": "overlay",
     "seed": 1052,
     "outcome": "clean",
     "violations": [],
-    "ms": 3234
+    "ms": 3254
   },
   {
     "fixture": "overlay",
     "seed": 1053,
     "outcome": "clean",
     "violations": [],
-    "ms": 2257
+    "ms": 2275
   },
   {
     "fixture": "overlay",
     "seed": 1054,
     "outcome": "clean",
     "violations": [],
-    "ms": 2226
+    "ms": 2242
   },
   {
     "fixture": "overlay",
     "seed": 1055,
     "outcome": "clean",
     "violations": [],
-    "ms": 2128
+    "ms": 2133
   },
   {
     "fixture": "overlay",
     "seed": 1056,
     "outcome": "clean",
     "violations": [],
-    "ms": 2432
+    "ms": 2440
   },
   {
     "fixture": "overlay",
     "seed": 1057,
     "outcome": "clean",
     "violations": [],
-    "ms": 2151
+    "ms": 2156
   },
   {
     "fixture": "overlay",
     "seed": 1058,
     "outcome": "clean",
     "violations": [],
-    "ms": 2213
+    "ms": 2220
   },
   {
     "fixture": "overlay",
     "seed": 1059,
     "outcome": "clean",
     "violations": [],
-    "ms": 2196
+    "ms": 2206
   },
   {
     "fixture": "overlay",
     "seed": 1060,
     "outcome": "clean",
     "violations": [],
-    "ms": 1588
+    "ms": 1599
   },
   {
     "fixture": "overlay",
     "seed": 1061,
     "outcome": "clean",
     "violations": [],
-    "ms": 2347
+    "ms": 2359
   },
   {
     "fixture": "overlay",
     "seed": 1062,
     "outcome": "clean",
     "violations": [],
-    "ms": 2028
+    "ms": 2040
   },
   {
     "fixture": "overlay",
@@ -1142,168 +1142,168 @@
     "violations": [
       "dialog ended as \"closing\", but the latest request was \"closed\"."
     ],
-    "ms": 2487
+    "ms": 2498
   },
   {
     "fixture": "overlay",
     "seed": 1064,
     "outcome": "clean",
     "violations": [],
-    "ms": 2647
+    "ms": 2659
   },
   {
     "fixture": "overlay",
     "seed": 1065,
     "outcome": "clean",
     "violations": [],
-    "ms": 2456
+    "ms": 2454
   },
   {
     "fixture": "overlay",
     "seed": 1066,
     "outcome": "clean",
     "violations": [],
-    "ms": 2743
+    "ms": 2746
   },
   {
     "fixture": "overlay",
     "seed": 1067,
     "outcome": "clean",
     "violations": [],
-    "ms": 1908
+    "ms": 1932
   },
   {
     "fixture": "overlay",
     "seed": 1068,
     "outcome": "clean",
     "violations": [],
-    "ms": 1845
+    "ms": 1848
   },
   {
     "fixture": "overlay",
     "seed": 1069,
     "outcome": "clean",
     "violations": [],
-    "ms": 2817
+    "ms": 2827
   },
   {
     "fixture": "overlay",
     "seed": 1070,
     "outcome": "clean",
     "violations": [],
-    "ms": 2332
+    "ms": 2333
   },
   {
     "fixture": "overlay",
     "seed": 1071,
     "outcome": "clean",
     "violations": [],
-    "ms": 2059
+    "ms": 2074
   },
   {
     "fixture": "overlay",
     "seed": 1072,
     "outcome": "clean",
     "violations": [],
-    "ms": 2822
+    "ms": 2833
   },
   {
     "fixture": "overlay",
     "seed": 1073,
     "outcome": "clean",
     "violations": [],
-    "ms": 2108
+    "ms": 2118
   },
   {
     "fixture": "overlay",
     "seed": 1074,
     "outcome": "clean",
     "violations": [],
-    "ms": 2238
+    "ms": 2240
   },
   {
     "fixture": "overlay",
     "seed": 1075,
     "outcome": "clean",
     "violations": [],
-    "ms": 1625
+    "ms": 1634
   },
   {
     "fixture": "overlay",
     "seed": 1076,
     "outcome": "clean",
     "violations": [],
-    "ms": 2615
+    "ms": 2634
   },
   {
     "fixture": "overlay",
     "seed": 1077,
     "outcome": "clean",
     "violations": [],
-    "ms": 1786
+    "ms": 1799
   },
   {
     "fixture": "overlay",
     "seed": 1078,
     "outcome": "clean",
     "violations": [],
-    "ms": 2058
+    "ms": 2075
   },
   {
     "fixture": "overlay",
     "seed": 1079,
     "outcome": "clean",
     "violations": [],
-    "ms": 2444
+    "ms": 2463
   },
   {
     "fixture": "overlay",
     "seed": 1080,
     "outcome": "clean",
     "violations": [],
-    "ms": 2363
+    "ms": 2389
   },
   {
     "fixture": "overlay",
     "seed": 1081,
     "outcome": "clean",
     "violations": [],
-    "ms": 2620
+    "ms": 2630
   },
   {
     "fixture": "overlay",
     "seed": 1082,
     "outcome": "clean",
     "violations": [],
-    "ms": 2764
+    "ms": 2772
   },
   {
     "fixture": "overlay",
     "seed": 1083,
     "outcome": "clean",
     "violations": [],
-    "ms": 1940
+    "ms": 1958
   },
   {
     "fixture": "overlay",
     "seed": 1084,
     "outcome": "clean",
     "violations": [],
-    "ms": 2416
+    "ms": 2419
   },
   {
     "fixture": "overlay",
     "seed": 1085,
     "outcome": "clean",
     "violations": [],
-    "ms": 1872
+    "ms": 1885
   },
   {
     "fixture": "overlay",
     "seed": 1086,
     "outcome": "clean",
     "violations": [],
-    "ms": 2380
+    "ms": 2394
   },
   {
     "fixture": "overlay",
@@ -1317,343 +1317,343 @@
     "seed": 1088,
     "outcome": "clean",
     "violations": [],
-    "ms": 1994
+    "ms": 2007
   },
   {
     "fixture": "overlay",
     "seed": 1089,
     "outcome": "clean",
     "violations": [],
-    "ms": 2823
+    "ms": 2837
   },
   {
     "fixture": "overlay",
     "seed": 1090,
     "outcome": "clean",
     "violations": [],
-    "ms": 2099
+    "ms": 2105
   },
   {
     "fixture": "overlay",
     "seed": 1091,
     "outcome": "clean",
     "violations": [],
-    "ms": 2161
+    "ms": 2176
   },
   {
     "fixture": "overlay",
     "seed": 1092,
     "outcome": "clean",
     "violations": [],
-    "ms": 1982
+    "ms": 1983
   },
   {
     "fixture": "overlay",
     "seed": 1093,
     "outcome": "clean",
     "violations": [],
-    "ms": 2391
+    "ms": 2394
   },
   {
     "fixture": "overlay",
     "seed": 1094,
     "outcome": "clean",
     "violations": [],
-    "ms": 2616
+    "ms": 2611
   },
   {
     "fixture": "overlay",
     "seed": 1095,
     "outcome": "clean",
     "violations": [],
-    "ms": 2226
+    "ms": 2217
   },
   {
     "fixture": "overlay",
     "seed": 1096,
     "outcome": "clean",
     "violations": [],
-    "ms": 2728
+    "ms": 2713
   },
   {
     "fixture": "overlay",
     "seed": 1097,
     "outcome": "clean",
     "violations": [],
-    "ms": 2158
+    "ms": 2157
   },
   {
     "fixture": "overlay",
     "seed": 1098,
     "outcome": "clean",
     "violations": [],
-    "ms": 1968
+    "ms": 1972
   },
   {
     "fixture": "overlay",
     "seed": 1099,
     "outcome": "clean",
     "violations": [],
-    "ms": 2071
+    "ms": 2068
   },
   {
     "fixture": "overlay",
     "seed": 1100,
     "outcome": "clean",
     "violations": [],
-    "ms": 2075
+    "ms": 2069
   },
   {
     "fixture": "timeline",
     "seed": 1001,
     "outcome": "clean",
     "violations": [],
-    "ms": 1284
+    "ms": 1286
   },
   {
     "fixture": "timeline",
     "seed": 1002,
     "outcome": "clean",
     "violations": [],
-    "ms": 1192
+    "ms": 1188
   },
   {
     "fixture": "timeline",
     "seed": 1003,
     "outcome": "clean",
     "violations": [],
-    "ms": 1158
+    "ms": 1155
   },
   {
     "fixture": "timeline",
     "seed": 1004,
     "outcome": "clean",
     "violations": [],
-    "ms": 1220
+    "ms": 1242
   },
   {
     "fixture": "timeline",
     "seed": 1005,
     "outcome": "clean",
     "violations": [],
-    "ms": 1214
+    "ms": 1231
   },
   {
     "fixture": "timeline",
     "seed": 1006,
     "outcome": "clean",
     "violations": [],
-    "ms": 1014
+    "ms": 1033
   },
   {
     "fixture": "timeline",
     "seed": 1007,
     "outcome": "clean",
     "violations": [],
-    "ms": 979
+    "ms": 993
   },
   {
     "fixture": "timeline",
     "seed": 1008,
     "outcome": "clean",
     "violations": [],
-    "ms": 1266
+    "ms": 1277
   },
   {
     "fixture": "timeline",
     "seed": 1009,
     "outcome": "clean",
     "violations": [],
-    "ms": 1261
+    "ms": 1291
   },
   {
     "fixture": "timeline",
     "seed": 1010,
     "outcome": "clean",
     "violations": [],
-    "ms": 1415
+    "ms": 1423
   },
   {
     "fixture": "timeline",
     "seed": 1011,
     "outcome": "clean",
     "violations": [],
-    "ms": 1427
+    "ms": 1442
   },
   {
     "fixture": "timeline",
     "seed": 1012,
     "outcome": "clean",
     "violations": [],
-    "ms": 1096
+    "ms": 1108
   },
   {
     "fixture": "timeline",
     "seed": 1013,
     "outcome": "clean",
     "violations": [],
-    "ms": 945
+    "ms": 957
   },
   {
     "fixture": "timeline",
     "seed": 1014,
     "outcome": "clean",
     "violations": [],
-    "ms": 949
+    "ms": 950
   },
   {
     "fixture": "timeline",
     "seed": 1015,
     "outcome": "clean",
     "violations": [],
-    "ms": 1264
+    "ms": 1281
   },
   {
     "fixture": "timeline",
     "seed": 1016,
     "outcome": "clean",
     "violations": [],
-    "ms": 1236
+    "ms": 1248
   },
   {
     "fixture": "timeline",
     "seed": 1017,
     "outcome": "clean",
     "violations": [],
-    "ms": 1160
+    "ms": 1175
   },
   {
     "fixture": "timeline",
     "seed": 1018,
     "outcome": "clean",
     "violations": [],
-    "ms": 1296
+    "ms": 1306
   },
   {
     "fixture": "timeline",
     "seed": 1019,
     "outcome": "clean",
     "violations": [],
-    "ms": 1279
+    "ms": 1294
   },
   {
     "fixture": "timeline",
     "seed": 1020,
     "outcome": "clean",
     "violations": [],
-    "ms": 1079
+    "ms": 1094
   },
   {
     "fixture": "timeline",
     "seed": 1021,
     "outcome": "clean",
     "violations": [],
-    "ms": 1582
+    "ms": 1595
   },
   {
     "fixture": "timeline",
     "seed": 1022,
     "outcome": "clean",
     "violations": [],
-    "ms": 1133
+    "ms": 1157
   },
   {
     "fixture": "timeline",
     "seed": 1023,
     "outcome": "clean",
     "violations": [],
-    "ms": 1363
+    "ms": 1375
   },
   {
     "fixture": "timeline",
     "seed": 1024,
     "outcome": "clean",
     "violations": [],
-    "ms": 1628
+    "ms": 1653
   },
   {
     "fixture": "timeline",
     "seed": 1025,
     "outcome": "clean",
     "violations": [],
-    "ms": 1393
+    "ms": 1409
   },
   {
     "fixture": "timeline",
     "seed": 1026,
     "outcome": "clean",
     "violations": [],
-    "ms": 1431
+    "ms": 1441
   },
   {
     "fixture": "timeline",
     "seed": 1027,
     "outcome": "clean",
     "violations": [],
-    "ms": 1441
+    "ms": 1438
   },
   {
     "fixture": "timeline",
     "seed": 1028,
     "outcome": "clean",
     "violations": [],
-    "ms": 1145
+    "ms": 1155
   },
   {
     "fixture": "timeline",
     "seed": 1029,
     "outcome": "clean",
     "violations": [],
-    "ms": 1380
+    "ms": 1408
   },
   {
     "fixture": "timeline",
     "seed": 1030,
     "outcome": "clean",
     "violations": [],
-    "ms": 1010
+    "ms": 1017
   },
   {
     "fixture": "timeline",
     "seed": 1031,
     "outcome": "clean",
     "violations": [],
-    "ms": 1061
+    "ms": 1074
   },
   {
     "fixture": "timeline",
     "seed": 1032,
     "outcome": "clean",
     "violations": [],
-    "ms": 1378
+    "ms": 1394
   },
   {
     "fixture": "timeline",
     "seed": 1033,
     "outcome": "clean",
     "violations": [],
-    "ms": 1477
+    "ms": 1493
   },
   {
     "fixture": "timeline",
     "seed": 1034,
     "outcome": "clean",
     "violations": [],
-    "ms": 1312
+    "ms": 1334
   },
   {
     "fixture": "timeline",
     "seed": 1035,
     "outcome": "clean",
     "violations": [],
-    "ms": 1662
+    "ms": 1677
   },
   {
     "fixture": "timeline",
     "seed": 1036,
     "outcome": "clean",
     "violations": [],
-    "ms": 1499
+    "ms": 1508
   },
   {
     "fixture": "timeline",
@@ -1667,35 +1667,35 @@
     "seed": 1038,
     "outcome": "clean",
     "violations": [],
-    "ms": 1445
+    "ms": 1449
   },
   {
     "fixture": "timeline",
     "seed": 1039,
     "outcome": "clean",
     "violations": [],
-    "ms": 1287
+    "ms": 1294
   },
   {
     "fixture": "timeline",
     "seed": 1040,
     "outcome": "clean",
     "violations": [],
-    "ms": 952
+    "ms": 956
   },
   {
     "fixture": "timeline",
     "seed": 1041,
     "outcome": "clean",
     "violations": [],
-    "ms": 1062
+    "ms": 1049
   },
   {
     "fixture": "timeline",
     "seed": 1042,
     "outcome": "clean",
     "violations": [],
-    "ms": 1278
+    "ms": 1265
   },
   {
     "fixture": "timeline",
@@ -1709,175 +1709,175 @@
     "seed": 1044,
     "outcome": "clean",
     "violations": [],
-    "ms": 1293
+    "ms": 1291
   },
   {
     "fixture": "timeline",
     "seed": 1045,
     "outcome": "clean",
     "violations": [],
-    "ms": 1413
+    "ms": 1408
   },
   {
     "fixture": "timeline",
     "seed": 1046,
     "outcome": "clean",
     "violations": [],
-    "ms": 1310
+    "ms": 1308
   },
   {
     "fixture": "timeline",
     "seed": 1047,
     "outcome": "clean",
     "violations": [],
-    "ms": 1011
+    "ms": 1006
   },
   {
     "fixture": "timeline",
     "seed": 1048,
     "outcome": "clean",
     "violations": [],
-    "ms": 1326
+    "ms": 1355
   },
   {
     "fixture": "timeline",
     "seed": 1049,
     "outcome": "clean",
     "violations": [],
-    "ms": 1375
+    "ms": 1358
   },
   {
     "fixture": "timeline",
     "seed": 1050,
     "outcome": "clean",
     "violations": [],
-    "ms": 1296
+    "ms": 1275
   },
   {
     "fixture": "timeline",
     "seed": 1051,
     "outcome": "clean",
     "violations": [],
-    "ms": 1135
+    "ms": 1139
   },
   {
     "fixture": "timeline",
     "seed": 1052,
     "outcome": "clean",
     "violations": [],
-    "ms": 1078
+    "ms": 1076
   },
   {
     "fixture": "timeline",
     "seed": 1053,
     "outcome": "clean",
     "violations": [],
-    "ms": 1177
+    "ms": 1175
   },
   {
     "fixture": "timeline",
     "seed": 1054,
     "outcome": "clean",
     "violations": [],
-    "ms": 1142
+    "ms": 1150
   },
   {
     "fixture": "timeline",
     "seed": 1055,
     "outcome": "clean",
     "violations": [],
-    "ms": 1228
+    "ms": 1226
   },
   {
     "fixture": "timeline",
     "seed": 1056,
     "outcome": "clean",
     "violations": [],
-    "ms": 1177
+    "ms": 1176
   },
   {
     "fixture": "timeline",
     "seed": 1057,
     "outcome": "clean",
     "violations": [],
-    "ms": 1242
+    "ms": 1240
   },
   {
     "fixture": "timeline",
     "seed": 1058,
     "outcome": "clean",
     "violations": [],
-    "ms": 1539
+    "ms": 1538
   },
   {
     "fixture": "timeline",
     "seed": 1059,
     "outcome": "clean",
     "violations": [],
-    "ms": 1444
+    "ms": 1417
   },
   {
     "fixture": "timeline",
     "seed": 1060,
     "outcome": "clean",
     "violations": [],
-    "ms": 1312
+    "ms": 1323
   },
   {
     "fixture": "timeline",
     "seed": 1061,
     "outcome": "clean",
     "violations": [],
-    "ms": 1143
+    "ms": 1142
   },
   {
     "fixture": "timeline",
     "seed": 1062,
     "outcome": "clean",
     "violations": [],
-    "ms": 1277
+    "ms": 1309
   },
   {
     "fixture": "timeline",
     "seed": 1063,
     "outcome": "clean",
     "violations": [],
-    "ms": 1158
+    "ms": 1156
   },
   {
     "fixture": "timeline",
     "seed": 1064,
     "outcome": "clean",
     "violations": [],
-    "ms": 1223
+    "ms": 1221
   },
   {
     "fixture": "timeline",
     "seed": 1065,
     "outcome": "clean",
     "violations": [],
-    "ms": 1390
+    "ms": 1389
   },
   {
     "fixture": "timeline",
     "seed": 1066,
     "outcome": "clean",
     "violations": [],
-    "ms": 1509
+    "ms": 1500
   },
   {
     "fixture": "timeline",
     "seed": 1067,
     "outcome": "clean",
     "violations": [],
-    "ms": 1257
+    "ms": 1255
   },
   {
     "fixture": "timeline",
     "seed": 1068,
     "outcome": "clean",
     "violations": [],
-    "ms": 1073
+    "ms": 1071
   },
   {
     "fixture": "timeline",
@@ -1891,84 +1891,84 @@
     "seed": 1070,
     "outcome": "clean",
     "violations": [],
-    "ms": 1404
+    "ms": 1377
   },
   {
     "fixture": "timeline",
     "seed": 1071,
     "outcome": "clean",
     "violations": [],
-    "ms": 1597
+    "ms": 1581
   },
   {
     "fixture": "timeline",
     "seed": 1072,
     "outcome": "clean",
     "violations": [],
-    "ms": 942
+    "ms": 934
   },
   {
     "fixture": "timeline",
     "seed": 1073,
     "outcome": "clean",
     "violations": [],
-    "ms": 1407
+    "ms": 1408
   },
   {
     "fixture": "timeline",
     "seed": 1074,
     "outcome": "clean",
     "violations": [],
-    "ms": 1292
+    "ms": 1294
   },
   {
     "fixture": "timeline",
     "seed": 1075,
     "outcome": "clean",
     "violations": [],
-    "ms": 1090
+    "ms": 1092
   },
   {
     "fixture": "timeline",
     "seed": 1076,
     "outcome": "clean",
     "violations": [],
-    "ms": 1291
+    "ms": 1290
   },
   {
     "fixture": "timeline",
     "seed": 1077,
     "outcome": "clean",
     "violations": [],
-    "ms": 1373
+    "ms": 1367
   },
   {
     "fixture": "timeline",
     "seed": 1078,
     "outcome": "clean",
     "violations": [],
-    "ms": 1062
+    "ms": 1058
   },
   {
     "fixture": "timeline",
     "seed": 1079,
     "outcome": "clean",
     "violations": [],
-    "ms": 1331
+    "ms": 1325
   },
   {
     "fixture": "timeline",
     "seed": 1080,
     "outcome": "clean",
     "violations": [],
-    "ms": 1190
+    "ms": 1191
   },
   {
     "fixture": "timeline",
     "seed": 1081,
     "outcome": "clean",
     "violations": [],
-    "ms": 1403
+    "ms": 1417
   },
   {
     "fixture": "timeline",
@@ -1982,35 +1982,35 @@
     "seed": 1083,
     "outcome": "clean",
     "violations": [],
-    "ms": 1307
+    "ms": 1290
   },
   {
     "fixture": "timeline",
     "seed": 1084,
     "outcome": "clean",
     "violations": [],
-    "ms": 1199
+    "ms": 1198
   },
   {
     "fixture": "timeline",
     "seed": 1085,
     "outcome": "clean",
     "violations": [],
-    "ms": 1152
+    "ms": 1155
   },
   {
     "fixture": "timeline",
     "seed": 1086,
     "outcome": "clean",
     "violations": [],
-    "ms": 1462
+    "ms": 1473
   },
   {
     "fixture": "timeline",
     "seed": 1087,
     "outcome": "clean",
     "violations": [],
-    "ms": 1343
+    "ms": 1356
   },
   {
     "fixture": "timeline",
@@ -2022,83 +2022,83 @@
     "seed": 1089,
     "outcome": "clean",
     "violations": [],
-    "ms": 1194
+    "ms": 1206
   },
   {
     "fixture": "timeline",
     "seed": 1090,
     "outcome": "clean",
     "violations": [],
-    "ms": 1211
+    "ms": 1241
   },
   {
     "fixture": "timeline",
     "seed": 1091,
     "outcome": "clean",
     "violations": [],
-    "ms": 1365
+    "ms": 1383
   },
   {
     "fixture": "timeline",
     "seed": 1092,
     "outcome": "clean",
     "violations": [],
-    "ms": 1078
+    "ms": 1089
   },
   {
     "fixture": "timeline",
     "seed": 1093,
     "outcome": "clean",
     "violations": [],
-    "ms": 1247
+    "ms": 1254
   },
   {
     "fixture": "timeline",
     "seed": 1094,
     "outcome": "clean",
     "violations": [],
-    "ms": 1294
+    "ms": 1304
   },
   {
     "fixture": "timeline",
     "seed": 1095,
     "outcome": "clean",
     "violations": [],
-    "ms": 1196
+    "ms": 1203
   },
   {
     "fixture": "timeline",
     "seed": 1096,
     "outcome": "clean",
     "violations": [],
-    "ms": 1078
+    "ms": 1093
   },
   {
     "fixture": "timeline",
     "seed": 1097,
     "outcome": "clean",
     "violations": [],
-    "ms": 1344
+    "ms": 1367
   },
   {
     "fixture": "timeline",
     "seed": 1098,
     "outcome": "clean",
     "violations": [],
-    "ms": 1342
+    "ms": 1364
   },
   {
     "fixture": "timeline",
     "seed": 1099,
     "outcome": "clean",
     "violations": [],
-    "ms": 1281
+    "ms": 1292
   },
   {
     "fixture": "timeline",
     "seed": 1100,
     "outcome": "clean",
     "violations": [],
-    "ms": 976
+    "ms": 1010
   }
 ]

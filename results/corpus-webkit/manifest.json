@@ -2,7 +2,7 @@
   "schema": "trace.bench/1",
   "command": "tsx bench/corpus.ts --browser webkit --out results/corpus-webkit",
   "source": {
-    "commit": "7c971c1b3b47deb61e9b34cbff98eade909fded1",
+    "commit": "3a66aaf24fabee3f60fdf0ec6bc8b18c60ac11bb",
     "dirty": false
   },
   "dependencies": {
@@ -49,7 +49,7 @@
     "timeline": "07d918c93a0dd6fd086c8bdf7a268120baa644b2a8e4ae77bc66ee6501a25a6b"
   },
   "pixelLimit": 576,
-  "wallSeconds": 116,
+  "wallSeconds": 114,
   "repetitions": 1,
   "warmup": 0,
   "exclusions": []

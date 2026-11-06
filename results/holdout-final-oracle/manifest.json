@@ -2,7 +2,7 @@
   "schema": "trace.bench/1",
   "command": "tsx bench/corpus.ts --labels corpus/holdout.json --out results/holdout-final-oracle",
   "source": {
-    "commit": "7c971c1b3b47deb61e9b34cbff98eade909fded1",
+    "commit": "3a66aaf24fabee3f60fdf0ec6bc8b18c60ac11bb",
     "dirty": false
   },
   "dependencies": {

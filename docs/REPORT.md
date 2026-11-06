@@ -8,15 +8,18 @@ Node 22.16.0, Playwright 1.65.0, Chromium 158.0.8127.18, Firefox 159.0, WebKit 2
 machine ran other work, so timings are not from an idle system. The final run held the
 display awake.
 
-**Source.** Every result comes from commit `7c971c1` with a clean source tree, except the
+**Source.** Every result comes from commit `3a66aaf` with a clean source tree, except the
 one holdout run at `432cf66`. Each manifest records its commit. The plan is in
-`docs/MEASUREMENT.md`, which was revised before this run.
+`docs/MEASUREMENT.md`, which was revised before this run. A full run took 42 minutes,
+within the revised 50 minute budget.
 
 ## How this report changed
 
 An earlier version of this report made claims that did not survive review. An independent
 reviewer, working on a clean clone with the repository and none of my conclusions, found
-25 issues. These changed what can be claimed.
+25 issues, then rechecked my fixes and found 7 regressions, including one that could delete
+user files in `--out` and a wrong explanation of a control result. These changed what can
+be claimed.
 
 | What I had claimed | What was wrong | What is true now |
 |---|---|---|
@@ -26,8 +29,7 @@ reviewer, working on a clean clone with the repository and none of my conclusion
 | 0 false alarms on random sessions | True for that oracle, but it missed ignored requests | A stricter check flags 2 sessions. Both are a real bug in my fixture |
 | Identical repeated runs | Verdicts repeat, but traces can reorder events at equal times | Stated below |
 
-Fixes cover vacuous checks, ignored requests, dangling ARIA references, late
-acknowledgements, held pointer capture, an idle jump that could skip timers and change a
+Fixes cover vacuous checks, ignored requests, dangling ARIA references, held pointer capture, an idle jump that could skip timers and change a
 verdict, a reducer that accepted sequences the baseline could not run, a run folder that
 could choose a registry and run commands, a static server crash on a malformed URL, and
 stale files mixing two runs in one report. Counterexamples for these are in the tests.
@@ -73,16 +75,17 @@ fixtures. It had already run on 2 inspector builds, so the labels are not fully 
 | Detector | Seeded caught | Clean flagged |
 |---|---|---|
 | Never flags | 0 of 18 | 0 of 13 |
-| Any recorded difference, Chromium | 18 of 18 | 9 of 13 |
-| Any recorded difference, WebKit | 18 of 18 | 9 of 13 |
-| Any recorded difference, Firefox | 18 of 18 | 13 of 13 |
+| Any recorded difference, on each of 3 browsers | 18 of 18 | 9 of 13 |
 | Final screenshot difference, Chromium | 11 of 18 | 5 of 13 |
 
 This is the most important table here. Comparing two full traces finds every seeded bug,
-so on these bugs Trace finds nothing extra. Its value is that it does not flag legitimate
-changes, and that it can fail a bug both builds share, which a comparison cannot do by
-construction. Firefox flags 13 of 13 because event times there differ between runs of the
-same build. That is noise, and it is also a measure of how brittle comparison is.
+so on these bugs Trace finds nothing extra. All 9 clean builds it flags are legitimate
+changes, and it flags no identical build. Trace's value here is that its requirements did
+not flag those changes on this tuned corpus, and that it can fail a bug both builds share,
+which a comparison cannot do by construction. On held-out builds that gap is smaller: Trace
+flagged 1 of 3 legitimate changes, and the control 2 of 3. An earlier version of this
+control flagged 13 of 13 on Firefox. That was my bug: it compared `pointerId`, a counter
+Firefox raises between runs.
 
 ### Holdout
 
@@ -129,9 +132,10 @@ measured fixture is unchanged, so the numbers here describe what ran.
 
 **What this does not show.** These sessions use a reduced requirement list. They carry no
 acknowledgements and leave out `focus-stays-on`, `geometry-continuous`, `geometry-origin` and
-`resources-released`. Requirements in fixed scenarios hold values specific to one sequence,
-and applying them to random sessions fails correct builds: the review saw 24 of 26 on
-timeline. So this measures false alarms from the checks it runs, not from all of them.
+`resources-released`. Applying a fixture's fixed requirements to random sessions fails
+correct builds: the review saw 23 of 26 on timeline, nearly all from `transient-cleared`,
+which judges just before the next action unless the scenario sets `settledMs`. So this
+measures false alarms from the checks it runs, not from all of them.
 
 Development rounds found 3 kinds of false alarm the corpus had not: judging a panel still in
 flight, reading the next action's state, and treating a user's Tab as a failed restore. My
@@ -148,12 +152,14 @@ one requirement kind of 11. See `tests/unit/model.test.ts`.
 
 A reviewer's rerun at the measured commit, with identical fixture hashes and WebKit 27.2,
 failed `timeline@correct` in 40 of 40 runs. `pointerdown` arrived at clientX -850, clientY
-1250, off the handle. The published run and two reruns of mine, with the display awake,
-passed 9 of 9 timeline builds, and presses landed within 1 px in 6 of 6 direct checks.
+1250, off the handle. Two reruns of mine, with the display awake, passed 9 of 9 timeline
+builds (`results/development/webkit-recheck`), and presses landed within 1 px in 6 of 6
+direct checks, which I did not save. The final run's 18 of 18 had no invalid runs, and the
+reviewer's later rerun also found WebKit clean.
 
-The reviewer's run happened during the display's 2 hour idle window, so a sleeping display
-is a plausible cause. I did not test that, and it is unproven. What is proven is the Trace
-weakness: nothing checked that a press landed, so scenarios expecting nothing to stay stuck
+This machine's display sleeps after 2 hours, and the reviewer's run came during a long idle
+stretch, so a sleeping display is a plausible cause. I did not test that, and it is
+unproven. What is proven is the Trace weakness: nothing checked that a press landed, so scenarios expecting nothing to stay stuck
 passed with no drag at all. A press more than 3 px from its aim now makes the run invalid.
 
 ## Reduction
@@ -164,10 +170,10 @@ cannot run is rejected. Budget: 80 attempts or 180 s.
 
 | Bug | Session | Actions | Attempts | Time, median (range) over 5 | Reproduced | On baseline |
 |---|---|---|---|---|---|---|
-| `inspector@stale-completion` | Generated, seed 4 | 18 to 2 | 9 | 29.1 s (29.1 to 29.2) | 10 of 10 | 0 of 3 |
-| `overlay@no-restore` | Generated, seed 1 | 18 to 2 | 17 | 40.0 s (39.9 to 40.3) | 10 of 10 | 0 of 3 |
-| `timeline@drag-stuck-on-cancel` | Generated, seed 2 | 18 to 2 | 5 | 12.5 s (12.5 to 12.5) | 10 of 10 | 0 of 3 |
-| `inspector@stale-origin` | Written | 14 to 4 | 26 | 61.0 s (61.0 to 61.0) | 10 of 10 | 0 of 3 |
+| `inspector@stale-completion` | Generated, seed 4 | 18 to 2 | 9 | 29.5 s (29.5 to 29.5) | 10 of 10 | 0 of 3 |
+| `overlay@no-restore` | Generated, seed 1 | 18 to 2 | 17 | 40.0 s (39.8 to 40.4) | 10 of 10 | 0 of 3 |
+| `timeline@drag-stuck-on-cancel` | Generated, seed 2 | 18 to 2 | 5 | 12.8 s (12.7 to 12.8) | 10 of 10 | 0 of 3 |
+| `inspector@stale-origin` | Written | 14 to 4 | 26 | 60.8 s (60.7 to 61.5) | 10 of 10 | 0 of 3 |
 
 All 20 runs ended 1-minimal: removing any one remaining action loses this failure, makes the
 sequence invalid, or changes the failure. Each repetition of a workload gave the same
@@ -188,8 +194,8 @@ From `results/reduction/summary.json`, on an 18 action session.
 |---|---|
 | Events | 764 |
 | Trace size | 103,242 bytes, 135 bytes per event |
-| Report size, no screenshots | 861,281 bytes |
-| Report generation | 4.2 ms median (3.7 to 6.0, 5 runs) |
+| Report size, no screenshots | 861,282 bytes |
+| Report generation | 4.0 ms median (3.8 to 6.1, 5 runs) |
 
 The report size is mostly the viewer and fonts.
 
@@ -201,25 +207,35 @@ inside each round, and each difference is paired within a round.
 
 | Level | Task ms, median (range) | Script ms, median (range) |
 |---|---|---|
-| Off (no recorder) | 72.95 (71.6 to 79.4) | 10.5 (10.2 to 11.3) |
-| Timestamps | 84.1 (76.5 to 91.6) | 11.3 (10.6 to 13.6) |
-| Full | 121.9 (116.3 to 151.7) | 27.7 (26.3 to 37.9) |
+| Off (no recorder) | 111.1 (104.4 to 113.2) | 17.6 (16.7 to 18.2) |
+| Timestamps | 116.6 (110.8 to 118.1) | 17.8 (17.5 to 18.5) |
+| Full | 169.8 (162.4 to 175.0) | 42.5 (40.2 to 44.8) |
 
 | Added cost, paired by round | Task ms | Script ms |
 |---|---|---|
-| Timestamps | 11.4 (3.5 to 18.5) | 0.4 (-0.4 to 3.5) |
-| Full | 46.1 (42.3 to 78.6) | 17.0 (15.0 to 27.7) |
+| Timestamps | 4.9 (-2.3 to 12.2) | 0.1 (-0.7 to 1.7) |
+| Full | 60.5 (49.2 to 70.6) | 24.9 (22.1 to 28.1) |
 
-Full recording costs about 3.3 ms of main thread work per action in this scenario. The
-previous run of this experiment put the timestamp level at 5.9 ms (-3.7 to 13.4), so that
-level is small and poorly resolved here.
+Full recording cost about 4.3 ms of main thread work per action in this run. The whole
+experiment moves between runs, even with rounds paired, because other work shares the
+machine:
+
+| Run of this experiment | Off, task ms | Full added | Timestamps added |
+|---|---|---|---|
+| Before the review, commit `1412c34` | 75.9 | 50.2 | 5.9 (range crosses zero) |
+| After the first fixes, commit `7c971c1` | 73.0 | 46.1 | 11.4 |
+| Final, commit `3a66aaf` | 111.1 | 60.5 | 4.9 (range crosses zero) |
+
+So full recording costs tens of ms in this scenario, and the timestamp level is small and
+not resolved by this experiment. Only the final run's raw data is in `results/overhead`.
+The earlier figures are quoted from their runs, which that run replaced.
 
 Input timings from the timestamp level, as a median of per-run medians, over 7 runs.
 
 | Event | input-to-handler | input-to-commit | input-to-render |
 |---|---|---|---|
-| Click | 0.45 ms | 16.4 ms | 32.8 ms |
-| Key press | 0.10 ms | 0.8 ms | 11.0 ms |
+| Click | 0.75 ms | 16.4 ms | 33.1 ms |
+| Key press | 0.10 ms | 1.4 ms | 6.9 ms |
 
 Clicks take longer to commit because this fixture publishes state after a passive effect. That
 is a property of the fixture, not of React or the browser. `input-to-render` is one message
@@ -235,13 +251,13 @@ pooled clicks (about 16 ms) with key presses (about 0.3 to 1 ms), so it describe
 Timings are now grouped by event type. That first run is in
 `results/development/overhead-pooled`.
 
-The gap remains on key presses, 0.8 ms against 0.3 ms, and is stable across runs. I do not know
-why. One guess is that the full recorder's frame loop keeps the main thread awake, but I did
+The gap remains on key presses, 1.4 ms against 0.4 ms, and it appeared in every run. I do not
+know why. One guess is that the full recorder's frame loop keeps the main thread awake, but I did
 not test that. It is not a speed-up.
 
 ## Interface checks
 
-63 browser tests cover keyboard transport, widths of 320, 390, 768 and 1440, half-width for 200
+65 browser tests and 117 unit tests pass on a clean clone. The browser tests cover keyboard transport, widths of 320, 390, 768 and 1440, half-width for 200
 percent zoom, touch, reduced motion, long labels and dense data, and empty and error states.
 axe-core found no serious or critical issues on a failing or passing report. Automated checks do
 not establish full accessibility.
@@ -251,6 +267,20 @@ the whole viewport, so the action was a speck in a corner and the candidate fell
 a phone. Both stages now frame the region where anything moved. The second confirmed playback and
 idle skipping. The third covered empty, invalid and diverged reports. After the review, the
 requirements table gained `not exercised` and an acknowledgement row.
+
+## Changes after the first freeze
+
+These came after `docs/MEASUREMENT.md` was first committed. Revisions 2 and 3 in that file
+cover the larger changes.
+
+| Change | Commit | Reason |
+|---|---|---|
+| Action timeout raised from 1 s to 2 s, adapter wait from 5 s to 10 s, navigation timeout added | `432cf66`, before the holdout ran | A busy machine could crash a reduction |
+| `pointerMove` with no finger down became invalid | `1412c34` | A random run crashed on it. 4 sessions then counted as invalid in that run |
+| Timings grouped by event type | `1412c34` | See "A number I did not publish" |
+| Written reduction workload added | `1412c34` | The demo's 14 to 4 had no repeated measurement |
+| `--adapter` added | after `1412c34` | For the optional portfolio check |
+| Oracle, reducer, control and trust fixes | `7c971c1`, `3a66aaf` | The two reviews |
 
 ## Failures worth knowing about
 
@@ -276,7 +306,12 @@ These are real, and they are not fixed.
   later state. Controlled mode does not have this gap.
 - Uncaught page exceptions are not recorded, so a throwing handler alone is not a failure.
 - `geometry-continuous` does not compare across a node replacement, so a jump by remount passes it.
-- A same-origin redirect is not stopped by the network guard.
+- The network guard does not stop a same-origin redirect, or a socket opened from a Worker.
+- An acknowledgement can be satisfied by the late answer to an earlier action, because a trace
+  cannot say which action caused a change. A scenario can narrow this with `oneOf`.
+- A typo only inside `requests` is not caught. That requirement then reports `not exercised`.
+- A run that ends with the pointer still down completes without complaint.
+- `not exercised` is per requirement, so one judged occurrence hides a skipped one.
 
 ## Next bounded improvements
 
