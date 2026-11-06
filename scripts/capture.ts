@@ -26,14 +26,17 @@ async function seek(page: Page, ms: number): Promise<void> {
   }, ms);
 }
 
-// Cover and poster, from the real report at the moment the two trails differ.
+// Cover and poster, from the project page, paused on the failure.
 {
-  const context = await browser.newContext({ viewport: { width: 1600, height: 800 }, deviceScaleFactor: 1.6 });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2 });
   const page = await context.newPage();
-  await page.goto(`${demo.url}regression/index.html`);
+  await page.goto(`${demo.url}index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
-  await seek(page, 4076);
-  await pause(page, 200);
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, document.getElementById('replay')!.offsetTop - 32);
+  });
+  await pause(page, 300);
   await page.screenshot({ path: join(assets, 'cover.png') });
   await context.close();
 }
@@ -55,7 +58,7 @@ async function caption(page: Page, text: string): Promise<void> {
     if (!el) {
       el = document.createElement('div');
       el.id = 'capture-caption';
-      el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:880px;padding:10px 18px;background:#121412;color:#fff;font:17px/1.4 system-ui,sans-serif;border-radius:10px;z-index:99;text-align:center';
+      el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:880px;padding:10px 18px;background:#121412;color:#fff;font:17px/1.4 Geist Serif,Georgia,serif;border-radius:10px;z-index:99;text-align:center';
       document.body.append(el);
     }
     el.textContent = t;

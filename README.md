@@ -11,10 +11,11 @@ each one in a sentence, with two aligned replays that show where the builds part
 
 ## See a report
 
-No install needed. Clone the repository and open
-[demo/regression/index.html](demo/regression/index.html) in a browser. `Space` plays, `[` and
-`]` step by action, `F` jumps to the failure, and `R` switches between the reduced and
-original sequence.
+No install needed. Clone the repository and open [demo/index.html](demo/index.html) in a
+browser. It replays one failure on two builds, and links to the full report.
+
+In the full report, `Space` plays, `[` and `]` step by action, `F` jumps to the failure, and
+`R` switches between the reduced and original sequence.
 
 You can also watch the [20 second demo](docs/assets/trace-demo.mp4) or the
 [67 second walkthrough](docs/assets/trace-walkthrough.mp4), which has captions and no voice.
@@ -160,7 +161,8 @@ The full method, raw runs and failures are in [docs/REPORT.md](docs/REPORT.md).
 | `pnpm test:e2e` | 65 real browser tests on all three engines | About 5 minutes |
 | `pnpm bench:smoke` | One good pair and one seeded failure | About 4 s |
 | `pnpm bench` | The full measurement | 42 minutes |
-| `pnpm demo` | Rebuilds the static demo in `demo/` | About 80 s |
+| `pnpm demo` | Rebuilds the reports and project page in `demo/` | About 80 s |
+| `pnpm page` | Rebuilds only the project page, from `site/` | Under 1 s |
 | `pnpm verify:artifacts` | Checks saved results against their hashes | Under 1 s |
 
 ## How it works
@@ -185,6 +187,7 @@ scenario.json ──> runner ──> two browsers, one action list
 | `src/oracle` | Pure functions from a scenario and one trace to violations |
 | `src/reduce` | Bounded delta debugging, then the browser predicate |
 | `src/report`, `viewer` | Portable report and the case file viewer |
+| `site` | The project page, built from saved runs |
 | `fixtures` | Four fixture families with seeded and legitimate variants |
 | `corpus` | Expected labels for each build |
 | `bench`, `results` | Reproducible measurements and raw data |
