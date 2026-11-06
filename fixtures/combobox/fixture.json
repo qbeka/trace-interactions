@@ -1,0 +1,20 @@
+{
+  "schema": "trace.fixture/1",
+  "id": "combobox",
+  "version": "1",
+  "stateAllowlist": ["listbox", "resultsFor", "count", "mounted"],
+  "clock": { "channels": ["timers", "frames"] },
+  "source": "fixtures/combobox",
+  "builds": {
+    "correct": { "dir": ".build/fixtures/combobox/correct" },
+    "stale-response": { "dir": ".build/fixtures/combobox/stale-response" },
+    "remount-on-results": { "dir": ".build/fixtures/combobox/remount-on-results" },
+    "duplicate-list-id": { "dir": ".build/fixtures/combobox/duplicate-list-id" },
+    "poll-leak": { "dir": ".build/fixtures/combobox/poll-leak" },
+    "escape-keeps-open": { "dir": ".build/fixtures/combobox/escape-keeps-open" },
+    "stale-list-width": { "dir": ".build/fixtures/combobox/stale-list-width" },
+    "legit-restyle": { "dir": ".build/fixtures/combobox/legit-restyle" },
+    "legit-fast-debounce": { "dir": ".build/fixtures/combobox/legit-fast-debounce" },
+    "legit-wide-list": { "dir": ".build/fixtures/combobox/legit-wide-list" }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "remove-while-searching",
+  "description": "Remove the search while a request is pending.",
+  "fixture": {
+    "id": "combobox",
+    "version": "1"
+  },
+  "seed": 35,
+  "initialState": {
+    "mounted": false
+  },
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 800
+  },
+  "targets": {
+    "input": {
+      "role": "combobox",
+      "name": "Search fruit",
+      "traceId": "input"
+    },
+    "list": {
+      "traceId": "list"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "resources-released",
+      "key": "mounted",
+      "removedValue": false
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "requestState",
+      "state": {
+        "mounted": true
+      },
+      "setup": true,
+      "note": "mount"
+    },
+    {
+      "at": 100,
+      "type": "focus",
+      "target": "input",
+      "note": "focus the search"
+    },
+    {
+      "at": 200,
+      "type": "type",
+      "target": "input",
+      "text": "f",
+      "note": "type f"
+    },
+    {
+      "at": 400,
+      "type": "requestState",
+      "state": {
+        "mounted": false
+      },
+      "note": "remove"
+    }
+  ],
+  "cleanup": []
+}

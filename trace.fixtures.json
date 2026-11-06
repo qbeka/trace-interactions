@@ -12,6 +12,10 @@
     {
       "id": "timeline",
       "manifest": "fixtures/timeline/fixture.json"
+    },
+    {
+      "id": "combobox",
+      "manifest": "fixtures/combobox/fixture.json"
     }
   ]
 }

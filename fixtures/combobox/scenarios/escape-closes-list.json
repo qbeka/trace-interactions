@@ -1,0 +1,62 @@
+{
+  "schema": "trace.scenario/1",
+  "id": "escape-closes-list",
+  "description": "Escape closes the list.",
+  "fixture": {
+    "id": "combobox",
+    "version": "1"
+  },
+  "seed": 32,
+  "initialState": {},
+  "viewport": {
+    "width": 900,
+    "height": 640,
+    "deviceScaleFactor": 1
+  },
+  "timing": {
+    "mode": "controlled",
+    "stepMs": 16,
+    "settleMs": 800
+  },
+  "targets": {
+    "input": {
+      "role": "combobox",
+      "name": "Search fruit",
+      "traceId": "input"
+    },
+    "list": {
+      "traceId": "list"
+    }
+  },
+  "requirements": [
+    {
+      "kind": "focus-valid"
+    }
+  ],
+  "actions": [
+    {
+      "at": 0,
+      "type": "focus",
+      "target": "input",
+      "note": "focus the search"
+    },
+    {
+      "at": 100,
+      "type": "type",
+      "target": "input",
+      "text": "b",
+      "note": "type b"
+    },
+    {
+      "at": 700,
+      "type": "press",
+      "key": "Escape",
+      "note": "press Escape",
+      "ack": {
+        "key": "listbox",
+        "withinMs": 50
+      }
+    }
+  ],
+  "cleanup": []
+}

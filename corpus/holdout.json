@@ -1,0 +1,66 @@
+{
+  "schema": "trace.corpus-labels/1",
+  "note": "Holdout. Written before any detector run on this family. The oracle was frozen first. The correct build may be run only to confirm scenarios are valid. Results are reported as they come, with no oracle change.",
+  "variants": [
+    {
+      "fixture": "combobox",
+      "build": "correct",
+      "expected": "clean",
+      "mechanism": "control: identical build"
+    },
+    {
+      "fixture": "combobox",
+      "build": "stale-response",
+      "expected": "stale-final-state",
+      "mechanism": "an early response overwrites a later one"
+    },
+    {
+      "fixture": "combobox",
+      "build": "remount-on-results",
+      "expected": "lost-focus",
+      "mechanism": "new results remount the focused input"
+    },
+    {
+      "fixture": "combobox",
+      "build": "duplicate-list-id",
+      "expected": "duplicate-interactive",
+      "mechanism": "a hidden template repeats the list id"
+    },
+    {
+      "fixture": "combobox",
+      "build": "poll-leak",
+      "expected": "incomplete-cleanup",
+      "mechanism": "removal leaves an interval running"
+    },
+    {
+      "fixture": "combobox",
+      "build": "escape-keeps-open",
+      "expected": "missed-ack",
+      "mechanism": "Escape is never acknowledged"
+    },
+    {
+      "fixture": "combobox",
+      "build": "stale-list-width",
+      "expected": "geometry-discontinuity",
+      "mechanism": "the list keeps a measured width after a resize"
+    },
+    {
+      "fixture": "combobox",
+      "build": "legit-restyle",
+      "expected": "clean",
+      "mechanism": "legitimate: new colors and corners"
+    },
+    {
+      "fixture": "combobox",
+      "build": "legit-fast-debounce",
+      "expected": "clean",
+      "mechanism": "legitimate: shorter debounce"
+    },
+    {
+      "fixture": "combobox",
+      "build": "legit-wide-list",
+      "expected": "clean",
+      "mechanism": "legitimate: wider list"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { background: #fbf8f4; color: #111511; font: 15px/1.45 system-ui, sans-serif; }
+.box { position: relative; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+.box label { display: block; margin-bottom: 4px; color: #444944; }
+.box input { width: 100%; padding: 9px; font: inherit; border: 1px solid #1115112e; border-radius: 6px; }
+.list { position: absolute; left: 16px; right: 16px; margin: 4px 0 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #1115112e; border-radius: 8px; min-height: 40px; }
+.list li { padding: 6px 8px; }
+.list.wide { right: 0; }
+.template { display: none; }
+.box.restyled input { border-radius: 0; background: #f2efe9; }
+.box.restyled .list { border-radius: 0; background: #f2efe9; }
