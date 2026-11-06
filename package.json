@@ -31,6 +31,7 @@
     "bench:smoke": "tsx bench/smoke.ts",
     "bench": "tsx bench/run.ts",
     "demo": "tsx bench/demo.ts",
+    "page": "tsx scripts/build-page.ts",
     "build:cli": "tsx scripts/build-cli.ts",
     "capture": "tsx scripts/capture.ts",
     "manifest": "tsx scripts/manifest.ts",

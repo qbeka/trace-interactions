@@ -1,10 +1,12 @@
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { buildPage } from '../scripts/build-page.ts';
 
 /**
- * Builds the static demo: a real regression, reduced and replayed, and the same
- * reduced scenario showing the fix. Every report comes from a real run.
+ * Builds the static demo: a real regression, reduced and replayed, the same
+ * reduced scenario showing the fix, and the project page that replays them.
+ * Every report comes from a real run.
  */
 const root = resolve(import.meta.dirname, '..');
 const work = join(root, '.trace', 'demo-build');
@@ -33,12 +35,5 @@ if (trace('run', join(regression, 'reduced.scenario.json'), '--baseline', 'inspe
 cpSync(join(regression, 'report'), join(out, 'regression'), { recursive: true });
 cpSync(join(fixed, 'report'), join(out, 'fixed'), { recursive: true });
 cpSync(join(regression, 'reduced.scenario.json'), join(out, 'reduced.scenario.json'));
-writeFileSync(join(out, 'index.html'), `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trace demo</title>
-<style>body{max-width:560px;margin:15vh auto;padding:0 20px;background:#fbf8f4;color:#111511;font:16px/1.5 system-ui,sans-serif}h1{font-weight:500}a{color:#1d3a2a}li{margin:8px 0}</style></head>
-<body><h1>Trace demo</h1><p>Both reports come from real runs on two builds of a small inspector panel.</p>
-<ul><li><a href="regression/index.html">The regression</a>: 14 actions reduced, with the failure pinned.</li>
-<li><a href="fixed/index.html">The fix</a>: the same reduced scenario, with the bug gone.</li></ul></body></html>
-`);
+await buildPage(out);
 console.log(`Demo written to ${out}`);

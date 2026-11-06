@@ -16,6 +16,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src", "viewer/src", "fixtures", "tests", "bench", "scripts", "*.ts"],
+  "include": ["src", "viewer/src", "site", "fixtures", "tests", "bench", "scripts", "*.ts"],
   "exclude": ["node_modules", "dist", ".build", "fixtures/external"]
 }

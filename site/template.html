@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace</title>
+<meta name="description" content="Trace replays the same actions on two builds of a component and shrinks a failure to the few actions that cause it.">
+<style>/*STYLES*/</style>
+</head>
+<body>
+<svg id="ridge" aria-hidden="true" preserveAspectRatio="none" focusable="false"></svg>
+<div class="page">
+  <header>
+    <p class="eyebrow">Developer tool. Every build here is a small test fixture.</p>
+    <h1>Same actions, two builds</h1>
+    <p class="lede">A panel can look right in its final screenshot and still open in the wrong place. Trace replays one list of actions on two builds, checks what must stay true, and shrinks a failure to the few actions that cause it.</p>
+    <div class="pills">
+      <button class="pill dark" id="hero-play" type="button">Play the replay</button>
+      <a class="pill ghost" href="#evidence">See the evidence</a>
+      <a class="pill ghost" href="https://github.com/qbeka/trace-interactions">GitHub</a>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="aside"><i class="dash"></i><span>These fixtures and their seeded bugs are mine, so the results show the method works on them, not how many real bugs it would catch. The hairline behind this page is the panel's recorded width over the whole session.</span></div>
+  </header>
+  <main>
+    <section id="replay" aria-labelledby="replay-title">
+      <div class="bar">
+        <h2 id="replay-title">The replay</h2>
+        <div class="scenes" id="scenes" role="group" aria-label="Choose a recording"></div>
+      </div>
+      <p class="note" id="scene-note"></p>
+      <div class="card">
+        <div class="stages" id="stages"></div>
+        <div class="player">
+          <button class="pill dark small" id="play" type="button">Play</button>
+          <input id="time" type="range" min="0" max="1000" step="1" value="0" aria-label="Time in the recording">
+          <span class="clock" id="clock"></span>
+        </div>
+        <div class="tools">
+          <button class="pill ghost small" id="jump" type="button">Go to the failure</button>
+          <select class="field" id="speed" aria-label="Playback speed">
+            <option value="0.1">Slow</option>
+            <option value="0.25" selected>Quarter speed</option>
+            <option value="1">Real time</option>
+          </select>
+        </div>
+        <p class="verdict" id="verdict" role="status"></p>
+        <h3>Actions, both builds</h3>
+        <ol class="steps" id="steps"></ol>
+      </div>
+      <ul class="key">
+        <li><i class="k-panel"></i>The panel</li>
+        <li><i class="k-ghost"></i>The other build's panel</li>
+        <li><i class="k-trail"></i>Path since it appeared</li>
+        <li><i class="k-focus"></i>Keyboard focus</li>
+      </ul>
+      <p class="note">This plays back a recorded trace on a shared virtual clock. Nothing runs in your browser, and this is not a video: both stages are drawn from recorded rectangles.</p>
+    </section>
+    <section id="evidence" aria-labelledby="evidence-title">
+      <h2 id="evidence-title">The evidence</h2>
+      <p class="text" id="evidence-text"></p>
+      <div class="table"><table id="table"></table></div>
+      <p class="note" id="table-note"></p>
+    </section>
+    <section aria-labelledby="checks-title">
+      <h2 id="checks-title">How it was checked</h2>
+      <ul class="dashes" id="checks"></ul>
+    </section>
+    <section aria-labelledby="limits-title">
+      <h2 id="limits-title">What this cannot tell you</h2>
+      <ul class="dashes" id="limits"></ul>
+    </section>
+  </main>
+  <footer id="foot"></footer>
+</div>
+<script id="trace-data" type="application/json">/*DATA*/</script>
+<script>/*SCRIPT*/</script>
+</body>
+</html>
