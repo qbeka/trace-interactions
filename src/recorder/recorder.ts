@@ -427,11 +427,14 @@ function createRecorder() {
     }
     if (!running || config?.recording !== 'full') return;
     const el = e.target instanceof Element ? e.target : null;
-    const entryEv: Record<string, unknown> = { k: 'event', name: e.type, target: el?.getAttribute('data-trace-id') ?? null };
-    if (e instanceof PointerEvent) entryEv.pointerId = e.pointerId;
-    // A printable key is user text. Only named keys such as Escape are kept.
-    if (e instanceof KeyboardEvent && e.key.length > 1) entryEv.key = e.key;
-    push(entryEv as unknown);
+    push({
+      k: 'event',
+      name: e.type,
+      target: el?.getAttribute('data-trace-id') ?? null,
+      ...(e instanceof PointerEvent ? { pointerId: e.pointerId } : {}),
+      // A printable key is user text. Only named keys such as Escape are kept.
+      ...(e instanceof KeyboardEvent && e.key.length > 1 ? { key: e.key } : {}),
+    });
     if (e.type === 'focusin' || e.type === 'focusout') sampleFocus();
   };
 
