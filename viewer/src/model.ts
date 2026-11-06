@@ -211,6 +211,22 @@ export function requirementStatus(r: Requirement, side: RunSide): 'held' | 'brok
   return side.violations.some((v) => v.requirement === r.kind) ? 'broken' : 'held';
 }
 
+/** Sorted times at which anything was recorded, on either build. */
+export function busyTimes(a: TraceEvent[], b: TraceEvent[]): { t: number }[] {
+  return [...new Set([...a, ...b].map((e) => e.t))].sort((x, y) => x - y).map((t) => ({ t }));
+}
+
+const IDLE_GAP_MS = 120;
+
+/** Moves a playback time past a quiet gap, stopping just before the next event. */
+export function skipIdle(busy: { t: number }[], time: number): number {
+  const index = lastAt(busy, time);
+  const next = busy[index + 1]?.t;
+  if (next === undefined) return time;
+  if (next - (busy[index]?.t ?? 0) < IDLE_GAP_MS) return time;
+  return Math.max(time, next - 40);
+}
+
 export function formatMs(t: number): string {
   return `${Math.round(t)} ms`;
 }

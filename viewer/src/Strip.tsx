@@ -24,7 +24,7 @@ function Lane({ name, segments, end }: { name: string; segments: Segment[]; end:
             style={{ left: pct(s.from, end), width: pct(s.to - s.from, end) }}
             title={`${s.value}, ${formatMs(s.from)} to ${formatMs(s.to)}`}
           >
-            <span className="seg-text">{s.value}</span>
+            {(s.to - s.from) / end > 0.06 && <span className="seg-text">{s.value}</span>}
           </span>
         ))}
       </div>

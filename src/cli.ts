@@ -6,6 +6,7 @@ import { parseArgs } from 'node:util';
 import { chromium, firefox, webkit, type Browser } from 'playwright';
 import { runCase, writeJson } from './case.ts';
 import { exitCode, type Comparison } from './compare.ts';
+import { perfRun, summarize, type PerfRun } from './perf.ts';
 import { reduceScenario, type ReductionReport } from './reduce/reduce.ts';
 import { exportReport } from './report/export.ts';
 import { dependencyVersions, environment, hashDirectory, sha256, sourceState } from './runner/environment.ts';
@@ -31,6 +32,7 @@ const USAGE = `trace: replay an interaction on two builds and explain what broke
   trace reduce <run-dir> [--max-attempts N] [--max-seconds N] [--resume]
   trace replay <run-dir>
   trace report <run-dir>
+  trace perf <scenario.json> --baseline <fixture@build> --candidate <fixture@build> [--runs 5] [--warmup 1]
   trace serve <dir> [--port 5175]
   trace fixtures list
   trace fixtures add <fixture.json>
@@ -301,6 +303,64 @@ async function cmdReplay(args: string[]): Promise<number> {
   }
 }
 
+/**
+ * Real time, a new browser for each run, and the low-overhead recording level.
+ * No screenshots or video. Builds alternate so drift hits both the same way.
+ */
+async function cmdPerf(args: string[]): Promise<number> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    options: {
+      baseline: { type: 'string' },
+      candidate: { type: 'string' },
+      browser: { type: 'string', default: 'chromium' },
+      runs: { type: 'string', default: '5' },
+      warmup: { type: 'string', default: '1' },
+      out: { type: 'string' },
+      registry: { type: 'string', default: REGISTRY_FILE },
+    },
+  });
+  const scenario = readScenario(positionals[0] ?? '');
+  const runs = Number(values.runs);
+  const warmup = Number(values.warmup);
+  if (runs < 5) console.log('Fewer than 5 runs. Treat these numbers as a smoke check, not a result.');
+  const fixtures = loadRegistry(values.registry!);
+  const fixture = fixtures.get(scenario.fixture.id);
+  if (!fixture) throw new InvalidScenario(`fixture ${scenario.fixture.id} is not registered`);
+  const type = BROWSERS[values.browser as keyof typeof BROWSERS];
+  if (!type) throw new InvalidScenario(`unknown browser "${values.browser}"`);
+  const a = resolveBuildRef(fixtures, values.baseline ?? '');
+  const b = resolveBuildRef(fixtures, values.candidate ?? '');
+  const baseline = await serveBuild(a.fixture, a.build);
+  const candidate = await serveBuild(b.fixture, b.build);
+  const out = resolve(values.out ?? join('.trace', `${scenario.id}-perf`));
+  const opts = { type, scenario, stateAllowlist: fixture.manifest.stateAllowlist, recording: 'stamps' as const };
+  const results: Record<'baseline' | 'candidate', PerfRun[]> = { baseline: [], candidate: [] };
+  try {
+    for (let n = 0; n < warmup + runs; n++) {
+      const order = n % 2 === 0 ? (['baseline', 'candidate'] as const) : (['candidate', 'baseline'] as const);
+      for (const side of order) {
+        const r = await perfRun({ ...opts, url: (side === 'baseline' ? baseline : candidate).url }, n);
+        if (n >= warmup) results[side].push(r);
+      }
+    }
+  } finally {
+    await baseline.stop();
+    await candidate.stop();
+  }
+  const summary = { baseline: summarize(results.baseline, warmup), candidate: summarize(results.candidate, warmup) };
+  writeJson(join(out, 'perf.raw.json'), results);
+  writeJson(join(out, 'perf.summary.json'), summary);
+  console.log(`${runs} runs after ${warmup} warmup. Median across runs, with the range. Wall clock, not INP.`);
+  for (const name of Object.keys(summary.baseline.metrics)) {
+    const x = summary.baseline.metrics[name]!;
+    const y = summary.candidate.metrics[name];
+    console.log(`  ${name.padEnd(18)} baseline ${x.median} (${x.min} to ${x.max})   candidate ${y?.median} (${y?.min} to ${y?.max})`);
+  }
+  return 0;
+}
+
 function cmdFixtures(args: string[], registryPath = REGISTRY_FILE): number {
   const [sub, path] = args;
   if (sub === 'list') {
@@ -338,6 +398,8 @@ async function main(argv: string[]): Promise<number> {
       return cmdReduce(rest);
     case 'replay':
       return cmdReplay(rest);
+    case 'perf':
+      return cmdPerf(rest);
     case 'report':
       await exportReport(resolve(rest[0] ?? ''));
       console.log(`Report: ${join(rest[0] ?? '', 'report', 'index.html')}`);

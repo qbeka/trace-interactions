@@ -3,6 +3,7 @@ import { Stage } from './Stage.tsx';
 import { Strip } from './Strip.tsx';
 import {
   alignTime,
+  busyTimes,
   describeRequirement,
   failingSide,
   focusName,
@@ -11,6 +12,7 @@ import {
   primaryTarget,
   primaryViolation,
   requirementStatus,
+  skipIdle,
   timelines,
 } from './model.ts';
 import { REPORT_SCHEMA, type ReportCase, type ReportData, type RunSide } from './types.ts';
@@ -106,6 +108,7 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   const [time, setTime] = useState(pin === null ? end : Math.min(pin, end));
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(0.25);
+  const busy = useMemo(() => busyTimes(c.baseline.events, c.candidate.events), [c]);
   const clock = useRef<{ wall: number; trace: number } | null>(null);
 
   useEffect(() => {
@@ -114,7 +117,13 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
     clock.current = { wall: performance.now(), trace: time >= end ? 0 : time };
     const step = (now: number) => {
       const start = clock.current!;
-      const next = start.trace + (now - start.wall) * rate;
+      let next = start.trace + (now - start.wall) * rate;
+      // Long quiet gaps carry no information, so playback skips them.
+      const skipped = skipIdle(busy, next);
+      if (skipped !== next) {
+        next = skipped;
+        clock.current = { wall: now, trace: next };
+      }
       if (next >= end) {
         setTime(end);
         setPlaying(false);

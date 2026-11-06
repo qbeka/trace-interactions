@@ -1,0 +1,219 @@
+import AxeBuilder from '@axe-core/playwright';
+import { cpSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { chromium, type Browser, type Page } from 'playwright';
+import { serveDirectory, type StaticServer } from '../../src/runner/static.ts';
+import { ROOT } from './helpers.ts';
+
+const exec = promisify(execFile);
+const TSX = join(ROOT, 'node_modules/.bin/tsx');
+const CLI = join(ROOT, 'src/cli.ts');
+const WIDTHS = [320, 390, 768, 1440];
+
+let browser: Browser;
+let failing: StaticServer;
+let passing: StaticServer;
+let failingDir: string;
+
+async function report(baseline: string, candidate: string, scenario: string, reduce: boolean): Promise<string> {
+  const out = mkdtempSync(join(tmpdir(), 'trace-viewer-'));
+  await exec(TSX, [CLI, 'run', scenario, '--baseline', baseline, '--candidate', candidate, '--out', out], { cwd: ROOT }).catch(() => {});
+  if (reduce) await exec(TSX, [CLI, 'reduce', out, '--confirm-runs', '1', '--reproduction-runs', '2'], { cwd: ROOT });
+  return join(out, 'report');
+}
+
+beforeAll(async () => {
+  browser = await chromium.launch();
+  failingDir = await report('inspector@correct', 'inspector@stale-origin', 'fixtures/inspector/scenarios/long-session.json', true);
+  failing = await serveDirectory(failingDir);
+  passing = await serveDirectory(await report('overlay@correct', 'overlay@legit-restyle', 'fixtures/overlay/scenarios/open-and-cancel.json', false));
+});
+
+afterAll(async () => {
+  await failing.close();
+  await passing.close();
+  await browser.close();
+});
+
+async function open(url: string, width = 1280, options: Parameters<Browser['newContext']>[0] = {}): Promise<Page> {
+  const context = await browser.newContext({ viewport: { width, height: 800 }, ...options });
+  const page = await context.newPage();
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto(url);
+  await page.getByRole('heading', { level: 1 }).waitFor();
+  expect(errors).toEqual([]);
+  return page;
+}
+
+const time = async (page: Page): Promise<number> => parseInt((await page.locator('output.time').textContent()) ?? '0', 10);
+
+describe('portable report', () => {
+  it('opens from a static server with no network beyond its own folder', async () => {
+    const page = await open(failing.url);
+    const origins = new Set<string>();
+    page.on('request', (r) => origins.add(new URL(r.url()).origin));
+    await page.reload();
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    expect([...origins]).toEqual([new URL(failing.url).origin]);
+    await page.context().close();
+  });
+
+  it('opens from a file with no server', async () => {
+    const copy = mkdtempSync(join(tmpdir(), 'trace-file-'));
+    cpSync(failingDir, copy, { recursive: true });
+    const page = await open(`file://${copy}/index.html`);
+    await expect(page.getByRole('heading', { level: 1 }).textContent()).resolves.toMatch(/panel appeared/);
+    await page.context().close();
+  });
+
+  it('states the verdict in one sentence and shows the failure', async () => {
+    const page = await open(failing.url);
+    expect(await page.getByRole('heading', { level: 1 }).textContent()).toMatch(/panel appeared 80 px away from trigger/);
+    expect(await page.locator('.verdict').textContent()).toBe('Regression');
+    expect(await time(page)).toBe(4000);
+    await page.context().close();
+  });
+
+  it('makes a passing run as readable as a failure', async () => {
+    const page = await open(passing.url);
+    expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('Both builds met every declared requirement.');
+    await expect(page.getByRole('columnheader', { name: 'Requirement' }).count()).resolves.toBe(1);
+    expect(await page.locator('td.status-held').count()).toBeGreaterThan(0);
+    expect(await page.locator('td.status-broken').count()).toBe(0);
+    await expect(page.getByRole('button', { name: 'Go to failure' }).count()).resolves.toBe(0);
+    await page.context().close();
+  });
+});
+
+describe('keyboard transport', () => {
+  it('steps by action, jumps to the failure, and switches sequence', async () => {
+    const page = await open(failing.url);
+    await page.locator('body').click({ position: { x: 2, y: 2 } });
+    await page.keyboard.press('[');
+    expect(await time(page)).toBe(3600);
+    await page.keyboard.press('[');
+    expect(await time(page)).toBe(3200);
+    await page.keyboard.press(']');
+    expect(await time(page)).toBe(3600);
+    await page.keyboard.press('f');
+    expect(await time(page)).toBe(4000);
+    await page.keyboard.press('ArrowLeft');
+    expect(await time(page)).toBe(3984);
+    await page.keyboard.press('r');
+    await page.getByRole('button', { name: 'Original sequence', pressed: true }).waitFor();
+    await page.context().close();
+  });
+
+  it('plays with Space and pauses with Space', async () => {
+    const page = await open(failing.url);
+    await page.locator('body').click({ position: { x: 2, y: 2 } });
+    await page.keyboard.press('[');
+    const before = await time(page);
+    await page.keyboard.press(' ');
+    await page.waitForTimeout(400);
+    await page.keyboard.press(' ');
+    const after = await time(page);
+    expect(after).toBeGreaterThan(before);
+    await page.waitForTimeout(150);
+    expect(await time(page)).toBe(after);
+    await page.context().close();
+  });
+
+  it('leaves Space on a button to that button', async () => {
+    const page = await open(failing.url);
+    await page.getByRole('button', { name: 'Previous action' }).focus();
+    const before = await time(page);
+    await page.keyboard.press(' ');
+    expect(await time(page)).toBeLessThan(before);
+    await expect(page.getByRole('button', { name: 'Pause' }).count()).resolves.toBe(0);
+    await page.context().close();
+  });
+
+  it('shows a visible focus indicator', async () => {
+    const page = await open(failing.url);
+    await page.getByRole('button', { name: 'Next action' }).focus();
+    await page.keyboard.press('Tab');
+    const outline = await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle);
+    expect(outline).toBe('solid');
+    await page.context().close();
+  });
+});
+
+describe('layout', () => {
+  it.each(WIDTHS)('has no horizontal page scroll at %i px', async (width) => {
+    const page = await open(failing.url, width);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    await page.context().close();
+  });
+
+  it('stays usable at 200 percent zoom, which is half the CSS width', async () => {
+    const page = await open(failing.url, 640);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    await page.getByRole('button', { name: 'Go to failure' }).click();
+    await page.context().close();
+  });
+
+  it('stacks the two stages on a phone', async () => {
+    const page = await open(failing.url, 390);
+    const boxes = await page.locator('figure.stage').evaluateAll((els) => els.map((e) => e.getBoundingClientRect().top));
+    expect(boxes[1]).toBeGreaterThan(boxes[0]! + 100);
+    await page.context().close();
+  });
+
+  it('handles a tall touch target on the transport', async () => {
+    const page = await open(failing.url, 390, { hasTouch: true });
+    const height = await page.getByRole('button', { name: 'Next action' }).evaluate((e) => e.getBoundingClientRect().height);
+    expect(height).toBeGreaterThanOrEqual(34);
+    await page.getByRole('button', { name: 'Next action' }).tap();
+    await page.context().close();
+  });
+});
+
+describe('reduced motion', () => {
+  it('never starts on its own and says so', async () => {
+    const page = await open(failing.url, 1280, { reducedMotion: 'reduce' });
+    const before = await time(page);
+    await page.waitForTimeout(300);
+    expect(await time(page)).toBe(before);
+    expect(await page.locator('.keys').textContent()).toMatch(/Reduced motion is on/);
+    await page.context().close();
+  });
+});
+
+describe('empty and error states', () => {
+  it('explains an empty report and recovers from a bad file', async () => {
+    const empty = mkdtempSync(join(tmpdir(), 'trace-empty-'));
+    cpSync(failingDir, empty, { recursive: true });
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync(join(empty, 'report.data.js'), '');
+    writeFileSync(join(empty, 'report.json'), '{"schema":"trace.report/1","cases":[]}');
+    const server = await serveDirectory(empty);
+    const page = await open(server.url);
+    expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('No report loaded');
+    await page.locator('input[type=file]').setInputFiles({ name: 'x.json', mimeType: 'application/json', buffer: Buffer.from('{"schema":"nope"}') });
+    await page.getByRole('alert').waitFor();
+    expect(await page.getByRole('alert').textContent()).toMatch(/not a Trace report/);
+    const { readFileSync } = await import('node:fs');
+    await page.locator('input[type=file]').setInputFiles({ name: 'r.json', mimeType: 'application/json', buffer: readFileSync(join(failingDir, 'report.json')) });
+    await page.getByRole('heading', { level: 1, name: /panel appeared/ }).waitFor();
+    await page.context().close();
+    await server.close();
+  });
+});
+
+describe('automated accessibility checks', () => {
+  it.each([['failing', () => failing.url], ['passing', () => passing.url]] as const)('finds no serious issues on the %s report', async (_n, url) => {
+    const page = await open(url());
+    await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
+    const results = await new AxeBuilder({ page }).analyze();
+    const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+    expect(serious.map((v) => `${v.id}: ${v.nodes[0]?.target}`)).toEqual([]);
+    await page.context().close();
+  });
+});

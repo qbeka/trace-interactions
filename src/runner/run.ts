@@ -24,6 +24,17 @@ const UNCONTROLLED = [
 const CLOCK_PROBE_MS = 16;
 const ACTION_TIMEOUT_MS = 1_000;
 
+/** Same surface as the recorder and no observation at all. Wall mode only. */
+const STUB_RECORDER = `window.__trace = {
+  configure() {}, start() {}, stop() {}, mark() {}, checkpoint() {}, sample() {},
+  drain: () => [], latency: () => [], usedChannels: () => [], state: () => ({}),
+  settle: () => new Promise((done) => requestAnimationFrame(() => {
+    const c = new MessageChannel();
+    c.port1.onmessage = () => { c.port1.close(); done(); };
+    c.port2.postMessage(0);
+  })),
+};`;
+
 const recorderSource = (): string => {
   const path = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'dist', 'recorder.js');
   try {
@@ -41,8 +52,12 @@ export interface RunOptions {
   stateAllowlist: string[];
   /** Overrides the scenario's timing mode. */
   mode?: 'controlled' | 'wall';
-  /** `stamps` is the low-overhead performance pass. It records no trace. */
-  recording?: 'full' | 'stamps';
+  /**
+   * `full` records the trace. `stamps` is the low-overhead performance pass: it
+   * keeps input and commit timestamps only. `off` injects a stub with no listeners
+   * or wrappers, which is the control for measuring what the recorder costs.
+   */
+  recording?: 'full' | 'stamps' | 'off';
   /** Saves screenshots to this directory. Never set during a performance pass. */
   screenshots?: { dir: string; prefix: string; times?: number[] };
   /** Disables the idle jump. Used by the test that proves the jump changes nothing. */
@@ -182,7 +197,7 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       await context.clock.install({ time: 0 });
       await context.clock.pauseAt(1000);
     }
-    await context.addInitScript({ content: recorderSource() });
+    await context.addInitScript({ content: recording === 'off' ? STUB_RECORDER : recorderSource() });
 
     const page = await context.newPage();
     page.setDefaultTimeout(ACTION_TIMEOUT_MS);
@@ -232,9 +247,17 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       }
     }
 
-    if (kind === 'chromium' && recording !== 'full' || (kind === 'chromium' && mode === 'wall')) {
+    // Measured by the browser, from outside the page, so the recorder cannot
+    // under-report itself. Chromium only. Counters are cumulative: take a delta.
+    const readMetrics = async (): Promise<Record<string, number>> => {
+      const { metrics: raw } = await cdpMetrics!.send('Performance.getMetrics');
+      return Object.fromEntries(raw.map((m) => [m.name, m.value]));
+    };
+    let metricsAtStart: Record<string, number> | null = null;
+    if (kind === 'chromium' && mode === 'wall') {
       cdpMetrics = await context.newCDPSession(page);
       await cdpMetrics.send('Performance.enable');
+      metricsAtStart = await readMetrics();
     }
 
     const mark = (e: PendingEvent): Promise<void> => page.evaluate((m) => window.__trace.mark(m), e);
@@ -413,9 +436,11 @@ export async function runScenario(opts: RunOptions): Promise<RunOutput> {
       window.__trace.checkpoint();
       window.__trace.stop();
     });
-    if (cdpMetrics) {
-      const { metrics: raw } = await cdpMetrics.send('Performance.getMetrics');
-      metrics = Object.fromEntries(raw.map((m) => [m.name, m.value]));
+    if (metricsAtStart) {
+      const end = await readMetrics();
+      metrics = Object.fromEntries(
+        ['TaskDuration', 'ScriptDuration', 'LayoutDuration', 'RecalcStyleDuration'].map((k) => [k, (end[k]! - metricsAtStart![k]!) * 1000]),
+      );
     }
     const events = (await page.evaluate(() => window.__trace.drain())) as TraceEvent[];
     const latency = await page.evaluate(() => window.__trace.latency());

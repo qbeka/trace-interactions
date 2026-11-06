@@ -13,8 +13,8 @@ import type { Primitive } from '../scenario/schema.ts';
 
 export interface RecorderConfig {
   mode: 'controlled' | 'wall';
-  /** full records everything. stamps keeps only input and commit timestamps. */
-  recording: 'full' | 'stamps';
+  /** full records everything. stamps keeps only input and commit timestamps. off is the stub. */
+  recording: 'full' | 'stamps' | 'off';
   targets: { name: string; traceId: string }[];
   relations: { from: string; fromTraceId: string; attribute: string }[];
   stateAllowlist: string[];

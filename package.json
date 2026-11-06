@@ -21,7 +21,11 @@
     "build:viewer": "vite build --config viewer/vite.config.ts",
     "build": "pnpm build:recorder && pnpm build:viewer && pnpm build:fixtures",
     "check": "tsc --noEmit -p .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "pnpm build && vitest run --config vitest.e2e.config.ts",
+    "bench:smoke": "tsx bench/smoke.ts",
+    "bench": "tsx bench/run.ts",
+    "demo": "tsx bench/demo.ts"
   },
   "dependencies": {
     "playwright": "1.65.0",
