@@ -213,7 +213,7 @@ did not test that. It is not a speed-up, and it should not be read as one.
 
 ## Interface checks
 
-54 browser tests cover keyboard transport, widths of 320, 390, 768 and 1440, half-width
+55 browser tests cover keyboard transport, widths of 320, 390, 768 and 1440, half-width
 for 200 percent zoom, touch, reduced motion, long labels and dense data, and empty and
 error states. axe-core found no serious or critical issues on a failing or passing report.
 Automated checks do not establish full accessibility.
@@ -235,6 +235,8 @@ diverged reports.
 - **Refused URLs.** The CLI opened a browser before refusing a remote URL, then hung.
 - **Navigation timeout.** The short action timeout also capped page load, so a busy machine
   could crash a reduction.
+- **Frozen install.** On a clean clone, `pnpm install --frozen-lockfile` exited 1 because
+  pnpm 12 stops on an unapproved build script. It only showed up on a clean checkout.
 
 ## Next bounded improvements
 
