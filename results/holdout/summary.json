@@ -1,0 +1,31 @@
+{
+  "seeded": 6,
+  "clean": 4,
+  "trace": {
+    "truePositives": 6,
+    "wrongCategory": 0,
+    "falseNegatives": 0,
+    "falsePositives": 1,
+    "trueNegatives": 3
+  },
+  "controls": {
+    "never": {
+      "truePositives": 0,
+      "falseNegatives": 6,
+      "falsePositives": 0,
+      "trueNegatives": 4
+    },
+    "traceDiff": {
+      "truePositives": 5,
+      "falseNegatives": 1,
+      "falsePositives": 2,
+      "trueNegatives": 2
+    },
+    "finalScreenshot": {
+      "truePositives": 2,
+      "falseNegatives": 4,
+      "falsePositives": 0,
+      "trueNegatives": 4
+    }
+  }
+}

@@ -1,0 +1,147 @@
+[
+  {
+    "fixture": "combobox",
+    "build": "correct",
+    "expected": "clean",
+    "mechanism": "control: identical build",
+    "detected": [],
+    "flagged": false,
+    "outcome": "tn",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": false,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-response",
+    "expected": "stale-final-state",
+    "mechanism": "an early response overwrites a later one",
+    "detected": [
+      "stale-final-state"
+    ],
+    "flagged": true,
+    "outcome": "tp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "remount-on-results",
+    "expected": "lost-focus",
+    "mechanism": "new results remount the focused input",
+    "detected": [
+      "missed-ack",
+      "lost-focus"
+    ],
+    "flagged": true,
+    "outcome": "tp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": true
+  },
+  {
+    "fixture": "combobox",
+    "build": "duplicate-list-id",
+    "expected": "duplicate-interactive",
+    "mechanism": "a hidden template repeats the list id",
+    "detected": [
+      "duplicate-interactive"
+    ],
+    "flagged": true,
+    "outcome": "tp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": false,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "poll-leak",
+    "expected": "incomplete-cleanup",
+    "mechanism": "removal leaves an interval running",
+    "detected": [
+      "incomplete-cleanup"
+    ],
+    "flagged": true,
+    "outcome": "tp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "escape-keeps-open",
+    "expected": "missed-ack",
+    "mechanism": "Escape is never acknowledged",
+    "detected": [
+      "missed-ack"
+    ],
+    "flagged": true,
+    "outcome": "tp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": true
+  },
+  {
+    "fixture": "combobox",
+    "build": "stale-list-width",
+    "expected": "geometry-discontinuity",
+    "mechanism": "the list keeps a measured width after a resize",
+    "detected": [
+      "geometry-discontinuity"
+    ],
+    "flagged": true,
+    "outcome": "tp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-restyle",
+    "expected": "clean",
+    "mechanism": "legitimate: new colors and corners",
+    "detected": [],
+    "flagged": false,
+    "outcome": "tn",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": false,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-fast-debounce",
+    "expected": "clean",
+    "mechanism": "legitimate: shorter debounce",
+    "detected": [],
+    "flagged": false,
+    "outcome": "tn",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": false
+  },
+  {
+    "fixture": "combobox",
+    "build": "legit-wide-list",
+    "expected": "clean",
+    "mechanism": "legitimate: wider list",
+    "detected": [
+      "geometry-discontinuity"
+    ],
+    "flagged": true,
+    "outcome": "fp",
+    "scenarios": 5,
+    "invalid": 0,
+    "traceDiffFlag": true,
+    "screenshotFlag": false
+  }
+]
