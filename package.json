@@ -16,7 +16,12 @@
   "scripts": {
     "trace": "tsx src/cli.ts",
     "build:fixtures": "tsx scripts/build-fixtures.ts",
-    "build:recorder": "tsx scripts/build-recorder.ts"
+    "build:recorder": "tsx scripts/build-recorder.ts",
+    "dev": "vite --config viewer/vite.config.ts",
+    "build:viewer": "vite build --config viewer/vite.config.ts",
+    "build": "pnpm build:recorder && pnpm build:viewer && pnpm build:fixtures",
+    "check": "tsc --noEmit -p .",
+    "test": "vitest run"
   },
   "dependencies": {
     "playwright": "1.65.0",
