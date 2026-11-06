@@ -1,7 +1,4 @@
 @font-face { font-family: 'Geist Serif'; src: url('../../node_modules/geist/dist/fonts/geist-serif/GeistSerif-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'Geist'; src: url('../../node_modules/geist/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'Geist'; src: url('../../node_modules/geist/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
-@font-face { font-family: 'Geist Mono'; src: url('../../node_modules/geist/dist/fonts/geist-mono/GeistMono-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 
 :root {
   --paper: #fbf8f4;
@@ -21,9 +18,9 @@
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 Geist, system-ui, sans-serif; font-synthesis: none; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 'Geist Serif', Georgia, serif; font-synthesis: none; }
 button, select, input { font: inherit; color: inherit; }
-code, kbd, .time, td, .stage-readout dd, .seg-text, .mast-meta, .stage-label, .tag { font-family: 'Geist Mono', ui-monospace, monospace; }
+code, kbd, .time, td, .stage-readout dd, .seg-text, .mast-meta, .stage-label, .tag { font-variant-numeric: tabular-nums; }
 code, kbd { font-size: 0.86em; }
 :focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; border-radius: 3px; }
 
@@ -49,7 +46,7 @@ code, kbd { font-size: 0.86em; }
 .stage svg { display: block; width: 100%; aspect-ratio: 16 / 10; max-height: 340px; background: var(--tile); border-radius: 6px; }
 .stage .outside { fill: #6040200a; }
 .stage .vp { fill: var(--paper); stroke: var(--line-strong); }
-.stage .node-name { fill: var(--muted); text-anchor: middle; font-family: 'Geist Mono', monospace; }
+.stage .node-name { fill: var(--muted); text-anchor: middle; }
 .stage .node { fill: none; stroke: var(--quiet); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .stage .primary { fill: #1d3a2a10; stroke: var(--forest); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
 .stage .ghost { fill: none; stroke: var(--quiet); stroke-dasharray: 5 4; stroke-width: 1; vector-effect: non-scaling-stroke; }
@@ -126,7 +123,7 @@ tr.is-failure td { background: var(--fail-wash); }
 .status-held { color: var(--forest); }
 .status-broken { color: var(--fail); font-weight: 500; }
 .status-not-run, .status-not-exercised { color: var(--muted); }
-.link { padding: 0; border: 0; background: none; color: inherit; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 2px; cursor: pointer; font-family: 'Geist Mono', monospace; font-size: 12.5px; white-space: nowrap; }
+.link { padding: 0; border: 0; background: none; color: inherit; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 2px; cursor: pointer; font-size: 12.5px; white-space: nowrap; }
 
 .violations { list-style: none; margin: 0; padding: 0; }
 .violations li { display: grid; grid-template-columns: 76px 1fr; gap: 2px 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }

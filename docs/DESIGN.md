@@ -58,10 +58,9 @@ but not focus, is costly to capture, and cannot draw the path a panel took.
 
 ## Layout and type
 
-The report uses a serif for editorial text and a readable sans for dense
-controls. The verdict sentence uses Geist Serif, tables and controls use Geist
-Sans, and trace values use Geist Mono. All three ship with the report, so it
-needs no network. Colors and spacing are design tokens in the viewer stylesheet.
+The report and the project page use Geist Serif throughout, with tabular figures
+for trace values, so a table of numbers still lines up. The font ships with the
+report, so it needs no network. Colors and spacing are design tokens in the viewer stylesheet.
 
 There are no metric tiles. A passing report has the same shape as a failing one:
 the sentence says what held, and the stages still replay.
