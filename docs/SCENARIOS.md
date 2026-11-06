@@ -86,6 +86,13 @@ Requirements do not depend on the baseline. Each maps to one failure category.
 
 An action `ack` and a timed-out `waitFor` report as `missed-ack`.
 
+Each requirement ends as `held`, `broken` or `not exercised`. The last means the run never
+reached what it checks, such as a focus requirement on a target that never had focus, or a
+leak check with no count from before mount. To test for leaks, start with
+`"initialState": { "mounted": false }` and mount with `requestState`, or there is nothing
+to compare against. A state key the page never publishes makes the scenario invalid, so a
+typo cannot pass as `held`.
+
 ## Valid, invalid, diverged
 
 A failed selector or an unsupported command is never a regression.
@@ -130,6 +137,8 @@ Then write a manifest and register it:
 trace fixtures add path/to/fixture.json
 ```
 
-Only state keys in `stateAllowlist` are recorded, and only short primitives. Trace never
-reads text, input values or labels. Use synthetic data in fixtures anyway. Commands run
-only from a manifest you registered, and URLs must be on this machine.
+Only state keys in `stateAllowlist` are recorded, and only short primitives. Choose them
+with care: a key holding a search query is typed text, and it will be saved. The recorder
+itself keeps no text, input values or labels, but reports include the scenario's typed
+text and unmasked screenshots, so use synthetic data. Commands run only from the registry
+you point at, never from a saved run folder, and URLs must be on this machine.
