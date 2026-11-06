@@ -11,8 +11,9 @@ each one in a sentence, with two aligned replays that show where the builds part
 
 ## See a report
 
-No install needed. Clone the repository and open [demo/index.html](demo/index.html) in a
-browser. It replays one failure on two builds, and links to the full report.
+**[Watch the replay](https://www.qendrimbeka.com/projects/trace/index.html)** in your browser. It plays one failure on two builds, and links to the
+full report. No install needed. The same page is in the repository at
+[demo/index.html](demo/index.html).
 
 In the full report, `Space` plays, `[` and `]` step by action, `F` jumps to the failure, and
 `R` switches between the reduced and original sequence.
