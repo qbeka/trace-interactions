@@ -125,7 +125,7 @@ let tab = 'a';
 const subscribers = new Set();
 window.__traceFixture = { id: 'tabs', version: '1', getState: () => ({ tab }), subscribe(cb) { subscribers.add(cb); return () => subscribers.delete(cb); } };
 const set = (t) => { tab = t; subscribers.forEach((f) => f()); };
-document.querySelector('[data-trace-id=b]').onclick = (e) => { set('b'); ${restore ? '' : 'e.target.remove();'} };
+document.querySelector('[data-trace-id=b]').onclick = (e) => { set('b'); ${restore ? '' : 'setTimeout(() => e.target.remove(), 30);'} };
 </script>`;
     writeFileSync(join(fixture, 'good', 'index.html'), page(true));
     writeFileSync(join(fixture, 'bad', 'index.html'), page(false));

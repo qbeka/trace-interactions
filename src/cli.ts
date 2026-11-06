@@ -55,7 +55,9 @@ const BROWSERS = { chromium, firefox, webkit };
 function launch(name: string): Promise<Browser> {
   const type = BROWSERS[name as keyof typeof BROWSERS];
   if (!type) throw new InvalidScenario(`unknown browser "${name}"`);
-  return type.launch();
+  // Playwright's default handler kills the browser and exits on Ctrl-C, which
+  // would lose the reducer's result. `trace reduce` stops cleanly on its own.
+  return type.launch({ handleSIGINT: false });
 }
 
 function readScenario(path: string): Scenario {
@@ -149,10 +151,13 @@ async function cmdRun(args: string[]): Promise<number> {
   };
 
   const out = resolve(values.out ?? join('.trace', scenario.id));
-  const browser = await launch(values.browser!);
+  // Check and serve both builds before a browser exists, so a refused URL opens nothing.
   const baseline = await serve(values.baseline, values['baseline-url'], 'baseline');
-  const candidate = await serve(values.candidate, values['candidate-url'], 'candidate');
+  let candidate: ServedBuild | null = null;
+  let browser: Browser | null = null;
   try {
+    candidate = await serve(values.candidate, values['candidate-url'], 'candidate');
+    browser = await launch(values.browser!);
     const manifest: RunManifest = {
       schema: 'trace.run/1',
       command: ['trace', 'run', ...args],
@@ -192,8 +197,8 @@ async function cmdRun(args: string[]): Promise<number> {
     return exitCode(comparison.verdict);
   } finally {
     await baseline.stop();
-    await candidate.stop();
-    await browser.close();
+    await candidate?.stop();
+    await browser?.close();
   }
 }
 

@@ -133,7 +133,7 @@ tr.is-failure td { background: var(--fail-wash); }
 .kept { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 12px 0; padding: 0; }
 .kept li { padding: 3px 10px; border-radius: 999px; font-size: 13px; }
 .kept .is-kept { background: var(--forest); color: #fff; }
-.kept .is-dropped { color: var(--quiet); border: 1px solid var(--line); text-decoration: line-through; }
+.kept .is-dropped { color: var(--muted); border: 1px solid var(--line); text-decoration: line-through; }
 
 .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
 .shots figure { margin: 0; min-width: 0; }
