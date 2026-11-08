@@ -11,7 +11,7 @@ each one in a sentence, with two aligned replays that show where the builds part
 
 ## See a report
 
-**[Watch the replay](https://www.qendrimbeka.com/projects/trace/index.html)** in your browser. It plays one failure on two builds, shows the reduction to four
+**[Watch the replay](https://www.qendrimbeka.com/projects/trace/)** in your browser. It plays one failure on two builds, shows the reduction to four
 steps, and links to the full report. No install needed. The same page is in the repository at
 [demo/index.html](demo/index.html).
 
