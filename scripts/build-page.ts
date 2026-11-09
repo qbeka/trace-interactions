@@ -20,7 +20,8 @@ interface Summary { seeded: number; clean: number; trace: Score; controls: { tra
 interface Frames { width: number; height: number; scale: number; runs: Record<string, { t: number; f: string }[]> }
 
 const KEEP = new Set(['geometry', 'focus', 'viewport']);
-const round = (n: number) => Math.round(n * 10) / 10;
+/** The recorder keeps 0.01 px, and the page measures from these, so nothing coarser will do. */
+const round = (n: number) => Math.round(n * 100) / 100;
 const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 /** Drops what the page does not draw, which is most of the report's size. */
