@@ -72,6 +72,11 @@ dimension line, read from the same two rectangles the oracle read.
 There are no metric tiles. A passing report has the same shape as a failing one:
 the sentence says what held, and the stages still replay.
 
+A status line, hint, caption or label is one sentence with no closing period, on the page
+and in a report. The page build stops if one of its own lines breaks that, and the tests
+check the same in a browser. Passages of several sentences are ordinary prose, and so is
+the verdict, which is saved with the run and shown as it was written.
+
 ## The project page
 
 The page compares the two builds in one viewer instead of two stacked panes, because the
