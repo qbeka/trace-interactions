@@ -15,7 +15,7 @@ within the revised 50 minute budget.
 
 ## How this report changed
 
-An earlier version of this report made claims that did not survive review. An independent
+An earlier version of this report made claims that did not survive review. A second
 reviewer, working on a clean clone with the repository and none of my conclusions, found
 25 issues, then rechecked my fixes and found 7 regressions, including one that could delete
 user files in `--out` and a wrong explanation of a control result. These changed what can
