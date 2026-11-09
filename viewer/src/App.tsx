@@ -104,11 +104,11 @@ function Report({ data }: { data: ReportData }) {
         <span className="mast-meta mast-clock">{active.baseline.clock.mode === 'controlled' ? 'controlled time' : 'wall clock'}</span>
         {hasBoth && (
           <div className="seg sequence-switch" role="group" aria-label="Sequence">
-            <button type="button" className="button" aria-label="Reduced sequence" aria-pressed={active.id === 'reduced'} onClick={active.id === 'reduced' ? undefined : toggle}>
-              Reduced<span className="count">{count('reduced')}</span>
+            <button type="button" className="button" aria-pressed={active.id === 'reduced'} onClick={active.id === 'reduced' ? undefined : toggle}>
+              Reduced <span className="count">{count('reduced')}</span><span className="visually-hidden"> actions</span>
             </button>
-            <button type="button" className="button" aria-label="Original sequence" aria-pressed={active.id === 'original'} onClick={active.id === 'original' ? undefined : toggle}>
-              Original<span className="count">{count('original')}</span>
+            <button type="button" className="button" aria-pressed={active.id === 'original'} onClick={active.id === 'original' ? undefined : toggle}>
+              Original <span className="count">{count('original')}</span><span className="visually-hidden"> actions</span>
             </button>
           </div>
         )}
