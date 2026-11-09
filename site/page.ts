@@ -1196,6 +1196,7 @@ new ResizeObserver(() => {
   measureFilm();
   schedule();
 }).observe(film);
+// The first report from this observer builds the grid, a frame after the viewer is up.
 new ResizeObserver(buildMatrix).observe(attemptsSvg);
 layout();
 measureFilm();
@@ -1203,7 +1204,6 @@ setSplit(split);
 view = startView;
 setSession(startSession, startTime);
 setView(startView);
-buildMatrix();
 status.textContent = '';
 urlReady = true;
 
