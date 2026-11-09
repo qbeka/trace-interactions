@@ -710,8 +710,8 @@
       "bytes": 8255
     },
     "demo/index.html": {
-      "sha256": "bc45e197367ee8259aab0863d3f4969b526a10b80d030cb5f729c2f47a5a79a3",
-      "bytes": 158076
+      "sha256": "e3130cb79ac6a48b4866393b9a88e8135ebeadf9515fab06a662ab3946befef1",
+      "bytes": 158075
     },
     "demo/reduced.scenario.json": {
       "sha256": "51855d9bfb9f3ea46ef13c3322c8d18263fd08c84cc9f67522bc35b329763668",
