@@ -153,7 +153,9 @@ const offsetAt = (t: number): number => {
 /* The viewer: one canvas of screenshots, and marks drawn in the same coordinates */
 interface Camera { x: number; y: number; w: number; h: number; scale: number }
 let cam: Camera = { x: 0, y: 0, w: 1, h: 1, scale: 1 };
-const scratch = [document.createElement('canvas'), document.createElement('canvas')] as const;
+/** Where the two frames differ, kept as its own layer so the browser blends and scales it off the main thread. */
+const glow = $<HTMLCanvasElement>('glow');
+const scratch = document.createElement('canvas');
 let drawn = '';
 
 const world = shape('g', 'world', marks);
@@ -165,6 +167,14 @@ const fanBad = shape('path', 'g-fan bad', world);
 const panelGood = shape('rect', 'g-panel good', world);
 const panelBad = shape('rect', 'g-panel bad', world);
 const focusRing = shape('rect', 'g-focus', world);
+// Past the edge of the window there is no page, and the hatching says so.
+const defs = shape('defs', '', marks);
+const hatch = shape('pattern', '', defs);
+set(hatch, { id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' });
+set(shape('line', 'm-hatch', hatch), { x1: 0, y1: 0, x2: 0, y2: 6 });
+const outside = shape('rect', 'm-outside', marks);
+marks.prepend(outside);
+marks.prepend(defs);
 const edge = shape('line', 'm-edge', marks);
 const ruler = shape('g', 'ruler', marks);
 const outlineGood = shape('rect', 'm-outline good', ruler);
@@ -177,17 +187,21 @@ const label = shape('text', 'm-label', ruler);
 function layout(): void {
   const { width, height } = viewer.getBoundingClientRect();
   if (!width || !height) return;
+  // On a narrow viewer the labels would sit on the Inspect button, so the window starts below them.
+  const head = width < 560 ? 34 : 0;
   // Large enough to read, and never so large that the open panel leaves the picture.
-  const scale = Math.min(Math.max(height / 300, width / frame.width), width / 548, 1.6);
+  const scale = Math.min(Math.max((height - head) / 300, width / frame.width), width / 548, 1.6);
   const w = Math.min(frame.width, width / scale);
   const h = height / scale;
-  cam = { x: frame.width - w, y: 0, w, h, scale: width / w };
-  const dpr = Math.min(devicePixelRatio || 1, 2);
-  for (const canvas of [screen, ...scratch]) {
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
+  cam = { x: frame.width - w, y: -head / scale, w, h, scale: width / w };
+  // The canvas holds the screenshot's own pixels for the part in view, so a frame is copied
+  // across without resampling, and the browser scales the finished picture to fit.
+  screen.width = Math.round(w * frame.scale);
+  screen.height = Math.round(h * frame.scale);
+  for (const canvas of [glow, scratch]) {
+    canvas.width = screen.width;
+    canvas.height = screen.height;
   }
-  ctx.imageSmoothingQuality = 'high';
   set(marks, { viewBox: `${cam.x} ${cam.y} ${cam.w} ${cam.h}` });
   const unit = 1 / cam.scale;
   set(label, { 'font-size': 12 * unit });
@@ -198,7 +212,14 @@ function layout(): void {
 
 function blit(to: CanvasRenderingContext2D, name: string): void {
   const s = frame.scale;
-  to.drawImage(images.get(name)!, cam.x * s, cam.y * s, cam.w * s, cam.h * s, 0, 0, to.canvas.width, to.canvas.height);
+  const k = to.canvas.width / (cam.w * s);
+  // Only the part of the camera that the frame covers is drawn, at the place it belongs.
+  const top = Math.max(0, cam.y);
+  const bottom = Math.min(frame.height, cam.y + cam.h);
+  const sx = Math.round(cam.x * s);
+  const sw = Math.round(cam.w * s);
+  const sh = Math.round((bottom - top) * s);
+  to.drawImage(images.get(name)!, sx, Math.round(top * s), sw, sh, 0, Math.round((top - cam.y) * s * k), to.canvas.width, Math.round(sh * k));
 }
 
 /** Paints one build on white, so that the part outside the window compares as equal. */
@@ -251,28 +272,19 @@ function paint(): void {
     blit(ctx, cell.bad);
     ctx.restore();
   } else {
-    // Difference: black where the two frames agree, lit where they do not.
-    ctx.fillStyle = '#111511';
-    ctx.fillRect(0, 0, W, H);
-    ctx.globalAlpha = 0.09;
+    // Difference: black where the two frames agree, lit where they do not. The last
+    // good build sits underneath, dimmed by the stylesheet, to show where things are.
+    ctx.clearRect(0, 0, W, H);
     blit(ctx, cell.good);
-    ctx.globalAlpha = 1;
+    const a = glow.getContext('2d')!;
     if (cell.differs) {
-      const a = flat(scratch[0], cell.good);
-      flat(scratch[1], cell.bad);
+      // The stylesheet brightens and tints this layer, so the main thread only subtracts.
+      flat(glow, cell.good);
+      flat(scratch, cell.bad);
       a.globalCompositeOperation = 'difference';
-      a.drawImage(scratch[1], 0, 0);
-      // Thin antialiased edges come out faint, so the result is added to itself.
-      a.globalCompositeOperation = 'lighter';
-      a.drawImage(scratch[0], 0, 0);
-      a.drawImage(scratch[0], 0, 0);
-      a.globalCompositeOperation = 'multiply';
-      a.fillStyle = '#ffb680';
-      a.fillRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.drawImage(scratch[0], 0, 0);
-      ctx.globalCompositeOperation = 'source-over';
-    }
+      a.drawImage(scratch, 0, 0);
+      a.globalCompositeOperation = 'source-over';
+    } else a.clearRect(0, 0, glow.width, glow.height);
   }
   drawn = key;
 }
@@ -308,7 +320,11 @@ function drawMarks(): void {
   const vp = viewportAt(goodLine, t, { width: frame.width, height: frame.height });
   const narrow = vp.width < frame.width;
   show(edge, narrow && !geometry);
-  if (narrow) set(edge, { x1: vp.width, y1: 0, x2: vp.width, y2: frame.height });
+  show(outside, narrow);
+  if (narrow) {
+    set(edge, { x1: vp.width, y1: 0, x2: vp.width, y2: frame.height });
+    set(outside, { x: vp.width, y: 0, width: frame.width - vp.width, height: frame.height });
+  }
 
   const a = rectAt(goodLine, 'panel', t);
   const b = rectAt(badLine, 'panel', t);
@@ -320,7 +336,7 @@ function drawMarks(): void {
     show(outlineGood, !geometry);
     show(outlineBad, !geometry);
     // A dimension line under the panels, the way a drawing marks a distance.
-    const y = Math.min(266, cam.h - 16 * unit);
+    const y = Math.min(266, cam.y + cam.h - 16 * unit);
     const from = a.x;
     const to = a.x + gap * grow;
     const foot = Math.min(a.y + a.h, b.y + b.h) + 5 * unit;
@@ -332,7 +348,9 @@ function drawMarks(): void {
     if (label.textContent !== text) label.textContent = text;
     const wide = (text.length * 6.6 + 14) * unit;
     const fits = Math.abs(gap) > wide + 6 * unit;
-    const cx = fits ? (a.x + b.x) / 2 : Math.max(a.x, b.x) + 8 * unit + wide / 2;
+    // Beside the line when it cannot sit over it, on whichever side still has room.
+    const right = Math.max(a.x, b.x) + 8 * unit + wide / 2;
+    const cx = fits ? (a.x + b.x) / 2 : right + wide / 2 < cam.x + cam.w - 4 * unit ? right : Math.min(a.x, b.x) - 8 * unit - wide / 2;
     const cy = fits ? y - 15 * unit : y - 1 * unit;
     set(pill, { x: cx - wide / 2, y: cy - 10 * unit, width: wide, height: 20 * unit, rx: 10 * unit });
     set(label, { x: cx, y: cy + 4.2 * unit });
@@ -343,7 +361,7 @@ function drawMarks(): void {
 
   show(world, geometry);
   if (!geometry) return;
-  set(worldView, { x: 0.5, y: -40, width: vp.width - 1, height: vp.height + 40 });
+  set(worldView, { x: 0.5, y: 0.5, width: vp.width - 1, height: frame.height - 0.5 });
   for (const [name, node] of nodes) {
     const r = rectAt(goodLine, name, t);
     show(node.rect, !!r);
@@ -1065,7 +1083,9 @@ stage.addEventListener('keydown', (e) => {
     } else {
       const first = trail[0]!;
       const span = e.timeStamp - first.t;
-      velocity = span > 8 && e.type === 'pointerup' && !calm() ? -((e.clientX - first.x) / span) * 1000 / pitch : 0;
+      // A hand that stopped before letting go leaves the film where it is.
+      const moving = e.timeStamp - trail.at(-1)!.t < 70;
+      velocity = moving && span > 8 && e.type === 'pointerup' && !calm() ? -((e.clientX - first.x) / span) * 1000 / pitch : 0;
       if (Math.abs(velocity) < 3) {
         velocity = 0;
         target = clamp(Math.round(pos), 0, cells.length - 1);

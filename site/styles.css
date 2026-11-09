@@ -4,7 +4,7 @@
   --bad-text: #96460f;
   --desk: #efede7;
   --stage-height: clamp(560px, calc(100svh - 152px), 676px);
-  --rail-width: 372px;
+  --rail-width: 392px;
   --label-col: 150px;
   --pitch: 110px;
   --cell: 104px;
@@ -45,15 +45,20 @@
 /* The viewer */
 .viewer {
   grid-area: viewer; position: relative; min-height: 0; margin: 0 12px; overflow: hidden; border-radius: 9px;
-  background: repeating-linear-gradient(135deg, transparent 0 5px, #1115110a 5px 6px), var(--desk);
+  background: var(--desk); isolation: isolate;
   --m-good: var(--forest); --m-bad: var(--bad); --m-paper: var(--paper); --m-text: var(--bad-text);
 }
 .viewer canvas, .viewer .marks { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .viewer .marks { pointer-events: none; }
 .viewer::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-strong); pointer-events: none; }
-.stage[data-view='geometry'] .viewer { background: var(--paper); }
+.stage[data-view='geometry'] .viewer { background: var(--surface); }
 .stage[data-view='difference'] .viewer { background: #111511; --m-good: #9ad3b1; --m-bad: #ffb680; --m-paper: #111511; --m-text: #ffd2b0; }
 .stage[data-view='difference'] .viewer::after { box-shadow: inset 0 0 0 1px #111511; }
+/* Difference: the subtraction is brightened, tinted and laid over the dimmed frame by the compositor */
+#glow { display: none; mix-blend-mode: screen; filter: brightness(4); }
+.stage[data-view='difference'] #glow { display: block; }
+.stage[data-view='difference'] #screen { opacity: .07; }
+.stage[data-view='difference'] .viewer .tint { position: absolute; inset: 0; background: #ffb680; mix-blend-mode: multiply; pointer-events: none; }
 
 .legend { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 6px; pointer-events: none; }
 .chip {
@@ -96,6 +101,9 @@
 
 /* Marks over the screenshot, all from recorded geometry */
 .m-edge { stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.m-hatch { stroke: #11151114; stroke-width: 1.5; }
+.m-outside { fill: url(#hatch); }
+.stage[data-view='difference'] .m-outside { visibility: hidden; }
 .m-outline { fill: none; stroke-width: 1.25; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
 .m-outline.good { stroke: var(--m-good); }
 .m-outline.bad { stroke: var(--m-bad); }
@@ -310,7 +318,8 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--f
   .bar { padding: 0 6px; flex-wrap: wrap; row-gap: 0; }
   .seg .control { padding: 0 8px; }
   .source { display: none; }
-  .viewer { height: clamp(150px, 27svh, 230px); margin: 0 8px 8px; }
+  .viewer { height: clamp(176px, 33svh, 250px); margin: 0 8px 8px; }
+  .chip { height: 20px; padding: 0 7px; font-size: 11px; }
   .film { -webkit-mask-image: none; mask-image: none; }
   .transport { flex-wrap: wrap; gap: 0 8px; padding: 6px 8px; min-height: 0; }
   .lane { flex: 1 1 calc(100% - 92px); }
@@ -323,6 +332,9 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--f
   .matrix { padding: 0 8px 0 4px; }
   .rail footer { flex-direction: column; align-items: stretch; padding: 8px 12px 12px; }
   .keys { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 399px) {
+  .readout { display: none; }
 }
 @media (max-width: 359px) {
   :root { --label-col: 118px; }

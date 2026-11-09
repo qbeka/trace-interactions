@@ -43,7 +43,7 @@ const seek = (page: Page, ms: number) => page.locator('#time').evaluate((el: HTM
 const still = { reducedMotion: 'reduce' } as const;
 const reelX = (page: Page) => page.locator('#reel').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
 /** How many pixels of the viewer are brighter than a level, read from the canvas itself. */
-const lit = (page: Page, level: number) => page.locator('#screen').evaluate((el: HTMLCanvasElement, min) => {
+const lit = (page: Page, level: number, canvas = '#glow') => page.locator(canvas).evaluate((el: HTMLCanvasElement, min) => {
   const { data } = el.getContext('2d')!.getImageData(0, 0, el.width, el.height);
   let n = 0;
   for (let i = 0; i < data.length; i += 4) if (data[i]! > min && data[i + 3]! > 0) n += 1;
@@ -167,16 +167,17 @@ describe('project page', () => {
     await button(page, 'Difference').click();
     await seek(page, 3600);
     await expect.poll(() => page.locator('#readout').textContent()).toBe('No pixel differs in this frame');
-    await expect.poll(() => lit(page, 90)).toBe(0);
+    await expect.poll(() => lit(page, 0)).toBe(0);
     await seek(page, 4032);
     expect(await page.locator('#readout').textContent()).toBe('Lit where the two frames differ');
-    await expect.poll(() => lit(page, 90)).toBeGreaterThan(500);
+    await expect.poll(() => lit(page, 40)).toBeGreaterThan(500);
     await seek(page, 4800);
-    await expect.poll(() => lit(page, 90)).toBe(0);
+    await expect.poll(() => lit(page, 0)).toBe(0);
     await button(page, 'Geometry').click();
     expect(await page.locator('#source').textContent()).toBe('Recorded geometry');
     await expect.poll(() => page.locator('#marks .g-panel.good').getAttribute('visibility')).toBe('visible');
-    expect(await lit(page, -1)).toBe(0);
+    expect(await lit(page, -1, '#screen')).toBe(0);
+    expect(await page.locator('#glow').isVisible()).toBe(false);
     await seek(page, 4032);
     await expect.poll(() => page.locator('#marks .g-panel.bad').getAttribute('visibility')).toBe('visible');
     // The path starts where the report says the broken panel first appeared.
@@ -346,6 +347,8 @@ describe('project page', () => {
     await page.mouse.move(x + 220, y, { steps: 5 });
     expect(await clock(page)).toBe('3440 ms');
     expect(await playLabel(page)).toBe('Play');
+    // Held still before the release, the film stays on the frame it was dragged to.
+    await page.waitForTimeout(160);
     await page.mouse.up();
     await page.waitForTimeout(700);
     expect(await clock(page)).toBe('3440 ms');
