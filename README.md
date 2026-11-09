@@ -7,19 +7,23 @@ A panel can look right in its final screenshot and still have lost focus, accept
 stale transition or jumped during a resize. Trace finds those failures and explains
 each one in a sentence, with two aligned replays that show where the builds part.
 
-![The Trace project page. Screenshots of two builds show the same moment. The broken build's panel starts 80 px from the Inspect button.](docs/assets/cover.png)
+![The Trace project page. A viewer lays the broken build over the last good build 32 ms into the failure, with a ruler between the two panels, above a film strip of the recorded frames and beside a grid of the 26 reduction attempts.](docs/assets/cover.png)
 
 ## See a report
 
-**[Watch the replay](https://www.qendrimbeka.com/projects/trace/)** in your browser. It plays one failure on two builds, shows the reduction to four
-steps, and links to the full report. No install needed. The same page is in the repository at
-[demo/index.html](demo/index.html).
+**[Watch the replay](https://www.qendrimbeka.com/projects/trace/)** in your browser. Drag the film strip of recorded frames through
+one failure and compare the two builds as an overlay, a swipe, a difference or the recorded
+rectangles. The grid beside it replays all 26 attempts of the reduction to four steps, and
+you can copy those four steps as a scenario. No install needed. The same page is in the
+repository at [demo/index.html](demo/index.html).
 
-In the full report, `Space` plays, `[` and `]` step by action, `F` jumps to the failure, and
-`R` switches between the reduced and original sequence.
+The page links to the [full report](https://www.qendrimbeka.com/projects/trace/regression/) and the
+[report after the fix](https://www.qendrimbeka.com/projects/trace/fixed/), which are what Trace writes for every run. On the
+page and in a report, `Space` plays, `[` and `]` step by action, and `F` jumps to the failure.
+In a report, `R` switches between the reduced and original sequence.
 
-You can also watch the [20 second demo](docs/assets/trace-demo.mp4) or the
-[67 second walkthrough](docs/assets/trace-walkthrough.mp4), which has captions and no voice.
+You can also watch the [25 second demo](docs/assets/trace-demo.mp4) or the
+[70 second walkthrough](docs/assets/trace-walkthrough.mp4), which has captions and no voice.
 
 ## Run it
 
@@ -158,12 +162,13 @@ The full method, raw runs and failures are in [docs/REPORT.md](docs/REPORT.md).
 | Command | What it does | Time here |
 |---|---|---|
 | `pnpm check` | Type checks everything | Under 1 s |
-| `pnpm test` | 125 unit tests | Under 1 s |
-| `pnpm test:e2e` | 79 real browser tests on all three engines | About 5 minutes |
+| `pnpm test` | 135 unit tests | Under 1 s |
+| `pnpm test:e2e` | 94 real browser tests on all three engines | About 5 minutes |
 | `pnpm bench:smoke` | One good pair and one seeded failure | About 4 s |
 | `pnpm bench` | The full measurement | 42 minutes |
 | `pnpm demo` | Rebuilds the reports, the page's screenshots and the project page in `demo/` | About 4 minutes |
 | `pnpm page` | Rebuilds only the project page, from `site/` | Under 1 s |
+| `pnpm demo:viewer` | Puts the current viewer and page into `demo/` and leaves the recorded runs alone | About 1 s |
 | `pnpm verify:artifacts` | Checks saved results against their hashes | Under 1 s |
 
 ## How it works
