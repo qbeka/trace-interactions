@@ -954,12 +954,12 @@
       "bytes": 5096643
     },
     "docs/assets/trace-walkthrough.mp4": {
-      "sha256": "526af3bb5ce9208aeb1fff100f99b64f1af876c71da94e07979757397d64b5ff",
-      "bytes": 823045
+      "sha256": "475163cd9228c56be8c2794257d5cfb4b2cc3f0c457f4cb241769a507f7098ea",
+      "bytes": 905970
     },
     "docs/assets/trace-walkthrough.webm": {
-      "sha256": "7c72b476eeaaabee69b41edce1e8369b563032c5d5dac084c17d287126edad8f",
-      "bytes": 5681645
+      "sha256": "f6ac3396df1163e095b41a4eb731374208ecda86a0f74ceb9f28f8b40081f201",
+      "bytes": 6232755
     },
     "results/corpus-chromium/manifest.json": {
       "sha256": "41da3cb15c9b381f691d27fc76c5888e301c03b0ca84aeb6e8310855b157f78f",
