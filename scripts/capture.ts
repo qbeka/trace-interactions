@@ -75,7 +75,7 @@ await record('trace-demo', async (page) => {
   await pause(page, 3000);
   await page.evaluate(() => window.scrollTo({ top: 170, behavior: 'smooth' }));
   await pause(page, 900);
-  await page.locator('select').selectOption('0.1');
+  await page.getByRole('button', { name: '0.1x' }).click();
   await seek(page, 3990);
   await pause(page, 500);
   await page.getByRole('button', { name: /Play|Replay/ }).click();
@@ -111,7 +111,7 @@ await record('trace-walkthrough', async (page) => {
   await page.evaluate(() => window.scrollTo({ top: 170, behavior: 'smooth' }));
   await caption(page, 'Both stages are drawn from recorded rectangles, on a virtual clock. Same actions, same time.');
   await pause(page, 7000);
-  await page.locator('select').selectOption('0.1');
+  await page.getByRole('button', { name: '0.1x' }).click();
   await seek(page, 3990);
   await page.getByRole('button', { name: /Play|Replay/ }).click();
   await caption(page, 'The trail shows the path. The candidate starts 80 px away from its trigger.');
