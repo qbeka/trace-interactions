@@ -33,7 +33,7 @@ export function Stage({ title, label, line, ghost, time, scenario, primary, stat
   const unit = Math.max(frame.w, frame.h) / 100;
   const state = stateKey ? stateAt(line, stateKey, time) : null;
   const ghostRect = ghost && primary ? rectAt(ghost.line, primary, ghost.time) : null;
-  const summary = `${title} at ${Math.round(time)} ms. ${stateKey ?? 'state'} is ${state ?? 'unknown'}. Focus is on ${focusName(focus)}.`;
+  const summary = `${title} at ${Math.round(time)} ms, where ${stateKey ?? 'state'} is ${state ?? 'unknown'} and focus is on ${focusName(focus)}`;
 
   return (
     <figure className={failing ? 'stage is-failing' : 'stage'}>
