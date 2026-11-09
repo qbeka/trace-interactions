@@ -20,10 +20,10 @@ export function diedAt(attempts: Attempt[], step: number): number | null {
 
 const steps = (n: number) => `${n} ${n === 1 ? 'step' : 'steps'}`;
 
-/** One sentence for the attempt on screen. `n` attempts have run, so `n` of 0 is the start. */
+/** One sentence for the attempt on screen, with no closing period. `n` attempts have run, so `n` of 0 is the start. */
 export function attemptNote(attempts: Attempt[], count: number, n: number): string {
   const total = attempts.length;
-  if (n <= 0) return `All ${count} steps reproduce the jump, so Trace starts deleting steps to find the ones it needs.`;
+  if (n <= 0) return `All ${count} steps reproduce the jump, so Trace starts deleting steps to find the ones it needs`;
   const alive = aliveAfter(attempts, count, n).length;
   if (n >= total) {
     // Minimal only if every attempt since the last accepted one removed a single step and none kept the failure.
@@ -31,23 +31,23 @@ export function attemptNote(attempts: Attempt[], count: number, n: number): stri
     const proof = attempts.slice(accepted + 1);
     const minimal = proof.length === alive && proof.every((a) => a.kept.length === alive - 1);
     return minimal
-      ? `${total} attempts left ${steps(alive)}, and taking any one of them away loses the jump.`
-      : `${total} attempts left ${steps(alive)}.`;
+      ? `${total} attempts left ${steps(alive)}, and taking any one of them away loses the jump`
+      : `${total} attempts left ${steps(alive)}`;
   }
   const attempt = attempts[n - 1]!;
   const ran = steps(attempt.kept.length);
   switch (attempt.outcome) {
     case 'fails': {
       const dropped = aliveAfter(attempts, count, n - 1).length - alive;
-      return `Attempt ${n} ran ${ran} and the panel still jumped, so the ${dropped === 1 ? 'one step' : `${dropped} steps`} it left out ${dropped === 1 ? 'is' : 'are'} gone for good.`;
+      return `Attempt ${n} ran ${ran} and the panel still jumped, so the ${dropped === 1 ? 'one step' : `${dropped} steps`} it left out ${dropped === 1 ? 'is' : 'are'} gone for good`;
     }
     case 'passes':
-      return `Attempt ${n} ran ${ran} and nothing failed, so something it left out is needed.`;
+      return `Attempt ${n} ran ${ran} and nothing failed, so something it left out is needed`;
     case 'invalid':
-      return `Attempt ${n} could not run with these ${ran}, so it says nothing either way.`;
+      return `Attempt ${n} could not run with these ${ran}, so it says nothing either way`;
     case 'other-failure':
-      return `Attempt ${n} ran ${ran} and it failed, but not as this bug, so it does not count.`;
+      return `Attempt ${n} ran ${ran} and it failed, but not as this bug, so it does not count`;
     default:
-      return `Attempt ${n} ran ${ran} and failed only some of the time, so Trace kept what it left out.`;
+      return `Attempt ${n} ran ${ran} and failed only some of the time, so Trace kept what it left out`;
   }
 }

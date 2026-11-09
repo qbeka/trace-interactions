@@ -38,16 +38,16 @@ describe('the reduction as the page replays it', () => {
 
   it('describes every attempt with its own count and outcome', () => {
     expect(attemptNote(attempts, 14, 0)).toContain('All 14 steps');
-    expect(attemptNote(attempts, 14, 1)).toBe('Attempt 1 could not run with these 7 steps, so it says nothing either way.');
-    expect(attemptNote(attempts, 14, 4)).toBe('Attempt 4 ran 10 steps and the panel still jumped, so the 4 steps it left out are gone for good.');
+    expect(attemptNote(attempts, 14, 1)).toBe('Attempt 1 could not run with these 7 steps, so it says nothing either way');
+    expect(attemptNote(attempts, 14, 4)).toBe('Attempt 4 ran 10 steps and the panel still jumped, so the 4 steps it left out are gone for good');
     expect(attemptNote(attempts, 14, 12)).toContain('the one step it left out is gone for good');
     expect(attemptNote(attempts, 14, 18)).toContain('but not as this bug');
-    expect(attemptNote(attempts, 14, 26)).toBe('26 attempts left 4 steps, and taking any one of them away loses the jump.');
+    expect(attemptNote(attempts, 14, 26)).toBe('26 attempts left 4 steps, and taking any one of them away loses the jump');
   });
 
   it('claims a minimal result only when single removals were all tried', () => {
     const cut = attempts.slice(0, -1);
-    expect(attemptNote(cut, 14, cut.length)).toBe('25 attempts left 4 steps.');
+    expect(attemptNote(cut, 14, cut.length)).toBe('25 attempts left 4 steps');
     const unstable: Attempt[] = [{ kept: [0, 1], outcome: 'unstable' }, { kept: [0], outcome: 'passes' }];
     expect(attemptNote(unstable, 3, 1)).toContain('failed only some of the time');
   });
