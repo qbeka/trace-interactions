@@ -198,31 +198,31 @@ export function failingSide(c: ReportCase): 'baseline' | 'candidate' | null {
   return null;
 }
 
-/** Plain sentence for each requirement, so a passing report still says what held. */
+/** One plain sentence for each requirement, with no closing period, so a passing report still says what held. */
 export function describeRequirement(r: Requirement): string {
   switch (r.kind) {
     case 'latest-request-wins':
-      return `The latest request owns ${r.key}.`;
+      return `The latest request owns ${r.key}`;
     case 'focus-stays-on':
-      return `${r.target} keeps focus on the same node while ${entries(r.whileState)}.`;
+      return `${r.target} keeps focus on the same node while ${entries(r.whileState)}`;
     case 'focus-restored':
-      return `Focus returns to ${r.to} within ${r.withinMs} ms of ${entries(r.whenState)}.`;
+      return `Focus returns to ${r.to} within ${r.withinMs} ms of ${entries(r.whenState)}`;
     case 'focus-valid':
-      return 'Focus never sits on a hidden, inert or detached element.';
+      return 'Focus never sits on a hidden, inert or detached element';
     case 'geometry-continuous':
-      return `${r.target} moves at most ${r.maxStepPx} px between samples.`;
+      return `${r.target} moves at most ${r.maxStepPx} px between samples`;
     case 'geometry-origin':
-      return `${r.target} appears at ${r.anchor} or at its final position (within ${r.tolerancePx} px).`;
+      return `${r.target} appears at ${r.anchor} or at its final position (within ${r.tolerancePx} px)`;
     case 'geometry-fits':
-      return `${r.target} stays ${r.insetPx} px inside the viewport after a resize.`;
+      return `${r.target} stays ${r.insetPx} px inside the viewport after a resize`;
     case 'single-interactive':
-      return `Only one live ${r.target} exists at a time.`;
+      return `Only one live ${r.target} exists at a time`;
     case 'relationship-resolves':
-      return `${r.attribute} on ${r.from} resolves to one element, ${r.to}.`;
+      return `${r.attribute} on ${r.from} resolves to one element, ${r.to}`;
     case 'transient-cleared':
-      return `${entries(r.state)} after ${r.after}.`;
+      return `${entries(r.state)} after ${r.after}`;
     case 'resources-released':
-      return `Listeners, observers and timers return to their count before mount.`;
+      return `Listeners, observers and timers return to their count before mount`;
   }
 }
 

@@ -2,7 +2,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { ReportData } from '../../viewer/src/types.ts';
-import { actionName, originGap, alignTime, focusAt, frameOf, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
+import type { Requirement } from '../../src/scenario/schema.ts';
+import { lineProblem } from '../../site/lines.ts';
+import { actionName, describeRequirement, originGap, alignTime, focusAt, frameOf, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
 import { scenario, trace } from './helpers.ts';
 
 const box = (x: number) => ({ x, y: 0, w: 10, h: 10 });
@@ -97,5 +99,27 @@ describe('what a report says about an action and a measured gap', () => {
   it('has no gap to draw when nothing failed', () => {
     const c = report.cases[0]!;
     expect(originGap({ ...c, comparison: { ...c.comparison, introduced: [], shared: [], resolved: [] } })).toBeNull();
+  });
+});
+
+describe('what a report says a requirement is', () => {
+  it('is one sentence with no closing period, for every kind of requirement', () => {
+    const kinds = [
+      { kind: 'latest-request-wins', key: 'panel', terminal: ['open', 'closed'] },
+      { kind: 'focus-stays-on', target: 'input', whileState: { panel: 'open' } },
+      { kind: 'focus-restored', to: 'trigger', withinMs: 100, whenState: { panel: 'closed' } },
+      { kind: 'focus-valid' },
+      { kind: 'geometry-continuous', target: 'panel', maxStepPx: 160 },
+      { kind: 'geometry-origin', target: 'panel', anchor: 'trigger', tolerancePx: 4 },
+      { kind: 'geometry-fits', target: 'panel', insetPx: 8, tolerancePx: 2 },
+      { kind: 'single-interactive', target: 'panel' },
+      { kind: 'relationship-resolves', from: 'input', attribute: 'aria-controls', to: 'list' },
+      { kind: 'transient-cleared', state: { dragging: false }, after: 'pointerUp' },
+      { kind: 'resources-released', key: 'mounted' },
+    ] as unknown as Requirement[];
+    const lines = kinds.map(describeRequirement);
+    expect(new Set(lines).size).toBe(11);
+    expect(lines.filter((line) => lineProblem(line))).toEqual([]);
+    expect(describeRequirement(kinds[5]!)).toBe('panel appears at trigger or at its final position (within 4 px)');
   });
 });
