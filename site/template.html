@@ -58,38 +58,6 @@
 
       <div class="verdict" id="verdict"></div>
 
-      <aside class="rail" id="rail" aria-label="The steps, and how Trace reduced them">
-        <header>
-          <div class="seg" id="sessions" role="group" aria-label="Which session to play">
-            <button class="control" type="button" data-session="original" aria-pressed="true">All 14 steps</button>
-            <button class="control" type="button" data-session="reduced" aria-pressed="false">The 4 that matter</button>
-          </div>
-          <button class="control icon" id="reduce-play" type="button" aria-label="Replay the reduction" title="Replay the reduction">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5M3 2.6v2.6h2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </header>
-        <div class="matrix" id="matrix">
-          <div class="axis" aria-hidden="true"><span id="axis-count"></span></div>
-          <ol class="steps" id="steps"></ol>
-          <svg class="attempts" id="attempts" aria-hidden="true"></svg>
-          <input id="attempt" type="range" min="0" step="1" aria-label="Attempt in the reduction">
-        </div>
-        <p class="attempt-note" id="attempt-note"></p>
-        <footer>
-          <div class="keys" id="keys" aria-hidden="true">
-            <span><i class="k-fails"></i>Failure kept</span>
-            <span><i class="k-passes"></i>Failure lost</span>
-            <span><i class="k-invalid"></i>Could not run</span>
-            <span><i class="k-other"></i>A different failure</span>
-          </div>
-          <button class="control outline swap" id="copy" type="button">
-            <span class="on" data-label="idle">Copy the four steps</span>
-            <span data-label="done">Copied as a scenario</span>
-            <span data-label="failed">Could not copy</span>
-          </button>
-        </footer>
-      </aside>
-
       <div class="film" id="film" aria-hidden="true">
         <div class="track"><div class="reel" id="reel"></div></div>
         <i class="needle"></i>
@@ -111,6 +79,37 @@
         <span class="tag">Recorded replay</span>
         <button class="control outline" id="jump" type="button" aria-keyshortcuts="F">Go to the jump</button>
       </div>
+      <aside class="rail" id="rail" aria-label="The steps, and how Trace reduced them">
+        <header>
+          <div class="seg" id="sessions" role="group" aria-label="Which session to play">
+            <button class="control" type="button" data-session="original" aria-pressed="true">All 14 steps</button>
+            <button class="control" type="button" data-session="reduced" aria-pressed="false">The 4 that matter</button>
+          </div>
+          <button class="control icon" id="reduce-play" type="button" aria-label="Replay the reduction" title="Replay the reduction">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5M3 2.6v2.6h2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </header>
+        <div class="matrix" id="matrix">
+          <div class="axis" aria-hidden="true"><span id="axis-count"></span></div>
+          <input id="attempt" type="range" min="0" step="1" aria-label="Attempt in the reduction">
+          <ol class="steps" id="steps"></ol>
+          <svg class="attempts" id="attempts" aria-hidden="true"></svg>
+        </div>
+        <p class="attempt-note" id="attempt-note"></p>
+        <footer>
+          <div class="keys" id="keys" aria-hidden="true">
+            <span><i class="k-fails"></i>Failure kept</span>
+            <span><i class="k-passes"></i>Failure lost</span>
+            <span><i class="k-invalid"></i>Could not run</span>
+            <span><i class="k-other"></i>A different failure</span>
+          </div>
+          <button class="control outline swap" id="copy" type="button">
+            <span class="on" data-label="idle">Copy the four steps</span>
+            <span data-label="done">Copied as a scenario</span>
+            <span data-label="failed">Could not copy</span>
+          </button>
+        </footer>
+      </aside>
     </section>
 
     <section class="reading" id="details" aria-labelledby="details-title">
