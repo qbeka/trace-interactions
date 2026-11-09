@@ -5,6 +5,8 @@ import type { Scenario } from '../src/scenario/schema.ts';
 import { parseScenario } from '../src/scenario/validate.ts';
 import type { ReportCase, ReportData } from '../viewer/src/types.ts';
 import { primaryViolation } from '../viewer/src/model.ts';
+import { frameLabel, lineProblem, readout, SAID, SOURCE, type View } from '../site/lines.ts';
+import { attemptNote } from '../site/reduction.ts';
 
 /**
  * Writes the public project page, `demo/index.html`, beside the two full reports.
@@ -50,6 +52,34 @@ function stepLabel(a: { type: string; note?: string; width?: number }): string {
 export function scenarioToCopy(saved: Scenario): string {
   const actions = saved.actions.map((a) => (a.type === 'resize' ? { ...a, note: stepLabel(a).toLowerCase() } : a));
   return JSON.stringify({ ...saved, actions }, null, 2) + '\n';
+}
+
+/** The text a visitor can read in a piece of markup: what sits between tags, and what a label attribute says. */
+export function markupLines(html: string): string[] {
+  const bare = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/g, '').replace(/<!--[\s\S]*?-->/g, '');
+  const text = [...bare.matchAll(/>([^<>]+)</g)].map((m) => m[1]!.trim());
+  const labels = [...bare.matchAll(/\b(?:aria-label|title|alt|content)="([^"]*)"/g)].map((m) => m[1]!);
+  return [...text, ...labels].filter(Boolean);
+}
+
+/**
+ * Every one-line status, hint, caption and label on the stage is one sentence
+ * with no closing period. The Details passages are prose and are not checked here.
+ */
+export function stageLines(data: { steps: { label: string }[]; attempts: { kept: number[]; outcome: string }[]; sessions: { verdict: Record<string, string> }[] }, template: string, css: string): string[] {
+  const views: View[] = ['overlay', 'swipe', 'difference', 'geometry'];
+  return [
+    ...data.sessions.flatMap((s) => Object.values(s.verdict)),
+    ...data.attempts.map((_, n) => attemptNote(data.attempts, data.steps.length, n)),
+    attemptNote(data.attempts, data.steps.length, data.attempts.length),
+    ...data.steps.map((s) => s.label),
+    ...Object.values(SOURCE),
+    ...views.flatMap((v) => [readout(v, true), readout(v, false)]),
+    SAID.finished, SAID.scenario, SAID.command, SAID.copyFailed, SAID.replaying(data.attempts.length), ...views.map((v) => SAID.view(v)),
+    ...[[true, 80], [true, 0], [false, 0]].map(([differs, px]) => frameLabel(4000, 12, data.steps.length, 'Reopen', differs as boolean, px as number)),
+    ...markupLines(template),
+    ...[...css.matchAll(/content:\s*'([^']*)'/g)].map((m) => m[1]!),
+  ].filter(Boolean);
 }
 
 export async function buildPage(demoDir: string): Promise<void> {
@@ -136,8 +166,8 @@ export async function buildPage(demoDir: string): Promise<void> {
   for (const line of [command, register]) if (!readme.includes(line)) throw new Error(`The README no longer gives: ${line}`);
 
   const axisEnd = Math.ceil(Math.max(...[original, reduced].map((c) => c.candidate.events.at(-1)!.t)) / 16) * 16;
-  const before = 'The two builds match so far, so watch where the panel starts when Inspect reopens it.';
-  const after = 'Both builds end on the same frame, so a final screenshot would miss this.';
+  const before = 'The two builds match so far, so watch where the panel starts when Inspect reopens it';
+  const after = 'Both builds end on the same frame, so a final screenshot would miss this';
   const where = 'where Inspect sat when the panel first opened';
   const data = {
     frame: { width: frames.width, height: frames.height, scale: frames.scale },
@@ -150,12 +180,12 @@ export async function buildPage(demoDir: string): Promise<void> {
       {
         id: 'original', count: `${allSteps.length} steps`, kept: allSteps.map((_, i) => i),
         good: 'original-baseline', bad: 'original-candidate',
-        verdict: { before, jump: `The panel should open from Inspect, but here it starts ${px} px to the right, ${where}.`, after },
+        verdict: { before, jump: `The panel should open from Inspect, but here it starts ${px} px to the right, ${where}`, after },
       },
       {
         id: 'reduced', count: `${kept.length} of ${allSteps.length} steps`, kept,
         good: 'reduced-baseline', bad: 'reduced-candidate',
-        verdict: { before, jump: `Trace deleted the other ${allSteps.length - kept.length} steps and the panel still starts ${px} px to the right of Inspect.`, after },
+        verdict: { before, jump: `Trace deleted the other ${allSteps.length - kept.length} steps and the panel still starts ${px} px to the right of Inspect`, after },
       },
     ],
     runs: Object.fromEntries(['original-baseline', 'original-candidate', 'reduced-baseline', 'reduced-candidate'].map((key) => {
@@ -218,10 +248,16 @@ export async function buildPage(demoDir: string): Promise<void> {
   copyFileSync(join(root, 'licenses/Geist-OFL-1.1.txt'), join(fonts, 'Geist-OFL-1.1.txt'));
 
   const css = readFileSync(join(root, 'site/foundation.css'), 'utf8') + readFileSync(join(root, 'site/styles.css'), 'utf8');
+  const template = readFileSync(join(root, 'site/template.html'), 'utf8');
+  const wrong = stageLines(data, template, css).flatMap((line) => {
+    const problem = lineProblem(line);
+    return problem ? [`"${line}" ${problem}`] : [];
+  });
+  if (wrong.length) throw new Error(`A status line, hint, caption or label must be one sentence with no closing period:\n${wrong.join('\n')}`);
   const first = [frames.runs['original-baseline']!, frames.runs['original-candidate']!].map((list) => atOrBefore(list, jumpT));
   const preload = first.map((f) => `<link rel="preload" href="./frames/${f}.webp" as="image" type="image/webp">`).join('\n');
   // Replacers are functions, so a `$` in the data is never read as a pattern.
-  const html = readFileSync(join(root, 'site/template.html'), 'utf8')
+  const html = template
     .replace('<!--PRELOAD-->', () => preload)
     .replace('<!--DETAILS-->', () => details)
     .replace('/*STYLES*/', () => css)
