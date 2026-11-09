@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { serveDirectory } from '../../src/runner/static.ts';
 import { parseScenario } from '../../src/scenario/validate.ts';
+import { lineProblem } from '../../site/lines.ts';
 
 const root = resolve(import.meta.dirname, '../..');
 let browser: Browser;
@@ -227,7 +228,7 @@ describe('project page', () => {
     expect(await page.locator('.a-column.a-other-failure').count()).toBe(2);
     expect(await page.locator('.a-life.kept').count()).toBe(4);
     expect(await page.locator('#steps .step:not(.gone) span').allTextContents()).toEqual(['Open', 'Close with Escape', 'Resize to 920 px', 'Reopen']);
-    expect(await page.locator('#attempt-note').textContent()).toBe('26 attempts left 4 steps, and taking any one of them away loses the jump.');
+    expect(await page.locator('#attempt-note').textContent()).toBe('26 attempts left 4 steps, and taking any one of them away loses the jump');
     const attempts = JSON.parse(readFileSync(join(root, 'demo/reduction.attempts.json'), 'utf8')).state.attempts as { kept: number[] }[];
     for (const [i, attempt] of attempts.entries()) expect(await page.locator('.a-column').nth(i).locator('.a-cell').count()).toBe(attempt.kept.length);
     await page.context().close();
@@ -245,7 +246,7 @@ describe('project page', () => {
     expect(await page.locator('.a-column.on').count()).toBe(4);
     expect(await page.locator('#steps .step.gone').count()).toBe(4);
     expect(await page.locator('#axis-count').textContent()).toBe('Attempt 4 of 26');
-    expect(await page.locator('#attempt-note').textContent()).toBe('Attempt 4 ran 10 steps and the panel still jumped, so the 4 steps it left out are gone for good.');
+    expect(await page.locator('#attempt-note').textContent()).toBe('Attempt 4 ran 10 steps and the panel still jumped, so the 4 steps it left out are gone for good');
     expect(await clock(page)).toBe('4000 ms');
     await page.context().close();
   });
@@ -455,6 +456,43 @@ describe('project page', () => {
       expect(viewer.height).toBeGreaterThan(140);
       await page.context().close();
     }
+  });
+
+  it('ends no status line, hint, caption or label in a full stop, at any frame, view or attempt', async () => {
+    const { page } = await open(still);
+    const lines = new Set<string>();
+    const collect = async () => {
+      const seen = await page.evaluate(() => {
+        const stage = document.getElementById('stage')!;
+        const text = [...stage.querySelectorAll('#verdict p, #attempt-note, #readout, #source, #now, #axis-count, .chip, .tag, .hint, .keys span, .cell-step, button, .peak')].map((el) => el.textContent ?? '');
+        const labels = [...stage.querySelectorAll('[aria-label], [aria-valuetext], [title]')].flatMap((el) => ['aria-label', 'aria-valuetext', 'title'].map((a) => el.getAttribute(a) ?? ''));
+        const before = [getComputedStyle(document.getElementById('viewer')!, '::before').content];
+        return [...text, ...labels, ...before, document.getElementById('status')!.textContent ?? ''];
+      });
+      for (const line of seen) if (line.trim()) lines.add(line.trim());
+    };
+    for (const view of ['Overlay', 'Swipe', 'Difference', 'Geometry']) {
+      await button(page, view).click();
+      for (const t of [0, 3600, 4000, 4032, 4800]) {
+        await seek(page, t);
+        await collect();
+      }
+    }
+    await button(page, 'The 4 that matter').click();
+    await collect();
+    const range = page.locator('#attempt');
+    await range.focus();
+    await page.keyboard.press('Home');
+    for (let i = 0; i <= 26; i++) {
+      await collect();
+      await page.keyboard.press('ArrowRight');
+    }
+    await page.locator('#play').click();
+    await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 9000 });
+    await collect();
+    expect(lines.size).toBeGreaterThan(80);
+    expect([...lines].filter((line) => lineProblem(line))).toEqual([]);
+    await page.context().close();
   });
 
   it('quotes the tuned score only with its limit, and keeps the wording rules', async () => {
