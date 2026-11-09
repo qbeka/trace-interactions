@@ -58,12 +58,32 @@ but not focus, is costly to capture, and cannot draw the path a panel took.
 
 ## Layout and type
 
-The report and the project page use Geist Serif throughout, with tabular figures
-for trace values, so a table of numbers still lines up. The font ships with the
-report, so it needs no network. Colors and spacing are design tokens in the viewer stylesheet.
+The report and the project page share one set of tokens: white paper, dark ink, one forest
+green, and one burnt orange that only ever marks a failure. Geist Serif sets the verdict and
+the reading passages. Geist sets controls, labels and data, with tabular figures so a table
+of numbers still lines up. Both fonts ship with the report, so it needs no network.
+
+A report opens on the verdict, then the requirement that failed in its own words. Under
+that, one bordered deck holds the two stages, a strip of the diagnostic screenshots to step
+along, the aligned traces and the transport. When the replay sits on a failed
+`geometry-origin` sample, the failing stage draws the distance the verdict states as a
+dimension line, read from the same two rectangles the oracle read.
 
 There are no metric tiles. A passing report has the same shape as a failing one:
 the sentence says what held, and the stages still replay.
+
+## The project page
+
+The page compares the two builds in one viewer instead of two stacked panes, because the
+failure is a difference and reads best where the two pictures share one set of
+coordinates. Overlay, Swipe and Difference blend the recorded screenshots in the browser.
+Geometry draws the report's rectangles and the path each panel took. The outlines and the
+ruler are always drawn from the report's rectangles, never from the pictures.
+
+The timeline is a film strip with one cell for each recorded frame, sliding under a fixed
+gate, over a line that plots how far apart the builds are across the whole recording. The
+reduction is a grid with one row for each step and one column for each attempt the reducer
+saved, so the invalid and rejected attempts stay in view.
 
 ## What the runner does not do
 
