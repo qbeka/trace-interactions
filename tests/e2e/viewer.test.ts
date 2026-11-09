@@ -81,7 +81,7 @@ describe('portable report', () => {
 
   it('names the requirement that failed and draws the measured gap on the build that failed', async () => {
     const page = await open(failing.url);
-    expect(await page.locator('.broken-rule .broken-text').textContent()).toBe('panel appears at trigger or at its final position (within 4 px).');
+    expect(await page.locator('.broken-rule .broken-text').textContent()).toBe('panel appears at trigger or at its final position (within 4 px)');
     expect(await page.locator('.broken-rule code').textContent()).toBe('geometry-origin');
     const stages = page.locator('figure.stage');
     expect(await stages.nth(0).locator('.stage-outcome').textContent()).toBe('Holds');
@@ -125,6 +125,33 @@ describe('portable report', () => {
     await page.getByRole('button', { name: '1x', exact: true }).click();
     expect(await page.getByRole('button', { name: '1x', exact: true }).getAttribute('aria-pressed')).toBe('true');
     expect(await page.getByRole('button', { name: '0.25x' }).getAttribute('aria-pressed')).toBe('false');
+    await page.context().close();
+  });
+
+  it('prints every fixed one-line string as one sentence with no closing period', async () => {
+    const ends = /[.!?]\s*$/;
+    for (const url of [failing.url, passing.url]) {
+      const page = await open(url);
+      await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
+      const lines = await page.evaluate(() => {
+        const own = (el: Element) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent ?? '').join('').trim();
+        const whole = [...document.querySelectorAll('.lede, .note, .broken-text, .film-title, .legend li, .stage-outcome, .frame-name, th, h2, .button, .facts dt')].map((el) => (el.textContent ?? '').trim());
+        const cells = [...document.querySelectorAll('.checks td:first-child')].map(own);
+        const labels = [...document.querySelectorAll('[aria-label]')].map((el) => el.getAttribute('aria-label') ?? '');
+        return [...whole, ...cells, ...labels].filter(Boolean);
+      });
+      expect(lines.length).toBeGreaterThan(40);
+      expect(lines.filter((line) => ends.test(line))).toEqual([]);
+      await page.context().close();
+    }
+    const page = await open(failing.url);
+    expect(await page.locator('.lede').textContent()).toMatch(/, 4 actions, reduced from 14 and reproduced in 2 of 2 runs$/);
+    await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
+    expect(await page.locator('.note').allTextContents()).toEqual(expect.arrayContaining([
+      'Supporting evidence from a separate diagnostic pass that did not decide the verdict',
+      'The raw evidence is in report.json, and trace report regenerates this page from it',
+    ]));
+    expect(await page.locator('figure.stage svg').first().getAttribute('aria-label')).toBe('Baseline at 4000 ms, where panel is opening and focus is on name-input');
     await page.context().close();
   });
 
@@ -260,7 +287,7 @@ describe('reduced motion', () => {
     const before = await time(page);
     await page.waitForTimeout(300);
     expect(await time(page)).toBe(before);
-    expect(await page.locator('.keys').textContent()).toMatch(/Reduced motion is on/);
+    expect(await page.locator('.keys .keys-note').textContent()).toBe('Reduced motion is on, so nothing plays until you press Play');
     await page.context().close();
   });
 });
