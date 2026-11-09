@@ -28,7 +28,7 @@ async function seek(page: Page, ms: number): Promise<void> {
 }
 
 // Cover, from the project page, held two frames into the failure with motion off.
-{
+if (!process.argv.includes('--only')) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const page = await context.newPage();
   await page.goto(`${demo.url}index.html?t=4032`);
@@ -46,7 +46,11 @@ if (process.argv.includes('--cover')) {
   process.exit(0);
 }
 
+/** `--only trace-walkthrough` records that one clip and leaves the cover and the other clip as they are. */
+const only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null;
+
 async function record(name: string, run: (page: Page) => Promise<void>): Promise<void> {
+  if (only && only !== name) return;
   const dir = mkdtempSync(join(tmpdir(), 'trace-video-'));
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, recordVideo: { dir, size: { width: 1280, height: 720 } } });
   const page = await context.newPage();
