@@ -792,6 +792,7 @@ function playCuts(): void {
 }
 
 function play(): void {
+  idle = false;
   if (poster || index >= cells.length - 1) place(0);
   poster = false;
   playing = true;
