@@ -6,7 +6,7 @@ import { chromium, type Page } from 'playwright';
 import { serveDirectory } from '../src/runner/static.ts';
 
 /**
- * Captures the cover, the poster and two screen recordings from the real demo.
+ * Captures the cover and two screen recordings from the real demo.
  * Run `pnpm demo` first. Needs ffmpeg for the mp4 files. Captions on the
  * walkthrough exist only in this script, never in the product.
  */
@@ -26,14 +26,15 @@ async function seek(page: Page, ms: number): Promise<void> {
   }, ms);
 }
 
-// Cover and poster, from the project page, paused on the failure.
+// Cover, from the project page, held two frames into the failure with motion off.
 {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2 });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const page = await context.newPage();
-  await page.goto(`${demo.url}index.html`);
+  await page.goto(`${demo.url}index.html?t=4032`);
   await page.getByRole('heading', { level: 1 }).waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await pause(page, 800);
+  await page.waitForFunction(() => document.querySelectorAll('.cell.ready').length === document.querySelectorAll('.cell').length);
+  await pause(page, 400);
   await page.screenshot({ path: join(assets, 'cover.png') });
   await context.close();
 }
@@ -68,24 +69,39 @@ async function caption(page: Page, text: string): Promise<void> {
   }, text);
 }
 
-// The signature interaction, 15 to 25 seconds.
+// The signature interaction, 15 to 25 seconds, on the project page.
 await record('trace-demo', async (page) => {
-  await page.goto(`${demo.url}regression/index.html`);
+  await page.goto(`${demo.url}index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
-  await pause(page, 3000);
-  await page.evaluate(() => window.scrollTo({ top: 170, behavior: 'smooth' }));
-  await pause(page, 900);
-  await page.getByRole('button', { name: '0.1x' }).click();
-  await seek(page, 3990);
+  await pause(page, 2600);
+  await page.getByRole('button', { name: 'Replay', exact: true }).click();
+  await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 20000 });
   await pause(page, 500);
-  await page.getByRole('button', { name: /Play|Replay/ }).click();
-  await pause(page, 5000);
-  await page.getByRole('button', { name: 'Pause' }).click({ timeout: 500 }).catch(() => {}); // playback may have ended
+  await page.getByRole('button', { name: 'Difference', exact: true }).click();
+  await page.locator('#jump').click();
   await pause(page, 1500);
-  await page.getByRole('button', { name: 'Go to failure' }).click();
-  await pause(page, 1500);
-  await page.locator('h2', { hasText: 'Reduction' }).scrollIntoViewIfNeeded();
-  await pause(page, 3500);
+  // Drag the film through the failure by hand, there and back.
+  const film = (await page.locator('#film').boundingBox())!;
+  const y = film.y + film.height / 2;
+  const x = film.x + film.width / 2;
+  await page.mouse.move(x + 300, y);
+  await page.mouse.down();
+  for (let i = 0; i <= 60; i++) {
+    await page.mouse.move(x + 300 - i * 14, y);
+    await pause(page, 30);
+  }
+  for (let i = 0; i <= 40; i++) {
+    await page.mouse.move(x - 540 + i * 12, y);
+    await pause(page, 30);
+  }
+  await pause(page, 200);
+  await page.mouse.up();
+  await pause(page, 900);
+  await page.getByRole('button', { name: 'Geometry', exact: true }).click();
+  await pause(page, 1600);
+  await page.getByRole('button', { name: 'Overlay', exact: true }).click();
+  await page.locator('#reduce-play').click();
+  await pause(page, 4200);
 });
 
 // The technical walkthrough, 60 to 90 seconds, with captions and no voice.
