@@ -7,7 +7,7 @@ A panel can look right in its final screenshot and still have lost focus, accept
 stale transition or jumped during a resize. Trace finds those failures and explains
 each one in a sentence, with two aligned replays that show where the builds part.
 
-![The Trace project page. A viewer lays the broken build over the last good build 32 ms into the failure, with a ruler between the two panels, above a film strip of the recorded frames and beside a grid of the 26 reduction attempts.](docs/assets/cover.png)
+![The Trace project page, where a viewer lays the broken build over the last good build 32 ms into the failure with a ruler between the two panels, above a film strip of the recorded frames and beside a grid of the 26 reduction attempts](docs/assets/cover.png)
 
 ## See a report
 
