@@ -60,7 +60,7 @@ export function App() {
       setData(parsed);
       setError(null);
     } catch (err) {
-      setError(`That file is not a Trace report: ${(err as Error).message}.`);
+      setError(`That file is not a Trace report: ${(err as Error).message}`);
     }
   };
 
@@ -70,7 +70,7 @@ export function App() {
         <span className="brand">Trace</span>
         <h1>No report loaded</h1>
         <p>
-          Run <code>trace run</code> to create a report, or open a <code>report.json</code> from an earlier run.
+          Run <code>trace run</code> to create a report, or open a <code>report.json</code> from an earlier run
         </p>
         <label className="button primary">
           Open report.json
@@ -209,8 +209,8 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
         <p className="lede">
           {c.baseline.label} against {c.candidate.label}, {c.scenario.actions.length} action{c.scenario.actions.length === 1 ? '' : 's'}
           {reduction && reduction.status === 'reduced' && c.id === 'reduced'
-            ? `, reduced from ${reduction.originalActions}. Reproduced in ${reduction.reducedReproduction.reproduced} of ${reduction.reducedReproduction.runs} runs.`
-            : '.'}
+            ? `, reduced from ${reduction.originalActions} and reproduced in ${reduction.reducedReproduction.reproduced} of ${reduction.reducedReproduction.runs} runs`
+            : ''}
         </p>
         {failure && broken && (
           <p className="broken-rule">
@@ -253,7 +253,7 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
         <p className="keys">
           <kbd>Space</kbd> play, <kbd>←</kbd> <kbd>→</kbd> one sample, <kbd>[</kbd> <kbd>]</kbd> one action, <kbd>F</kbd> failure
           {canToggle && <>, <kbd>R</kbd> reduced or original</>}
-          {prefersReducedMotion() && '. Reduced motion is on, so nothing plays until you press Play.'}
+          {prefersReducedMotion() && <span className="keys-note">Reduced motion is on, so nothing plays until you press Play</span>}
         </p>
       </section>
 
@@ -350,7 +350,7 @@ function Requirements({ c, onSeek }: { c: ReportCase; onSeek: (t: number) => voi
             })}
             {c.scenario.actions.some((a) => a.ack) && (
               <tr>
-                <td>Each declared action was acknowledged.</td>
+                <td>Each declared action was acknowledged</td>
                 <Status value={ackStatus(c.baseline)} />
                 <Status value={ackStatus(c.candidate)} />
               </tr>
@@ -401,8 +401,8 @@ function Reduction({ data, active }: { data: ReportData; active: ReportCase }) {
         <h2>Reduction</h2>
         <p>
           {r.status === 'unstable'
-            ? `The failure appeared in ${r.reducedReproduction.runs > 0 ? `${r.reducedReproduction.reproduced} of ${r.reducedReproduction.runs} runs of the reduced sequence` : `${r.originalReproduction.reproduced} of ${r.originalReproduction.runs} runs`}, so it is unstable and the original trace is the evidence.`
-            : 'The failure did not appear again, so nothing was reduced.'}
+            ? `The failure appeared in ${r.reducedReproduction.runs > 0 ? `${r.reducedReproduction.reproduced} of ${r.reducedReproduction.runs} runs of the reduced sequence` : `${r.originalReproduction.reproduced} of ${r.originalReproduction.runs} runs`}, so it is unstable and the original trace is the evidence`
+            : 'The failure did not appear again, so nothing was reduced'}
         </p>
       </section>
     );
@@ -411,7 +411,7 @@ function Reduction({ data, active }: { data: ReportData; active: ReportCase }) {
     <section className="block">
       <h2>Reduction</h2>
       <p>
-        {r.originalActions} actions became {r.reducedActions}. It took {r.attempts} attempts in {(r.elapsedMs / 1000).toFixed(1)} s.
+        {r.originalActions} actions became {r.reducedActions} in {r.attempts} attempts and {(r.elapsedMs / 1000).toFixed(1)} s.
         The result {r.oneMinimal ? 'is 1-minimal: removing any one remaining action loses this failure, makes the sequence invalid, or changes the failure' : `is not proven minimal (${r.stopped})`}.
         The failure appeared in {r.reducedReproduction.reproduced} of {r.reducedReproduction.runs} candidate runs and {r.baselineReproduction.reproduced} of {r.baselineReproduction.runs} baseline runs.
       </p>
@@ -428,7 +428,7 @@ function Reduction({ data, active }: { data: ReportData; active: ReportCase }) {
       </div>
       <p className="note">
         Attempts: {r.outcomes.fails} kept the failure, {r.outcomes.passes} lost it, {r.outcomes.invalid} were invalid,
-        {' '}{r.outcomes['other-failure']} failed differently, {r.outcomes.unstable} were unstable.
+        {' '}{r.outcomes['other-failure']} failed differently, {r.outcomes.unstable} were unstable
       </p>
     </section>
   );
@@ -546,7 +546,7 @@ function Screenshots({ c, onSeek }: { c: ReportCase; onSeek: (t: number) => void
   return (
     <section className="block">
       <h2>Screenshots</h2>
-      <p className="note">Supporting evidence from a separate diagnostic pass. They did not decide the verdict.</p>
+      <p className="note">Supporting evidence from a separate diagnostic pass that did not decide the verdict</p>
       {shots.map(({ s, b }, i) => (
         <div className="shots" key={i}>
           {b && (
@@ -584,7 +584,7 @@ function Environment({ data, c }: { data: ReportData; c: ReportCase }) {
         <dt>Not controlled</dt><dd>{clock.uncontrolled.join('; ')}</dd>
         <dt>Used by the page</dt><dd>{clock.used.length ? clock.used.join(', ') : 'none of the uncontrolled channels Trace can detect'}</dd>
       </dl>
-      <p className="note">Raw evidence: <a href="report.json">report.json</a>. Regenerate with <code>trace report</code>.</p>
+      <p className="note">The raw evidence is in <a href="report.json">report.json</a>, and <code>trace report</code> regenerates this page from it</p>
     </details>
   );
 }
