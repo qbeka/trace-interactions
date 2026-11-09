@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { alignTime, focusAt, frameOf, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
+import type { ReportData } from '../../viewer/src/types.ts';
+import { actionName, originGap, alignTime, focusAt, frameOf, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
 import { scenario, trace } from './helpers.ts';
 
 const box = (x: number) => ({ x, y: 0, w: 10, h: 10 });
@@ -66,5 +69,33 @@ describe('viewer model', () => {
   it('picks the target a geometry requirement names', () => {
     const s = scenario({ requirements: [{ kind: 'focus-valid' }, { kind: 'geometry-continuous', target: 'panel', maxStepPx: 10 }] });
     expect(primaryTarget(s)).toBe('panel');
+  });
+});
+
+describe('what a report says about an action and a measured gap', () => {
+  const report = JSON.parse(readFileSync(join(import.meta.dirname, '../../demo/regression/report.json'), 'utf8')) as ReportData;
+  const fixed = JSON.parse(readFileSync(join(import.meta.dirname, '../../demo/fixed/report.json'), 'utf8')) as ReportData;
+
+  it('names a resize by its size, and anything else by its note or type', () => {
+    expect(actionName({ type: 'resize', width: 920, height: 640, at: 0, note: 'widen' })).toBe('resize to 920 × 640');
+    expect(actionName({ type: 'activate', target: 'trigger', at: 0, note: 'reopen' })).toBe('reopen');
+    expect(actionName({ type: 'press', key: 'Escape', at: 0 })).toBe('press');
+  });
+
+  it('measures the same distance the verdict states, on the build that failed', () => {
+    for (const c of report.cases) {
+      const gap = originGap(c)!;
+      expect(c.comparison.sentence).toContain(`${gap.px} px away from ${gap.anchor} at ${gap.t} ms`);
+      expect(Math.round(gap.to.x - gap.from.x)).toBe(80);
+    }
+    // After the fix the failure is on the baseline, and the gap is read from there.
+    const gap = originGap(fixed.cases[0]!)!;
+    expect(gap.px).toBe(80);
+    expect(fixed.cases[0]!.comparison.verdict).toBe('fixed');
+  });
+
+  it('has no gap to draw when nothing failed', () => {
+    const c = report.cases[0]!;
+    expect(originGap({ ...c, comparison: { ...c.comparison, introduced: [], shared: [], resolved: [] } })).toBeNull();
   });
 });

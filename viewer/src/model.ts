@@ -1,4 +1,4 @@
-import type { Requirement, Scenario } from '../../src/scenario/schema.ts';
+import type { Action, Requirement, Scenario } from '../../src/scenario/schema.ts';
 import type { NodeRef, Rect, TraceEvent, Violation } from '../../src/trace/types.ts';
 import type { ReportCase, RunSide } from './types.ts';
 
@@ -259,4 +259,45 @@ export function skipIdle(busy: { t: number }[], time: number): number {
 
 export function formatMs(t: number): string {
   return `${Math.round(t)} ms`;
+}
+
+/**
+ * What a row calls an action. A resize says its size, because a note such as
+ * "widen" describes the session it was written for and a reduced session can
+ * reach the same width from the other side.
+ */
+export function actionName(a: Action): string {
+  if (a.type === 'resize') return `resize to ${a.width} × ${a.height}`;
+  return a.note ?? a.type;
+}
+
+export interface OriginGap {
+  /** Where the target should have started. */
+  from: Rect;
+  /** Where it did start. */
+  to: Rect;
+  px: number;
+  t: number;
+  target: string;
+  anchor: string;
+}
+
+/**
+ * The two rectangles behind a `geometry-origin` failure, read the way the oracle
+ * read them: the target's first sample, and the anchor's last one before it.
+ */
+export function originGap(c: ReportCase): OriginGap | null {
+  const v = primaryViolation(c);
+  const side = failingSide(c);
+  if (!v || !side || v.index === undefined) return null;
+  const r = c.scenario.requirements[v.index];
+  if (r?.kind !== 'geometry-origin') return null;
+  const geometry = pick(c[side].events, 'geometry');
+  const hit = geometry.find((g) => g.target === r.target && g.seq === v.at.seq);
+  const anchor = geometry.filter((g) => g.target === r.anchor && g.seq < v.at.seq && g.rect).at(-1);
+  if (!hit?.rect || !anchor?.rect) return null;
+  const a = hit.rect;
+  const b = anchor.rect;
+  const px = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y), Math.abs(a.x + a.w - (b.x + b.w)), Math.abs(a.y + a.h - (b.y + b.h)));
+  return { from: b, to: a, px: Math.round(px), t: v.at.t, target: r.target, anchor: r.anchor };
 }
