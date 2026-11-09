@@ -131,7 +131,8 @@ await record('trace-walkthrough', async (page) => {
   await page.getByRole('heading', { level: 1 }).waitFor();
   await caption(page, 'Trace replayed 14 actions on two builds and says what broke in plain words at the top of the report');
   await pause(page, 7000);
-  await page.evaluate(() => window.scrollTo({ top: 170, behavior: 'smooth' }));
+  // Bring the two stages up under the bar at the top, so the caption does not cover them.
+  await page.evaluate(() => window.scrollTo({ top: document.querySelector('.deck')!.getBoundingClientRect().top + scrollY - 68, behavior: 'smooth' }));
   await caption(page, 'Both stages are drawn from recorded rectangles on one virtual clock, with the same actions at the same times');
   await pause(page, 7000);
   await page.getByRole('button', { name: '0.1x' }).click();
