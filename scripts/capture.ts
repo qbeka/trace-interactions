@@ -8,7 +8,8 @@ import { serveDirectory } from '../src/runner/static.ts';
 /**
  * Captures the cover and two screen recordings from the real demo.
  * Run `pnpm demo` first. Needs ffmpeg for the mp4 files. Captions on the
- * walkthrough exist only in this script, never in the product.
+ * walkthrough exist only in this script, never in the product. Each caption is
+ * one whole sentence with no closing period, and the check below holds them to it.
  */
 const root = resolve(import.meta.dirname, '..');
 const assets = join(root, 'docs/assets');
@@ -57,6 +58,8 @@ async function record(name: string, run: (page: Page) => Promise<void>): Promise
 }
 
 async function caption(page: Page, text: string): Promise<void> {
+  // A full stop, a question mark or an exclamation mark anywhere means more than one sentence, or a closing mark.
+  if (/[.!?]/.test(text.replace(/\d+\.\d+/g, ''))) throw new Error(`A caption must be one sentence with no closing period: ${text}`);
   await page.evaluate((t) => {
     let el = document.getElementById('capture-caption');
     if (!el) {
@@ -108,7 +111,7 @@ await record('trace-demo', async (page) => {
 await record('trace-walkthrough', async (page) => {
   await page.goto(fixture.url);
   await page.waitForLoadState('load');
-  await caption(page, 'A small inspector panel. It looks right. Open it, close it, resize the window, open it again.');
+  await caption(page, 'This small inspector panel looks right when you open it, close it, resize the window and open it again');
   await pause(page, 3500);
   await page.getByRole('button', { name: 'Inspect' }).click();
   await pause(page, 1500);
@@ -117,38 +120,38 @@ await record('trace-walkthrough', async (page) => {
   await page.setViewportSize({ width: 1100, height: 720 });
   await pause(page, 800);
   await page.getByRole('button', { name: 'Inspect' }).click();
-  await caption(page, 'The bug is in the first frames of that last open. The final screenshot looks fine.');
+  await caption(page, 'The bug is in the first frames of that last open, so the final screenshot looks fine');
   await pause(page, 5000);
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto(`${demo.url}regression/index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
-  await caption(page, 'Trace replayed 14 actions on two builds, and the verdict is one sentence.');
+  await caption(page, 'Trace replayed 14 actions on two builds and says what broke in plain words at the top of the report');
   await pause(page, 7000);
   await page.evaluate(() => window.scrollTo({ top: 170, behavior: 'smooth' }));
-  await caption(page, 'Both stages are drawn from recorded rectangles, on a virtual clock. Same actions, same time.');
+  await caption(page, 'Both stages are drawn from recorded rectangles on one virtual clock, with the same actions at the same times');
   await pause(page, 7000);
   await page.getByRole('button', { name: '0.1x' }).click();
   await seek(page, 3990);
   await page.getByRole('button', { name: /Play|Replay/ }).click();
-  await caption(page, 'The trail shows the path. The candidate starts 80 px away from its trigger.');
+  await caption(page, 'The trail shows the path the panel took, and the candidate starts 80 px away from its trigger');
   await pause(page, 7000);
   await page.getByRole('button', { name: 'Go to failure' }).click();
-  await caption(page, 'The requirement is written in the scenario, so a bug in both builds still fails.');
+  await caption(page, 'The requirement is written in the scenario, so a bug that both builds share still fails');
   await pause(page, 6000);
   await page.locator('h2', { hasText: 'What was checked' }).scrollIntoViewIfNeeded();
-  await caption(page, 'Each requirement names what held. Nothing is compared to an old screenshot.');
+  await caption(page, 'Each requirement names what held, and nothing is compared to an old screenshot');
   await pause(page, 7000);
   await page.locator('h2', { hasText: 'Reduction' }).scrollIntoViewIfNeeded();
-  await caption(page, 'The reducer only deletes. It keeps the same failure, confirms it, and checks the baseline still passes.');
+  await caption(page, 'The reducer only deletes actions, keeps the same failure, confirms it and checks that the baseline still passes');
   await pause(page, 8000);
   await page.keyboard.press('r');
   await pause(page, 300);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
-  await caption(page, 'R switches to the original 14 action session. The report stays a static folder.');
+  await caption(page, 'R switches to the original 14 action session, and the report is still one static folder');
   await pause(page, 6000);
   await page.goto(`${demo.url}fixed/index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
-  await caption(page, 'After the fix, the same reduced scenario reports the bug as gone.');
+  await caption(page, 'After the fix, the same reduced scenario reports the bug as gone');
   await pause(page, 6000);
 });
 
