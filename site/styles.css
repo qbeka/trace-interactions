@@ -2,98 +2,268 @@
 :root {
   --bad: #b4561a;
   --bad-text: #96460f;
-  --desk: #eeece6;
-  --stage-height: clamp(520px, calc(100svh - 156px), 640px);
-  --rail-width: 352px;
+  --desk: #efede7;
+  --stage-height: clamp(560px, calc(100svh - 152px), 676px);
+  --rail-width: 372px;
+  --label-col: 150px;
+  --pitch: 110px;
+  --cell: 104px;
+  --thumb: 65px;
+  --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
 }
+
+.title { align-items: center; row-gap: 2px; }
+.title .control { align-self: center; }
 
 .stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto var(--rail-width);
-  grid-template-rows: 52px minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) var(--rail-width);
+  grid-template-rows: 50px minmax(0, 1fr) auto auto auto;
   grid-template-areas:
-    'modes geometry rail'
-    'panes panes rail'
-    'verdict verdict rail'
-    'transport transport transport';
+    'bar rail'
+    'viewer rail'
+    'verdict rail'
+    'film film'
+    'transport transport';
   height: var(--stage-height);
 }
 
-/* Modes */
-.modes { grid-area: modes; display: flex; align-items: center; gap: 2px; padding: 0 0 0 8px; min-width: 0; }
-#geometry { grid-area: geometry; align-self: center; margin-right: 8px; }
+/* A row of choices that reads as one control */
+.seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 10px; background: var(--wash); }
+.seg .control { min-height: calc(var(--control-height) - 6px); padding: 0 10px; }
+.seg .control:focus-visible { outline-offset: 1px; }
+.swap { display: inline-grid; justify-items: center; }
+.swap > span[data-label] { grid-area: 1 / 1; visibility: hidden; }
+.swap > span[data-label].on { visibility: visible; }
+.control.icon { width: var(--control-height); padding: 0; color: var(--muted); }
 
-/* The two builds */
-.panes { grid-area: panes; display: flex; flex-direction: column; min-height: 0; padding: 0 12px; gap: 6px; }
-.pane { flex: 1 1 0; display: flex; flex-direction: column; min-height: 0; margin: 0; }
-.pane figcaption { flex: none; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; height: 22px; font-size: 13px; line-height: 20px; }
-.build { font-weight: 500; color: var(--ink); white-space: nowrap; }
-.note { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.note.bad { color: var(--bad-text); }
-.view { position: relative; flex: 1 1 0; min-height: 0; overflow: hidden; border-radius: 7px; background: var(--desk); box-shadow: inset 0 0 0 1px var(--line); }
-.view canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.view svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
-.view::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; }
-.is-geometry .view canvas { visibility: hidden; }
-.is-geometry .view { background: var(--paper); }
+/* How to compare */
+.bar { grid-area: bar; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 12px 0 9px; min-width: 0; }
+.source { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; line-height: 18px; color: var(--muted); white-space: nowrap; }
+.source::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--forest); }
 
-/* Marks over the screenshot */
+/* The viewer */
+.viewer {
+  grid-area: viewer; position: relative; min-height: 0; margin: 0 12px; overflow: hidden; border-radius: 9px;
+  background: repeating-linear-gradient(135deg, transparent 0 5px, #1115110a 5px 6px), var(--desk);
+  --m-good: var(--forest); --m-bad: var(--bad); --m-paper: var(--paper); --m-text: var(--bad-text);
+}
+.viewer canvas, .viewer .marks { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.viewer .marks { pointer-events: none; }
+.viewer::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-strong); pointer-events: none; }
+.stage[data-view='geometry'] .viewer { background: var(--paper); }
+.stage[data-view='difference'] .viewer { background: #111511; --m-good: #9ad3b1; --m-bad: #ffb680; --m-paper: #111511; --m-text: #ffd2b0; }
+.stage[data-view='difference'] .viewer::after { box-shadow: inset 0 0 0 1px #111511; }
+
+.legend { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 6px; pointer-events: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 11px;
+  background: #fffffff0; box-shadow: 0 0 0 1px var(--line), 0 1px 2px #1115110f;
+  font-size: 11.5px; line-height: 16px; color: var(--ink); white-space: nowrap;
+}
+.chip i { width: 10px; height: 0; border-top: 2px dashed var(--forest); }
+.chip.bad i { border-color: var(--bad); }
+.stage[data-view='swipe'] .chip.bad { margin-left: auto; }
+.stage[data-view='swipe'] .chip i, .stage[data-view='geometry'] .chip i { border-top-style: solid; }
+.stage[data-view='difference'] .chip { background: #111511d9; color: #f1efe9; box-shadow: 0 0 0 1px #ffffff26; }
+.stage[data-view='difference'] .chip.good i { border-color: #9ad3b1; }
+.stage[data-view='difference'] .chip.bad i { border-color: #ffb680; }
+.readout {
+  position: absolute; left: 8px; bottom: 8px; max-width: calc(100% - 16px); padding: 2px 8px; border-radius: 10px;
+  background: #fffffff0; box-shadow: 0 0 0 1px var(--line);
+  font-size: 11.5px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+}
+.readout:empty { display: none; }
+.stage[data-view='difference'] .readout { background: #111511d9; color: #d9d6cf; box-shadow: 0 0 0 1px #ffffff26; }
+.viewer.is-waiting::before {
+  content: 'Loading this frame'; position: absolute; right: 8px; bottom: 8px; z-index: 1; padding: 2px 8px; border-radius: 10px;
+  background: #fffffff0; box-shadow: 0 0 0 1px var(--line); font-size: 11.5px; line-height: 16px; color: var(--muted);
+}
+
+/* The swipe divider */
+.wipe { display: none; position: absolute; top: 0; bottom: 0; left: calc(var(--split, .5) * 100%); width: 44px; margin-left: -22px; cursor: ew-resize; touch-action: none; }
+.stage[data-view='swipe'] .wipe { display: block; }
+.wipe::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; margin-left: -.5px; background: var(--ink); }
+.wipe i {
+  position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
+  background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='none' stroke='%23111511' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 11l-4 4 4 4M18 11l4 4-4 4'/%3E%3C/svg%3E") center / 30px no-repeat;
+  box-shadow: 0 0 0 1px var(--ink), var(--float-shadow); transition: transform .12s;
+}
+.wipe:active i { transform: scale(.94); background-color: var(--surface); }
+@media (hover: hover) { .wipe:hover i { transform: scale(1.06); } .wipe:active i { transform: scale(.94); } }
+.wipe:focus-visible { outline: none; }
+.wipe:focus-visible i { outline: 2px solid var(--forest); outline-offset: 2px; }
+
+/* Marks over the screenshot, all from recorded geometry */
 .m-edge { stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.m-guide { stroke: var(--bad); stroke-width: 1; stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
-.pane.is-good .m-guide { stroke: var(--forest); }
-.m-start { fill: none; stroke: var(--bad); stroke-width: 1.25; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; }
-.pane.is-good .m-start { stroke: var(--forest); }
-.m-span { fill: none; stroke: var(--bad); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.m-label { fill: var(--bad-text); font-family: var(--sans); font-weight: 500; text-anchor: middle; paint-order: stroke; stroke: var(--paper); stroke-linejoin: round; }
+.m-outline { fill: none; stroke-width: 1.25; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+.m-outline.good { stroke: var(--m-good); }
+.m-outline.bad { stroke: var(--m-bad); }
+.m-extend { fill: none; stroke: var(--m-bad); stroke-width: 1; opacity: .55; vector-effect: non-scaling-stroke; }
+.m-span { fill: none; stroke: var(--m-bad); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.m-pill { fill: var(--m-paper); stroke: var(--m-bad); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.m-label { fill: var(--m-text); font-family: var(--sans); font-weight: 500; text-anchor: middle; font-variant-numeric: tabular-nums; }
 
 /* Rectangles, for Geometry */
 .g-view { fill: #fbf8f4; stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .g-node { fill: #6040200e; stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .g-name { fill: var(--muted); font-family: var(--sans); text-anchor: middle; }
-.g-panel { fill: #1d3a2a14; stroke: var(--forest); stroke-width: 1.25; vector-effect: non-scaling-stroke; }
-.pane.is-bad .g-panel { fill: #b4561a1f; stroke: var(--bad); }
-.g-ghost { fill: none; stroke: var(--faint); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
-.g-trail { fill: none; stroke: var(--forest); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.pane.is-bad .g-trail { stroke: var(--bad); }
-.g-focus { fill: none; stroke: var(--forest); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.g-panel { stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.g-panel.good { fill: #1d3a2a12; stroke: var(--forest); }
+.g-panel.bad { fill: #b4561a17; stroke: var(--bad); }
+.g-fan { fill: none; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.g-fan.good { stroke: #1d3a2a47; }
+.g-fan.bad { stroke: #b4561a5c; }
+.g-focus { fill: none; stroke: var(--forest); stroke-width: 1.5; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; }
 
 /* What the frame on screen means */
-.verdict { grid-area: verdict; display: grid; align-items: start; padding: 8px 12px 10px; }
+.verdict { grid-area: verdict; display: grid; align-items: start; padding: 10px 14px 12px; }
 .verdict > p {
   grid-area: 1 / 1; margin: 0; visibility: hidden;
-  font: 400 15px/21px var(--serif); letter-spacing: -0.005em; color: var(--body);
+  font: 400 15px/21px var(--serif); letter-spacing: -0.005em; color: var(--body); text-wrap: pretty;
 }
 .verdict > p.on { visibility: visible; }
 .verdict > p.bad { color: var(--bad-text); }
-.verdict > p.good { color: var(--forest); }
-.verdict b { display: none; font: 500 12px/18px var(--sans); letter-spacing: 0; color: var(--muted); }
+
+/* The steps, and every attempt the reducer made at deleting them */
+.rail { grid-area: rail; display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
+.rail > header { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 50px; padding: 0 8px 0 9px; }
+.matrix {
+  position: relative; flex: 1 1 0; min-height: 0; display: grid; padding: 0 12px 0 8px;
+  grid-template-columns: var(--label-col) minmax(0, 1fr); grid-template-rows: 22px minmax(0, 1fr);
+}
+.axis { grid-area: 1 / 1; align-self: center; padding-left: 8px; font-size: 12px; line-height: 16px; color: var(--muted); white-space: nowrap; }
+.steps { grid-area: 2 / 1 / 3 / 3; display: grid; grid-template-rows: repeat(14, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; min-height: 0; }
+.steps li { min-height: 0; }
+.step {
+  appearance: none; display: grid; grid-template-columns: 22px minmax(0, 1fr); align-items: center;
+  width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0 calc(100% - var(--label-col) + 6px) 0 8px;
+  border: 0; border-radius: 6px; background: transparent; color: var(--ink);
+  font: 400 13px/16px var(--sans); text-align: left; white-space: nowrap;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: background-color .12s, color .16s;
+}
+.step i { font-style: normal; color: var(--muted); transition: color .16s; }
+.step span { overflow: hidden; text-overflow: ellipsis; }
+.step.gone { color: var(--muted); }
+.step.gone i { color: var(--faint); }
+.step:active { background: var(--wash-strong); }
+.step[aria-current='true'] { background: var(--wash-strong); color: var(--ink); font-weight: 500; }
+.step[aria-current='true'] i { color: var(--ink); }
+.step[aria-current='true']:active { background: #11151124; }
+.step[aria-disabled='true'], .step[aria-disabled='true']:active { background: transparent; color: var(--faint); cursor: default; font-weight: 400; }
+.step[aria-disabled='true'] i { color: var(--faint); }
+@media (hover: hover) {
+  .step:hover { background: var(--wash); color: var(--ink); }
+  .step:active { background: var(--wash-strong); }
+  .step[aria-current='true']:hover { background: #1115111f; }
+  .step[aria-current='true']:active { background: #11151124; }
+  .step[aria-disabled='true']:hover, .step[aria-disabled='true']:active { background: transparent; color: var(--faint); }
+}
+.step.is-jump span { color: var(--bad-text); }
+.step.is-jump[aria-current='true'] span { color: #7a380b; }
+
+.attempts { grid-area: 2 / 2; width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
+.a-life { stroke: var(--line-strong); stroke-width: 1; }
+.a-life.kept { stroke: var(--forest); stroke-width: 1.25; }
+.a-end { fill: var(--forest); visibility: hidden; }
+.attempts.done .a-end { visibility: visible; }
+.a-cursor { fill: var(--wash-strong); }
+.a-column { visibility: hidden; }
+.a-column.on { visibility: visible; }
+.a-cell { stroke-width: 1; }
+.a-fails .a-cell { fill: var(--forest); stroke: var(--forest); }
+.a-passes .a-cell { fill: var(--paper); stroke: var(--muted); }
+.a-invalid .a-cell { fill: #d5d3cd; stroke: #d5d3cd; }
+.a-other-failure .a-cell { fill: var(--bad); stroke: var(--bad); }
+
+/* The attempt scrubber sits over the columns, with its thumb on the attempt shown */
+#attempt {
+  grid-area: 1 / 2; align-self: center; height: 22px; margin: 0;
+  width: calc(100% * 26 / 27 + 12px); margin-left: calc(-6px - 100% / 54);
+}
+.attempt-note { flex: none; min-height: 46px; margin: 0; padding: 8px 16px 0; font-size: 12.5px; line-height: 17px; color: var(--muted); text-wrap: pretty; }
+.rail footer { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 12px 10px 16px; }
+.keys { display: grid; grid-template-columns: auto auto; gap: 1px 12px; font-size: 11.5px; line-height: 16px; color: var(--muted); }
+.keys span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.keys i { flex: none; width: 6px; height: 10px; border-radius: 1.5px; }
+.k-fails { background: var(--forest); }
+.k-passes { background: var(--paper); box-shadow: inset 0 0 0 1px var(--muted); }
+.k-invalid { background: #d5d3cd; }
+.k-other { background: var(--bad); }
+
+/* The film: one cell for each recorded frame, sliding under a fixed gate */
+.film {
+  grid-area: film; position: relative; height: calc(var(--thumb) + 50px); overflow: hidden; border-top: 1px solid var(--line);
+  background: var(--paper); cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+}
+.film.is-dragging { cursor: grabbing; }
+.reel { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; will-change: transform; }
+.cell { position: absolute; top: 0; bottom: 0; left: calc(var(--i) * var(--pitch) - var(--pitch) / 2); width: var(--pitch); }
+/* The film base runs behind every frame, with a row of perforations along each edge */
+.cell::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 21px; height: calc(var(--thumb) + 14px);
+  --perf: repeating-linear-gradient(90deg, transparent 0 calc(var(--pitch) / 12 - 2.5px), var(--paper) 0 calc(var(--pitch) / 12 + 2.5px), transparent 0 calc(var(--pitch) / 6));
+  background: var(--perf) 0 2px / 100% 3px no-repeat, var(--perf) 0 calc(100% - 2px) / 100% 3px no-repeat, var(--desk);
+}
+.cell:first-child::before { border-radius: 4px 0 0 4px; }
+.cell:last-child::before { border-radius: 0 4px 4px 0; }
+.cell canvas {
+  position: absolute; top: 28px; left: calc((var(--pitch) - var(--cell)) / 2); width: var(--cell); height: var(--thumb);
+  border-radius: 2px; background: #f7f5f0; box-shadow: 0 0 0 1px #1115111f; opacity: 0; transition: opacity .2s;
+}
+.cell.ready canvas { opacity: 1; }
+.cell-ms { position: absolute; left: 0; right: 0; bottom: 0; height: 15px; text-align: center; font-size: 10.5px; line-height: 14px; color: var(--faint); }
+.cell.current .cell-ms { color: var(--ink); font-weight: 500; }
+.cell.differs::after { content: ''; position: absolute; left: 0; right: 0; top: 19px; height: 2px; background: var(--bad); }
+.cell.differs .cell-ms { color: var(--bad-text); }
+.cell-step { position: absolute; left: calc((var(--pitch) - var(--cell)) / 2); top: 3px; max-width: calc(var(--span, 1) * var(--pitch) - 6px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; line-height: 15px; color: var(--muted); }
+.cell-step b { margin-right: 4px; font-weight: 500; color: var(--ink); }
+.cell-step.bad, .cell-step.bad b { color: var(--bad-text); }
+/* The gate stays put. The frame inside it is the frame in the viewer. */
+.needle {
+  position: absolute; top: 24px; left: 50%; width: calc(var(--cell) + 8px); height: calc(var(--thumb) + 8px); margin-left: calc(var(--cell) / -2 - 4px);
+  border: 1.5px solid var(--ink); border-radius: 5px; pointer-events: none;
+}
+.needle::before, .needle::after { content: ''; position: absolute; left: 50%; width: 1.5px; margin-left: -.75px; background: var(--ink); }
+.needle::before { top: -7px; height: 6px; }
+.needle::after { bottom: -7px; height: 6px; }
+.stage.in-jump .needle { border-color: var(--bad); }
+.stage.in-jump .needle::before, .stage.in-jump .needle::after { background: var(--bad); }
 
 /* Transport */
 .transport {
   grid-area: transport; display: flex; align-items: center; gap: 12px;
-  min-height: 56px; padding: 0 12px; border-top: 1px solid var(--line); background: var(--paper);
+  min-height: 54px; padding: 0 12px; border-top: 1px solid var(--line); background: var(--paper);
 }
-.swap { display: inline-grid; justify-items: center; min-width: 76px; }
-.swap > span { grid-area: 1 / 1; visibility: hidden; }
-.swap > span.on { visibility: visible; }
-.lane { position: relative; flex: 1 1 0; min-width: 0; height: 36px; }
-.ticks { position: absolute; left: 7px; right: 7px; top: 50%; height: 1px; background: var(--line-strong); }
-.ticks .done { position: absolute; left: 0; top: 0; height: 1px; width: 100%; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--progress, 0)); }
-.ticks .tick { position: absolute; top: -6px; width: 1px; height: 13px; margin-left: -0.5px; background: var(--ink); transition: opacity .16s, background-color .16s; }
-.ticks .tick.dropped { opacity: .22; }
-.ticks .tick.jump { top: -9px; width: 2px; height: 19px; margin-left: -1px; background: var(--bad); }
-.ticks .tick.jump.good { background: var(--forest); }
+#play { min-width: 76px; }
+.lane { position: relative; flex: 1 1 0; min-width: 0; height: 40px; }
+.scope { position: absolute; left: 7px; right: 7px; top: 0; width: calc(100% - 14px); height: 100%; overflow: visible; }
+.s-base { stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.s-done { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.s-tick { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; transition: opacity .16s; }
+.s-tick.dropped { opacity: .2; }
+.s-tick.jump { stroke: var(--bad); }
+.s-trace { fill: #b4561a24; stroke: var(--bad); stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.peak { position: absolute; top: 1px; left: calc(7px + (100% - 14px) * var(--at)); margin-left: 12px; font-size: 10.5px; line-height: 14px; font-weight: 500; color: var(--bad-text); white-space: nowrap; pointer-events: none; }
+
 input[type='range'] {
-  position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
   background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; touch-action: pan-y;
 }
+#time { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; }
 input[type='range']::-webkit-slider-runnable-track { height: 100%; background: transparent; }
 input[type='range']::-moz-range-track { height: 100%; background: transparent; }
 input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 14px; height: 14px; margin-top: 11px;
+  -webkit-appearance: none; width: 14px; height: 14px; margin-top: 23px;
   border-radius: 50%; background: var(--ink); border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--ink);
 }
-input[type='range']::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--ink); border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--ink); }
+input[type='range']::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--ink); border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--ink); transform: translateY(10px); }
+#attempt::-webkit-slider-runnable-track { background: linear-gradient(var(--line-strong), var(--line-strong)) 6px 50% / calc(100% - 12px) 1px no-repeat; }
+#attempt::-moz-range-track { background: linear-gradient(var(--line-strong), var(--line-strong)) 6px 50% / calc(100% - 12px) 1px no-repeat; }
+#attempt::-webkit-slider-thumb { width: 12px; height: 12px; margin-top: 5px; }
+#attempt::-moz-range-thumb { width: 8px; height: 8px; transform: none; }
 input[type='range']:active::-webkit-slider-thumb { background: var(--forest-pressed); box-shadow: 0 0 0 1px var(--forest-pressed); }
 input[type='range']:active::-moz-range-thumb { background: var(--forest-pressed); box-shadow: 0 0 0 1px var(--forest-pressed); }
 @media (hover: hover) {
@@ -105,114 +275,70 @@ input[type='range']:active::-moz-range-thumb { background: var(--forest-pressed)
 input[type='range']:focus-visible { outline: none; }
 input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--forest); outline-offset: 2px; }
 input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--forest); outline-offset: 2px; }
-.clock { flex: none; min-width: 58px; text-align: right; font-size: 13px; line-height: 20px; color: var(--ink); }
+.clock { flex: none; min-width: 62px; text-align: right; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--ink); }
 .tag { flex: none; font-size: 13px; line-height: 20px; color: var(--muted); white-space: nowrap; }
 
-/* The steps, beside what they do */
-.rail { grid-area: rail; display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); padding: 0 8px 8px; }
-.rail > header { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 8px; font-size: 13px; line-height: 20px; }
-#rail-title { font-weight: 500; color: var(--ink); white-space: nowrap; }
-#rail-count { color: var(--muted); white-space: nowrap; }
-.rail .grid { position: relative; flex: 1 1 0; min-height: 0; }
-.steps { display: grid; grid-template-rows: repeat(14, minmax(0, 1fr)); height: 100%; margin: 0; padding: 0; list-style: none; }
-.steps li { min-height: 0; }
-.step {
-  appearance: none; display: grid; grid-template-columns: 22px minmax(0, 1fr); align-items: center;
-  width: 100%; height: 100%; min-height: 0; padding: 0 8px; margin: 0;
-  border: 0; border-radius: 6px; background: transparent; color: var(--body);
-  font: 400 13px/16px var(--sans); text-align: left; white-space: nowrap;
-  cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  transition: background-color .12s, color .12s;
-}
-.step i { font-style: normal; color: var(--muted); }
-.step span { overflow: hidden; text-overflow: ellipsis; }
-.step:active { background: var(--wash-strong); }
-.step[aria-current='true'] { background: var(--wash-strong); color: var(--ink); font-weight: 500; }
-.step[aria-current='true'] i { color: var(--ink); }
-.step[aria-current='true']:active { background: #11151124; color: var(--ink); }
-.step[aria-disabled='true'], .step[aria-disabled='true']:active { background: transparent; color: var(--faint); cursor: default; font-weight: 400; }
-.step[aria-disabled='true'] i { color: var(--faint); }
-@media (hover: hover) {
-  .step:hover { background: var(--wash); color: var(--ink); }
-  .step:active { background: var(--wash-strong); }
-  .step[aria-current='true']:hover { background: #1115111f; color: var(--ink); }
-  .step[aria-current='true']:active { background: #11151124; color: var(--ink); }
-  .step[aria-disabled='true']:hover, .step[aria-disabled='true']:active { background: transparent; color: var(--faint); }
-}
-.step.is-jump span { color: var(--bad-text); }
-.step.is-jump.is-good span { color: var(--forest); }
-.step.is-jump[aria-current='true'] span { font-weight: 500; color: #7a380b; }
-.step.is-jump.is-good[aria-current='true'] span { color: var(--forest); }
-
-/* Every recorded attempt, one column each, with the steps it kept */
-.attempts { position: absolute; top: 0; right: 8px; width: min(182px, calc(100% - 158px)); height: 100%; pointer-events: none; }
-.a-column { visibility: hidden; }
-.a-column.on { visibility: visible; }
-.a-cell { stroke-width: 1; vector-effect: non-scaling-stroke; }
-.a-fails .a-cell { fill: var(--forest); stroke: var(--forest); }
-.a-passes .a-cell { fill: var(--paper); stroke: var(--muted); }
-.a-invalid .a-cell { fill: var(--line-strong); stroke: none; }
-.a-other-failure .a-cell { fill: var(--bad); stroke: var(--bad); }
-.rail footer { flex: none; display: flex; flex-wrap: wrap; gap: 2px 14px; min-height: 42px; padding: 6px 8px 0; font-size: 12px; line-height: 17px; color: var(--muted); }
-.rail footer span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.rail footer i { flex: none; width: 7px; height: 11px; }
-.k-fails { background: var(--forest); }
-.k-passes { background: var(--paper); box-shadow: inset 0 0 0 1px var(--muted); }
-.k-invalid { background: var(--line-strong); }
-.k-other { background: var(--bad); }
-.k-panel { width: 14px !important; background: #1d3a2a14; box-shadow: inset 0 0 0 1px var(--forest); }
-.k-ghost { width: 14px !important; border: 1px dashed var(--faint); }
-.k-trail { width: 14px !important; height: 0 !important; border-top: 2px solid var(--forest); }
-
-/* A second control in the reading column */
-.reading .links { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+/* Reading column: commands a visitor can take away */
+.code { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; padding: 5px 5px 5px 14px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--surface); }
+.code pre { flex: 1 1 0; min-width: 0; margin: 0; overflow-x: auto; font: 400 13px/20px var(--mono); color: var(--ink); white-space: pre; scrollbar-width: thin; }
+.code code { font: inherit; }
+.code .control { flex: none; min-width: 64px; }
+.code + .prose { margin-top: 14px; }
+.prose code { padding: 1px 4px; border-radius: 4px; background: var(--wash); font: 400 .82em/1 var(--mono); color: var(--ink); }
 
 /* Under the side rail width the rail moves below the transport */
 @media (max-width: 919px) {
   .stage {
     height: auto;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: auto auto auto auto auto;
-    grid-template-areas:
-      'modes geometry'
-      'panes panes'
-      'verdict verdict'
-      'transport transport'
-      'rail rail';
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: 'bar' 'viewer' 'film' 'transport' 'verdict' 'rail';
   }
-  .modes { min-height: 52px; }
-  .pane { flex: none; }
-  .view { flex: none; height: clamp(150px, 26vw, 214px); }
-  .rail { border-left: 0; border-top: 1px solid var(--line); padding: 0 8px 12px; }
-  .rail > header { height: 44px; }
-  .rail .grid { flex: none; height: calc(14 * 30px); }
-  .verdict { padding-top: 6px; }
-  .verdict b { display: block; }
+  .bar { min-height: 50px; }
+  .viewer { height: clamp(220px, 44vw, 360px); margin: 0 12px 10px; }
+  .verdict { border-top: 1px solid var(--line); padding-top: 12px; }
+  .rail { border-left: 0; border-top: 1px solid var(--line); }
+  .matrix { flex: none; height: calc(22px + 14 * 27px); }
+  .rail footer { padding-bottom: 12px; }
 }
 
-/* Phones: Replay sits against the panes, so the action and its result share a screen */
+/* Phones: the film and Replay sit against the viewer, so the action and its result share a screen */
 @media (max-width: 559px) {
+  :root { --pitch: 84px; --cell: 78px; --thumb: 49px; --label-col: 136px; }
   .title { margin-bottom: 12px; }
-  .stage { grid-template-areas: 'modes modes' 'panes panes' 'transport transport' 'verdict verdict' 'geometry geometry' 'rail rail'; grid-template-rows: auto auto auto auto auto auto; }
-  #geometry { justify-self: start; margin: 0 0 8px 8px; }
-  .modes { padding: 0 6px; min-height: 48px; }
-  .modes .control { padding: 0 9px; }
-  .panes { padding: 0 8px; gap: 2px; }
-  .pane figcaption { height: 20px; font-size: 12px; line-height: 18px; }
-  .view { height: clamp(92px, 16.5svh, 150px); }
-  .transport { flex-wrap: wrap; gap: 0 8px; padding: 6px 8px 0; border-top: 0; background: transparent; min-height: 0; }
-  .lane { flex: 1 1 calc(100% - 92px); height: var(--control-height); }
-  .clock { display: none; }
-  .tag { order: 3; flex: 1 1 auto; }
-  #jump { order: 4; }
-  .verdict { padding: 6px 12px 8px; }
+  .title h1 { font-size: 34px; line-height: 40px; }
+  .bar { padding: 0 6px; flex-wrap: wrap; row-gap: 0; }
+  .seg .control { padding: 0 8px; }
+  .source { display: none; }
+  .viewer { height: clamp(150px, 27svh, 230px); margin: 0 8px 8px; }
+  .film { -webkit-mask-image: none; mask-image: none; }
+  .transport { flex-wrap: wrap; gap: 0 8px; padding: 6px 8px; min-height: 0; }
+  .lane { flex: 1 1 calc(100% - 92px); }
+  .clock { order: 3; min-width: 0; text-align: left; margin: 4px 0 4px 2px; }
+  .tag { order: 4; flex: 1 1 auto; margin: 4px 0; }
+  #jump { order: 5; margin: 4px 0; }
+  .verdict { padding: 10px 12px; }
   .verdict > p { font-size: 14px; line-height: 20px; }
-  .transport .tag, .transport #jump { margin-top: 4px; margin-bottom: 4px; }
+  .rail > header { padding: 0 6px; }
+  .matrix { padding: 0 8px 0 4px; }
+  .rail footer { flex-direction: column; align-items: stretch; padding: 8px 12px 12px; }
+  .keys { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 359px) {
+  :root { --label-col: 118px; }
+  .seg .control { padding: 0 6px; font-size: 12.5px; }
+  .step { font-size: 12.5px; }
 }
 
 @media (pointer: coarse) {
-  input[type='range']::-webkit-slider-thumb { width: 22px; height: 22px; margin-top: calc((var(--control-height) - 22px) / 2); }
+  input#time::-webkit-slider-thumb { width: 22px; height: 22px; margin-top: 19px; }
   input[type='range']::-moz-range-thumb { width: 18px; height: 18px; }
-  .ticks { left: 11px; right: 11px; }
+  #attempt { height: 30px; }
+  #attempt::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: 6px; }
+  .matrix { grid-template-rows: 30px minmax(0, 1fr); }
+  .scope { left: 11px; right: 11px; width: calc(100% - 22px); }
 }
-@media print { .transport, .modes, #geometry { display: none; } }
+@media (pointer: coarse) and (max-width: 919px) {
+  .matrix { height: calc(30px + 14 * 32px); }
+}
+@media print { .transport, .bar, .film { display: none; } }
