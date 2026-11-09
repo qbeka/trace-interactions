@@ -1,5 +1,6 @@
 import type { TraceEvent } from '../src/trace/types.ts';
 import { focusAt, lastAt, rectAt, timelines, viewportAt, type Timelines } from '../viewer/src/model.ts';
+import { frameLabel, readout, SAID, SOURCE, type View } from './lines.ts';
 import { aliveAfter, attemptNote, diedAt } from './reduction.ts';
 
 /**
@@ -11,7 +12,6 @@ import { aliveAfter, attemptNote, diedAt } from './reduction.ts';
 interface Rect { x: number; y: number; w: number; h: number }
 interface Run { frames: { t: number; f: string }[]; events: TraceEvent[] }
 type Phase = 'before' | 'jump' | 'after';
-type View = 'overlay' | 'swipe' | 'difference' | 'geometry';
 interface Session {
   id: 'original' | 'reduced';
   count: string;
@@ -621,13 +621,6 @@ function setLabel(which: 'replay' | 'play' | 'pause'): void {
 }
 const idleLabel = () => setLabel(poster || index >= cells.length - 1 ? 'replay' : 'play');
 
-const SOURCE: Record<View, string> = {
-  overlay: 'Recorded screenshots',
-  swipe: 'Recorded screenshots',
-  difference: 'Recorded screenshots',
-  geometry: 'Recorded geometry',
-};
-
 let spoken = '';
 let nowStep = -1;
 function render(): void {
@@ -640,13 +633,9 @@ function render(): void {
     spoken = key;
   }
   const off = Math.round(Math.abs(offsetAt(t)));
-  const readout = view === 'geometry' ? 'Rectangles from the report, with the path each panel took'
-    : view === 'difference' ? (cell.differs ? 'Lit where the two frames differ' : 'No pixel differs in this frame')
-    : view === 'overlay' ? (cell.differs ? 'Both builds, one over the other' : 'The two frames are the same')
-    : '';
-  $('readout').textContent = readout;
+  $('readout').textContent = readout(view, cell.differs);
   $('source').textContent = SOURCE[view];
-  screen.setAttribute('aria-label', `${t} ms, step ${cell.step + 1} of ${steps.length}, ${steps[cell.step]!.label}. ${off ? `The broken build is ${off} px to the right of the last good build.` : session.verdict[phase]}`);
+  screen.setAttribute('aria-label', frameLabel(t, cell.step + 1, steps.length, steps[cell.step]!.label, cell.differs, off));
   range.value = String(t);
   range.setAttribute('aria-valuetext', `${t} ms, step ${cell.step + 1}: ${steps[cell.step]!.label}, frame ${index + 1} of ${cells.length}`);
   set(scopeDone, { x1: 0, y1: 30, x2: (t / axisEnd) * 1000, y2: 30 });
@@ -810,7 +799,7 @@ function finish(): void {
   setIndex(cells.length - 1);
   idleLabel();
   saveUrl();
-  status.textContent = 'Replay finished';
+  status.textContent = SAID.finished;
 }
 
 /** With reduced motion the replay cuts between the steps, and ends on the jump. */
@@ -993,7 +982,7 @@ function copyButton(button: HTMLElement, text: () => string, said: string): void
   button.addEventListener('click', async () => {
     const ok = await copyText(text());
     for (const node of button.querySelectorAll<HTMLElement>('span[data-label]')) node.classList.toggle('on', node.dataset.label === (ok ? 'done' : 'failed'));
-    status.textContent = ok ? said : 'Copying did not work in this browser';
+    status.textContent = ok ? said : SAID.copyFailed;
     clearTimeout(timer);
     timer = window.setTimeout(() => {
       for (const node of button.querySelectorAll<HTMLElement>('span[data-label]')) node.classList.toggle('on', node.dataset.label === 'idle');
@@ -1010,13 +999,14 @@ for (const button of $('sessions').querySelectorAll<HTMLButtonElement>('button')
     if (wasPlaying) stop();
     setSession(next);
     saveUrl();
-    status.textContent = `${next.count}. ${next.verdict[phaseAt(time())]}`;
+    // The pressed button names the session, so the status only has to say what is on screen.
+    status.textContent = next.verdict[phaseAt(time())];
   });
 }
 for (const button of $('views').querySelectorAll<HTMLButtonElement>('button')) {
   button.addEventListener('click', () => {
     setView(button.dataset.view as View);
-    status.textContent = `${button.textContent}. ${$('readout').textContent}`;
+    status.textContent = $('readout').textContent || SAID.view(button.textContent ?? '');
   });
 }
 playButton.addEventListener('click', () => (playing ? pause() : play()));
@@ -1176,10 +1166,10 @@ attemptRange.addEventListener('input', () => {
 });
 $('reduce-play').addEventListener('click', () => {
   playReduction();
-  status.textContent = `Replaying ${attempts.length} attempts`;
+  status.textContent = SAID.replaying(attempts.length);
 });
-copyButton($('copy'), () => data.scenario, 'The four steps are on the clipboard as a Trace scenario');
-for (const button of document.querySelectorAll<HTMLElement>('[data-copy]')) copyButton(button, () => $(button.dataset.copy!).textContent ?? '', 'Copied');
+copyButton($('copy'), () => data.scenario, SAID.scenario);
+for (const button of document.querySelectorAll<HTMLElement>('[data-copy]')) copyButton(button, () => $(button.dataset.copy!).textContent ?? '', SAID.command);
 
 /* Start */
 const query = new URLSearchParams(location.search);
