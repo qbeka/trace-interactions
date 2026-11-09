@@ -7,15 +7,14 @@ interface Props {
   end: number;
   time: number;
   pin: number | null;
-  onSeek: (t: number) => void;
 }
 
 const pct = (t: number, end: number): string => `${(t / Math.max(end, 1)) * 100}%`;
 
-function Lane({ name, segments, end }: { name: string; segments: Segment[]; end: number }) {
+function Lane({ build, name, segments, end }: { build: string; name: string; segments: Segment[]; end: number }) {
   return (
     <div className="lane">
-      <span className="lane-name">{name}</span>
+      <span className="lane-name"><b>{build}</b> {name}</span>
       <div className="lane-track">
         {segments.map((s, i) => (
           <span
@@ -37,10 +36,10 @@ export function Strip({ baseline, candidate, stateKey, end, time, pin }: Props) 
   return (
     <div className="strip" aria-hidden="true">
       <div className="strip-rows">
-        {stateKey && <Lane name={`baseline ${stateKey}`} segments={stateSegments(baseline, stateKey)} end={end} />}
-        {stateKey && <Lane name={`candidate ${stateKey}`} segments={stateSegments(candidate, stateKey)} end={end} />}
-        <Lane name="baseline focus" segments={focusSegments(baseline)} end={end} />
-        <Lane name="candidate focus" segments={focusSegments(candidate)} end={end} />
+        {stateKey && <Lane build="Baseline" name={stateKey} segments={stateSegments(baseline, stateKey)} end={end} />}
+        {stateKey && <Lane build="Candidate" name={stateKey} segments={stateSegments(candidate, stateKey)} end={end} />}
+        <Lane build="Baseline" name="focus" segments={focusSegments(baseline)} end={end} />
+        <Lane build="Candidate" name="focus" segments={focusSegments(candidate)} end={end} />
         <div className="strip-overlay">
           {candidate.actions.map((a) => (
             <span key={a.seq} className="tick" style={{ left: pct(a.t, end) }} />
