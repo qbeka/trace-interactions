@@ -282,8 +282,9 @@ cover the larger changes.
 | `--adapter` added | after `9ae376e` | To check a local page with no change to it |
 | Oracle, reducer, control and trust fixes | `9f5868e`, `9af1d42` | The two reviews |
 | Exported reports drop local paths | after `9af1d42` | A report is made to be shared. This touches only the export step, so no measured result depends on it. The 861,282 byte report was measured before this change and would now be a few hundred bytes smaller |
+| Report viewer and project page redesigned | after `9af1d42` | To make a report read like a tool. The viewer's script and fonts grew from 299,738 to 406,997 bytes, so every report is 107,259 bytes larger. The 861,282 byte report above was measured before this and was not measured again |
 
-The project page and the report's move to Geist Serif also came after `9af1d42`. Neither touches the runner, recorder, oracle or reducer, so no measured result depends on them.
+The project page and the report's move to Geist Serif also came after `9af1d42`, as did the redesign of both. None of them touches the runner, recorder, oracle or reducer, so no other measured result depends on them. The demo reports kept the runs they had recorded: only the viewer files beside them were replaced.
 
 The history was rewritten once before the first public push, to remove working notes and
 local paths from demo reports. Commit hashes in the saved results and in these docs were
