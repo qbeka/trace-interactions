@@ -51,12 +51,24 @@ export function withoutLocalPaths(body: string, cwd = process.cwd(), home = home
 }
 
 /** Beside the bundled CLI when installed, under dist when run from source. */
-async function viewerDir(): Promise<string> {
+export async function viewerDir(): Promise<string> {
   const here = dirname(fileURLToPath(import.meta.url));
   for (const dir of [join(here, 'viewer'), join(here, '..', '..', 'dist', 'viewer')]) {
     if (await exists(join(dir, 'index.html'))) return dir;
   }
   throw new Error('The viewer is not built. Run: pnpm build');
+}
+
+/**
+ * Puts the current viewer into a report that already exists and leaves what the
+ * report recorded alone: its data, its screenshots and their hashes stay as they are.
+ */
+export async function refreshViewer(reportDir: string): Promise<void> {
+  const out = resolve(reportDir);
+  if (!(await exists(join(out, 'report.json')))) throw new Error(`${reportDir} is not an exported report.`);
+  const viewer = await viewerDir();
+  await rm(join(out, 'assets'), { recursive: true, force: true });
+  await cp(viewer, out, { recursive: true });
 }
 
 /**
