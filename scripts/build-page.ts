@@ -1,6 +1,8 @@
 import { build } from 'esbuild';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import type { Scenario } from '../src/scenario/schema.ts';
+import { parseScenario } from '../src/scenario/validate.ts';
 import type { ReportCase, ReportData } from '../viewer/src/types.ts';
 import { primaryViolation } from '../viewer/src/model.ts';
 
@@ -37,6 +39,16 @@ function stepLabel(a: { type: string; note?: string; width?: number }): string {
   if (a.type === 'resize') return `Resize to ${a.width} px`;
   const note = a.note ?? a.type;
   return note[0]!.toUpperCase() + note.slice(1);
+}
+
+/**
+ * The reduced scenario a visitor copies. A note is a label carried over from the
+ * session it was written for, so a resize note is rewritten to say the width,
+ * the same way the page labels the step. Nothing that runs is changed.
+ */
+export function scenarioToCopy(saved: Scenario): string {
+  const actions = saved.actions.map((a) => (a.type === 'resize' ? { ...a, note: stepLabel(a).toLowerCase() } : a));
+  return JSON.stringify({ ...saved, actions }, null, 2) + '\n';
 }
 
 export async function buildPage(demoDir: string): Promise<void> {
@@ -93,37 +105,56 @@ export async function buildPage(demoDir: string): Promise<void> {
   const allSteps = original.scenario.actions;
   const steps = allSteps.map((a) => ({ at: a.at, label: stepLabel(a) }));
   const kept = reduction.keptIndices;
-  const axisEnd = Math.ceil(Math.max(...[original, reduced].map((c) => c.candidate.events.at(-1)!.t)) / 16) * 16;
   const jumpStep = allSteps.findIndex((a) => a.at === jumpT);
   if (jumpStep < 0 || !kept.includes(jumpStep)) throw new Error('The jump is not on a kept step.');
+  // The broken build keeps where Inspect sat the first time the panel opened.
+  const firstTrigger = original.baseline.events.flatMap((e) => (e.k === 'geometry' && e.target === 'trigger' && e.rect ? [e.rect] : []))[0]!;
+  if (Math.abs(firstTrigger.x - broken.x) > 1) throw new Error('The broken build no longer starts where Inspect first sat.');
 
-  const starts = { good: 'Started on Inspect', bad: `Started ${px} px from Inspect` };
+  // The reducer's own bookkeeping, replayed: which steps were still in play after each attempt.
+  const attempts = progress.state.attempts;
+  let alive = allSteps.map((_, i) => i);
+  for (const attempt of attempts) if (attempt.outcome === 'fails') alive = attempt.kept;
+  if (alive.join() !== kept.join()) throw new Error('The saved attempts do not end on the kept steps.');
+  const lastAccepted = attempts.findLastIndex((a) => a.outcome === 'fails');
+  const proof = attempts.slice(lastAccepted + 1);
+  if (!reduction.oneMinimal || proof.length !== kept.length || proof.some((a) => a.kept.length !== kept.length - 1)) throw new Error('The last attempts no longer remove one kept step each.');
+
+  // The scenario a visitor copies must be the saved one, with only a resize label changed.
+  const savedReduced = read<Scenario>(join(demoDir, 'reduced.scenario.json'));
+  const copy = scenarioToCopy(savedReduced);
+  const copied = parseScenario(JSON.parse(copy));
+  const strip = (s: Scenario) => JSON.stringify({ ...s, actions: s.actions.map((a) => ({ ...a, note: undefined })) });
+  if (strip(copied) !== strip(parseScenario(savedReduced))) throw new Error('The scenario to copy differs from the saved one in more than a label.');
+  if (copied.actions.map(stepLabel).join() !== kept.map((i) => steps[i]!.label).join()) throw new Error('The scenario to copy is not the kept steps.');
+
+  // The command on the page has to be one the README gives.
+  const command = 'pnpm trace run my.scenario.json --baseline tabs@main --candidate tabs@branch';
+  const register = 'pnpm trace fixtures add path/to/fixture.json';
+  const readme = readFileSync(join(root, 'README.md'), 'utf8');
+  for (const line of [command, register]) if (!readme.includes(line)) throw new Error(`The README no longer gives: ${line}`);
+
+  const axisEnd = Math.ceil(Math.max(...[original, reduced].map((c) => c.candidate.events.at(-1)!.t)) / 16) * 16;
   const before = 'The two builds match so far, so watch where the panel starts when Inspect reopens it.';
-  const after = 'Both builds end in the same place, so a final screenshot would miss this.';
-  const lastGood = { label: 'Last good build', bad: false, started: starts.good };
+  const after = 'Both builds end on the same frame, so a final screenshot would miss this.';
+  const where = 'where Inspect sat when the panel first opened';
   const data = {
     frame: { width: frames.width, height: frames.height, scale: frames.scale },
     axisEnd,
-    jump: { t: jumpT, settled, px, trigger, broken },
+    jump: { t: jumpT, settled, px, step: jumpStep },
     steps,
-    jumpStep,
-    attempts: progress.state.attempts,
+    attempts,
     targets: Object.entries(original.scenario.targets).flatMap(([name, t]) => (t.traceId && name !== 'panel' ? [{ name, id: t.traceId, label: t.name ?? name }] : [])),
-    modes: [
+    sessions: [
       {
-        id: 'original', title: 'Original session', count: `${allSteps.length} steps`, end: original.candidate.events.at(-1)!.t, kept: allSteps.map((_, i) => i),
-        top: { ...lastGood, run: 'original-baseline' }, bottom: { label: 'Broken build', run: 'original-candidate', bad: true, started: starts.bad },
-        verdict: { before, jump: `The panel should open from Inspect, but here it starts ${px} px to the right, where Inspect was before the resize.`, after },
+        id: 'original', count: `${allSteps.length} steps`, kept: allSteps.map((_, i) => i),
+        good: 'original-baseline', bad: 'original-candidate',
+        verdict: { before, jump: `The panel should open from Inspect, but here it starts ${px} px to the right, ${where}.`, after },
       },
       {
-        id: 'reduced', title: 'Reduced', count: `${kept.length} of ${allSteps.length} steps`, end: reduced.candidate.events.at(-1)!.t, kept,
-        top: { ...lastGood, run: 'reduced-baseline' }, bottom: { label: 'Broken build', run: 'reduced-candidate', bad: true, started: starts.bad },
+        id: 'reduced', count: `${kept.length} of ${allSteps.length} steps`, kept,
+        good: 'reduced-baseline', bad: 'reduced-candidate',
         verdict: { before, jump: `Trace deleted the other ${allSteps.length - kept.length} steps and the panel still starts ${px} px to the right of Inspect.`, after },
-      },
-      {
-        id: 'fixed', title: 'Fixed', count: `the same ${kept.length} steps`, end: reduced.candidate.events.at(-1)!.t, kept,
-        top: { ...lastGood, run: 'reduced-baseline' }, bottom: { label: 'Fixed build', run: 'reduced-baseline', bad: false, started: starts.good },
-        verdict: { before: 'Watch the panel reopen on the fixed build, with the same steps.', jump: 'The fixed build opens the panel from Inspect, the same as the last good build.', after: 'The fixed build opens the panel from Inspect, the same as the last good build.' },
       },
     ],
     runs: Object.fromEntries(['original-baseline', 'original-candidate', 'reduced-baseline', 'reduced-candidate'].map((key) => {
@@ -131,6 +162,7 @@ export async function buildPage(demoDir: string): Promise<void> {
       const c = id === 'original' ? original : reduced;
       return [key, { frames: frames.runs[key], events: slim(c[side].events) }];
     })),
+    scenario: copy,
   };
 
   const rows: [string, string, string][] = [
@@ -148,15 +180,23 @@ export async function buildPage(demoDir: string): Promise<void> {
     'Timings are lab numbers from one machine, and they are not INP.',
     'Nobody outside this project has used it yet.',
   ];
+  const outcomes = reduction.outcomes;
+  const code = (id: string, text: string, label: string) => `<div class="code"><pre><code id="${id}">${escapeHtml(text)}</code></pre><button class="control outline swap" type="button" data-copy="${id}"><span class="on" data-label="idle">Copy</span><span data-label="done">Copied</span><span data-label="failed">Failed</span><span class="sr-only"> ${escapeHtml(label)}</span></button></div>`;
   const details = [
     '<p class="prose">Trace replays one list of user actions on two builds of a React component under a controlled clock, and judges each build against written requirements that never look at the other build. When a build fails, Trace deletes actions until only the cause is left.</p>',
-    '<p class="prose">The bug on this page is one of the seeded bugs, in a small inspector fixture on a corpus I wrote. The broken build keeps the position of the Inspect button from the first time it opens, so after the window changes size the panel grows from the old spot for about a quarter of a second. The fix is the last good code, which is why the Fixed pane matches the Last good pane.</p>',
+    '<p class="prose">The bug on this page is one of the seeded bugs, in a small inspector fixture on a corpus I wrote. The broken build keeps the position of the Inspect button from the first time it opens, so after the window changes size the panel grows from the old spot for about a quarter of a second, and then both builds show the same frame.</p>',
+    `<p class="prose">The grid beside the replay is the whole reduction. Each column is one of the ${reduction.attempts} attempts, and a mark means that step was in it. ${outcomes.fails} attempts kept the failure, ${outcomes.passes} lost it, ${outcomes.invalid} could not run and ${outcomes['other-failure']} failed in a different way. The last ${proof.length} each remove one of the ${kept.length} remaining steps, and none of them keeps the failure, which is why Trace stops at ${kept.length}.</p>`,
+    '<h3>Run it on your own component</h3>',
+    '<p class="prose">Mark the elements you care about with <code>data-trace-id</code>, write a scenario that says what the user does and what must stay true, and register both builds in a fixture manifest. Then one command replays the scenario on the two builds and writes a report like the one behind this page.</p>',
+    code('cmd-register', register, 'the command that registers a fixture'),
+    code('cmd-run', command, 'the command that runs a scenario'),
+    '<p class="prose">The <a href="https://github.com/qbeka/trace-interactions#use-it-on-your-component">README</a> has the setup, and <a href="https://github.com/qbeka/trace-interactions/blob/main/docs/SCENARIOS.md">the scenario guide</a> lists every action and requirement.</p>',
     '<h3>Results</h3>',
     `<dl class="results">${rows.map(([name, value, scope]) => `<div><dt>${escapeHtml(name)}</dt><dd><b>${escapeHtml(value)}</b>${escapeHtml(scope)}</dd></div>`).join('')}</dl>`,
     '<h3>Limits</h3>',
     `<ul class="limits">${limits.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`,
     '<h3>Method</h3>',
-    '<p class="prose">The panes are screenshots of the real fixture, taken by Trace on a rerun of the saved scenarios and kept only because the rerun recorded the same geometry as the saved report. Geometry draws that report\'s rectangles, and the step grid draws every attempt the reducer recorded. The <a href="regression/index.html">full report</a>, the <a href="fixed/index.html">report after the fix</a> and the <a href="https://github.com/qbeka/trace-interactions/blob/main/docs/LIMITS.md">limits</a> have the rest.</p>',
+    '<p class="prose">The frames are screenshots of the real fixture, taken by Trace on a rerun of the saved scenarios and kept only because the rerun recorded the same geometry as the saved report. Overlay, Swipe and Difference blend those screenshots in the browser and change nothing in them. The dashed outlines, the ruler and everything in Geometry are drawn from the rectangles in that report. Playback slows down at the failure and skips the quiet stretches, and the clock always shows the recorded time. The <a href="regression/">full report</a>, the <a href="fixed/">report after the fix</a> and the <a href="https://github.com/qbeka/trace-interactions/blob/main/docs/LIMITS.md">limits</a> have the rest.</p>',
   ].join('\n      ');
 
   const script = await build({
