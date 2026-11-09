@@ -79,12 +79,63 @@ describe('portable report', () => {
     await page.context().close();
   });
 
+  it('names the requirement that failed and draws the measured gap on the build that failed', async () => {
+    const page = await open(failing.url);
+    expect(await page.locator('.broken-rule .broken-text').textContent()).toBe('panel appears at trigger or at its final position (within 4 px).');
+    expect(await page.locator('.broken-rule code').textContent()).toBe('geometry-origin');
+    const stages = page.locator('figure.stage');
+    expect(await stages.nth(0).locator('.stage-outcome').textContent()).toBe('Holds');
+    expect(await stages.nth(1).locator('.stage-outcome').textContent()).toBe('Fails here');
+    expect(await stages.nth(1).locator('.gap-text').textContent()).toBe('80 px');
+    expect(await stages.nth(0).locator('.gap-text').count()).toBe(0);
+    await page.locator('body').click({ position: { x: 2, y: 2 } });
+    await page.keyboard.press('ArrowRight');
+    expect(await page.locator('.gap-text').count()).toBe(0);
+    await page.locator('.checks tr.is-broken .link').click();
+    expect(await time(page)).toBe(4000);
+    expect(await page.locator('.gap-text').count()).toBe(1);
+    await page.context().close();
+  });
+
+  it('steps along the screenshots, and marks the one taken at the failure', async () => {
+    const page = await open(failing.url);
+    const frames = page.locator('.film .frame');
+    expect(await frames.count()).toBeGreaterThan(4);
+    expect(await page.locator('.film .frame[aria-current="true"] .frame-name').textContent()).toBe('failure');
+    expect(await frames.locator('.frame-name').allTextContents()).toContain('resize to 920 × 640');
+    await frames.nth(2).click();
+    expect(await time(page)).toBe(3200);
+    expect(await frames.nth(2).getAttribute('aria-current')).toBe('true');
+    for (const img of await page.locator('.film img').all()) expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+    await page.context().close();
+  });
+
+  it('never shows a label that describes another session', async () => {
+    const page = await open(failing.url);
+    await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
+    expect(await page.locator('main').textContent()).not.toMatch(/widen/);
+    expect(await page.locator('.kept li').count()).toBe(14);
+    expect(await page.locator('.kept .is-kept').allTextContents()).toEqual(['Kept: open', 'Kept: close with Escape', 'Kept: resize to 920 × 640', 'Kept: reopen']);
+    await page.context().close();
+  });
+
+  it('changes the replay speed from a row of buttons', async () => {
+    const page = await open(failing.url);
+    expect(await page.getByRole('button', { name: '0.25x', pressed: true }).count()).toBe(1);
+    await page.getByRole('button', { name: '1x', exact: true }).click();
+    expect(await page.getByRole('button', { name: '1x', exact: true }).getAttribute('aria-pressed')).toBe('true');
+    expect(await page.getByRole('button', { name: '0.25x' }).getAttribute('aria-pressed')).toBe('false');
+    await page.context().close();
+  });
+
   it('makes a passing run as readable as a failure', async () => {
     const page = await open(passing.url);
     expect(await page.getByRole('heading', { level: 1 }).textContent()).toMatch(/^Both builds met /);
     await expect(page.getByRole('columnheader', { name: 'Requirement' }).count()).resolves.toBe(1);
     expect(await page.locator('td.status-held').count()).toBeGreaterThan(0);
     expect(await page.locator('td.status-broken').count()).toBe(0);
+    expect(await page.locator('.broken-rule').count()).toBe(0);
+    expect(await page.locator('.stage-outcome').count()).toBe(0);
     await expect(page.getByRole('button', { name: 'Go to failure' }).count()).resolves.toBe(0);
     await page.context().close();
   });
@@ -105,7 +156,7 @@ describe('keyboard transport', () => {
     await page.keyboard.press('ArrowLeft');
     expect(await time(page)).toBe(3984);
     await page.keyboard.press('r');
-    await page.getByRole('button', { name: 'Original sequence', pressed: true }).waitFor();
+    await page.getByRole('button', { name: /^Original \d+ actions$/, pressed: true }).waitFor();
     await page.context().close();
   });
 
@@ -193,7 +244,7 @@ describe('long labels and dense data', () => {
     const server = await serveDirectory(copy);
     const page = await open(server.url, 320);
     await page.keyboard.press('r');
-    await page.getByRole('button', { name: 'Original sequence', pressed: true }).waitFor();
+    await page.getByRole('button', { name: /^Original \d+ actions$/, pressed: true }).waitFor();
     await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(0);
