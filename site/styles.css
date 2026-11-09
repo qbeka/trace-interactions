@@ -80,8 +80,9 @@
 }
 .readout:empty { display: none; }
 .stage[data-view='difference'] .readout { background: #111511d9; color: #d9d6cf; box-shadow: 0 0 0 1px #ffffff26; }
-.viewer.is-waiting::before {
-  content: 'Loading this frame'; position: absolute; right: 8px; bottom: 8px; z-index: 1; padding: 2px 8px; border-radius: 10px;
+.viewer.is-failed::before { content: 'This frame did not load'; }
+.viewer.is-waiting::before { content: 'Loading this frame'; }
+.viewer.is-waiting::before, .viewer.is-failed::before { position: absolute; right: 8px; bottom: 8px; z-index: 1; padding: 2px 8px; border-radius: 10px;
   background: #fffffff0; box-shadow: 0 0 0 1px var(--line); font-size: 11.5px; line-height: 16px; color: var(--muted);
 }
 
@@ -202,11 +203,21 @@
 
 /* The film: one cell for each recorded frame, sliding under a fixed gate */
 .film {
-  grid-area: film; position: relative; height: calc(var(--thumb) + 50px); overflow: hidden; border-top: 1px solid var(--line);
+  grid-area: film; position: relative; height: calc(var(--thumb) + 50px); border-top: 1px solid var(--line);
   background: var(--paper); cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+}
+.track {
+  position: absolute; inset: 0; overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
   mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
 }
+.hint {
+  display: none; position: absolute; top: 0; right: 0; align-items: center; gap: 3px; height: 20px; margin: 0; padding: 0 12px 0 28px;
+  background: linear-gradient(90deg, transparent, var(--paper) 22px); font-size: 11px; line-height: 16px; color: var(--muted); white-space: nowrap; pointer-events: none;
+}
+.hint kbd { min-width: 16px; margin-left: 5px; padding: 0 3px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--paper); font: 400 10.5px/14px var(--sans); color: var(--ink); text-align: center; }
+.hint kbd + kbd { margin-left: 0; }
+@media (hover: hover) and (pointer: fine) and (min-width: 920px) { .hint { display: flex; } }
 .film.is-dragging { cursor: grabbing; }
 .reel { position: absolute; top: 0; bottom: 0; left: 50%; width: 0; will-change: transform; }
 .cell { position: absolute; top: 0; bottom: 0; left: calc(var(--i) * var(--pitch) - var(--pitch) / 2); width: var(--pitch); }
@@ -230,6 +241,13 @@
 .cell-step { position: absolute; left: calc((var(--pitch) - var(--cell)) / 2); top: 3px; max-width: calc(var(--span, 1) * var(--pitch) - 6px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; line-height: 15px; color: var(--muted); }
 .cell-step b { margin-right: 4px; font-weight: 500; color: var(--ink); }
 .cell-step.bad, .cell-step.bad b { color: var(--bad-text); }
+.cell.is-behind .cell-step { visibility: hidden; }
+.now {
+  position: absolute; top: 0; left: 0; height: 20px; margin: 0; padding: 3px 26px 0 12px; max-width: 46%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  background: linear-gradient(270deg, transparent, var(--paper) 22px); font-size: 10.5px; line-height: 15px; font-weight: 500; color: var(--ink); pointer-events: none;
+}
+.now b { margin-right: 4px; font-weight: 500; }
+.now.bad { color: var(--bad-text); }
 /* The gate stays put. The frame inside it is the frame in the viewer. */
 .needle {
   position: absolute; top: 24px; left: 50%; width: calc(var(--cell) + 8px); height: calc(var(--thumb) + 8px); margin-left: calc(var(--cell) / -2 - 4px);
@@ -320,7 +338,7 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--f
   .source { display: none; }
   .viewer { height: clamp(176px, 33svh, 250px); margin: 0 8px 8px; }
   .chip { height: 20px; padding: 0 7px; font-size: 11px; }
-  .film { -webkit-mask-image: none; mask-image: none; }
+  .track { -webkit-mask-image: none; mask-image: none; }
   .transport { flex-wrap: wrap; gap: 0 8px; padding: 6px 8px; min-height: 0; }
   .lane { flex: 1 1 calc(100% - 92px); }
   .clock { order: 3; min-width: 0; text-align: left; margin: 4px 0 4px 2px; }

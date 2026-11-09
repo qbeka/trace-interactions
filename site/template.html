@@ -91,12 +91,14 @@
       </aside>
 
       <div class="film" id="film" aria-hidden="true">
-        <div class="reel" id="reel"></div>
+        <div class="track"><div class="reel" id="reel"></div></div>
         <i class="needle"></i>
+        <p class="now" id="now"></p>
+        <p class="hint"><kbd>←</kbd><kbd>→</kbd> frame <kbd>[</kbd><kbd>]</kbd> step <kbd>F</kbd> jump <kbd>Space</kbd> play</p>
       </div>
 
       <div class="transport">
-        <button class="control primary swap" id="play" type="button">
+        <button class="control primary swap" id="play" type="button" aria-keyshortcuts="Space">
           <span class="on" data-label="replay">Replay</span>
           <span data-label="play">Play</span>
           <span data-label="pause">Pause</span>
@@ -107,7 +109,7 @@
         </div>
         <span class="clock" id="clock"></span>
         <span class="tag">Recorded replay</span>
-        <button class="control outline" id="jump" type="button">Go to the jump</button>
+        <button class="control outline" id="jump" type="button" aria-keyshortcuts="F">Go to the jump</button>
       </div>
     </section>
 

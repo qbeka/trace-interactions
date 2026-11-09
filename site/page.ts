@@ -73,6 +73,7 @@ const { steps, jump, attempts, frame, axisEnd } = data;
 /* Screenshots. They load behind the first paint, nearest the playhead first. */
 const images = new Map<string, HTMLImageElement>();
 const loaded = new Set<string>();
+const failed = new Set<string>();
 let queue: string[] = [];
 let active = 0;
 
@@ -88,7 +89,12 @@ function pump(): void {
     img.decode().then(() => {
       loaded.add(name);
       arrived(name);
-    }, () => images.delete(name)).finally(() => {
+    }, () => {
+      // Forgotten, so the next time the frame is wanted it is asked for again.
+      images.delete(name);
+      failed.add(name);
+      arrived(name);
+    }).finally(() => {
       active -= 1;
       pump();
     });
@@ -245,10 +251,14 @@ function paint(): void {
   }
   // A frame still on its way leaves the last one up, so nothing flashes empty.
   if (!loaded.has(cell.good) || !loaded.has(cell.bad)) {
-    want([cell.good, cell.bad]);
-    waiting(true);
+    const lost = failed.has(cell.good) || failed.has(cell.bad);
+    viewer.classList.toggle('is-failed', lost);
+    waiting(!lost);
+    // A frame that failed is tried again when the film next comes to it, not in a loop.
+    if (!lost) want([cell.good, cell.bad]);
     return;
   }
+  viewer.classList.remove('is-failed');
   waiting(false);
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
@@ -619,6 +629,7 @@ const SOURCE: Record<View, string> = {
 };
 
 let spoken = '';
+let nowStep = -1;
 function render(): void {
   const cell = cells[index]!;
   const t = cell.t;
@@ -644,12 +655,23 @@ function render(): void {
   jumpButton.setAttribute('aria-disabled', String(t === jump.t));
   reel.querySelector('.cell.current')?.classList.remove('current');
   reel.children[index]?.classList.add('current');
+  // The step in the gate is named at the left of the film, and the steps ahead keep their own labels.
+  if (nowStep !== cell.step) {
+    nowStep = cell.step;
+    const now = $('now');
+    now.replaceChildren(el('b', '', String(cell.step + 1)), steps[cell.step]!.label);
+    now.classList.toggle('bad', cell.step === jump.step);
+    cells.forEach((c, i) => {
+      if (c.first) reel.children[i]!.classList.toggle('is-behind', c.step <= cell.step);
+    });
+  }
   stage.classList.toggle('in-jump', phase === 'jump');
 }
 
 function setIndex(next: number): void {
   next = clamp(next, 0, cells.length - 1);
   if (next === index) return;
+  failed.clear();
   const from = index < 0 ? 'jump' : phaseAt(time());
   index = next;
   // Walking into the failure draws the ruler. Moving about inside it does not redraw it.
@@ -894,6 +916,7 @@ function setSession(next: Session, at = time()): void {
   drawScope();
   index = -1;
   spoken = '';
+  nowStep = -1;
   drawn = '';
   pos = clamp(lastAt(cells, at), 0, cells.length - 1);
   velocity = 0;
