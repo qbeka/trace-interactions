@@ -415,6 +415,35 @@ describe('project page', () => {
     await page.context().close();
   });
 
+  it('says when a frame did not load, and gets it the next time the film comes to it', async () => {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    const frames = JSON.parse(readFileSync(join(root, 'demo/frames/index.json'), 'utf8')).runs['original-candidate'] as { t: number; f: string }[];
+    const lost = frames.find((f) => f.t === 4064)!.f;
+    let block = true;
+    await page.route('**/frames/*.webp', (route) => (block && route.request().url().includes(lost) ? route.abort() : route.continue()));
+    await page.goto(`${server.url}index.html?t=4064`);
+    await expect.poll(() => page.locator('#viewer').getAttribute('class')).toContain('is-failed');
+    expect(await page.locator('#viewer').evaluate((el) => getComputedStyle(el, '::before').content)).toBe('"This frame did not load"');
+    expect(await clock(page)).toBe('4064 ms');
+    block = false;
+    await page.locator('#time').focus();
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => page.locator('#viewer').getAttribute('class')).toBe('viewer');
+    await expect.poll(() => page.locator('.cell.ready').count()).toBe(89);
+    await context.close();
+  });
+
+  it('names the step in the gate at the left of the film', async () => {
+    const { page } = await open(still);
+    expect(await page.locator('#now').textContent()).toBe('12Reopen');
+    await seek(page, 3232);
+    expect(await page.locator('#now').textContent()).toBe('10Close with Escape');
+    expect(await page.locator('.cell.first:not(.is-behind) .cell-step').allTextContents()).toEqual(['11Resize to 920 px', '12Reopen', '13Focus the name', '14Last edit']);
+    await page.context().close();
+  });
+
   it('fits every width with no sideways scroll, and the film and Replay sit beside the result', async () => {
     for (const [width, height] of [[1440, 900], [1280, 720], [1024, 768], [768, 1024], [390, 844], [320, 568]] as const) {
       const { page } = await open({ width, height, ...still });
