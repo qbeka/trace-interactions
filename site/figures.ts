@@ -39,7 +39,7 @@ export function initFigures(ctx: Context): void {
     if (!entries.some((e) => e.isIntersecting)) return;
     near.disconnect();
     endsFigure(ctx, ends);
-  }, { rootMargin: '600px 0px' });
+  }, { rootMargin: '240px 0px' });
   near.observe(ends);
 }
 
@@ -127,7 +127,8 @@ function endsFigure({ data, images, loaded, want, watch }: Context, root: HTMLEl
     pending = true;
     requestAnimationFrame(() => {
       pending = false;
-      let budget = 4;
+      // Each first drawing of a frame costs a decode, so only two a frame.
+      let budget = 2;
       for (const [i, t] of thumbs.entries()) {
         const cell = cells[i]!;
         for (const [k, name] of [cell.good, cell.bad].entries()) {
