@@ -430,7 +430,8 @@ function drawMarks(): void {
     // Through the jump, where the panel started and where it ends, and in Geometry every rectangle between.
     // Close on the start there is no room for the end, so it waits until the frame has opened out.
     show(m.path, t >= jump.t && t < jump.settled && (geometry || camTo === field));
-    show(m.world, geometry);
+    // The whole drawing is taken out, since a part marked visible would show through a hidden group.
+    (m.world as SVGGElement).style.display = geometry ? '' : 'none';
     if (!geometry) continue;
     set(m.view, { x: 0.5, y: 0.5, width: vp.width - 1, height: frame.height - 0.5 });
     for (const [name, node] of m.nodes) {

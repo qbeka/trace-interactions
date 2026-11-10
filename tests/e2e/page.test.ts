@@ -417,6 +417,9 @@ describe('project page', () => {
     // In Geometry the cores are drawn here from the rectangles, one row for each frame.
     expect(await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.height)).toBe(89);
     await button(page, 'Screenshots').click();
+    // Nothing of the drawing is left over the screenshot.
+    for (const part of ['.g-panel', '.g-node', '.g-name', '.g-fan', '.g-view']) await expect.poll(() => page.locator(`#marks-bad ${part}`).first().isVisible()).toBe(false);
+    await expect.poll(() => lit(page, 200, '#shot-bad')).toBeGreaterThan(1000);
     expect(await page.locator('#core-note').textContent()).toBe('Time runs down these two pictures, with each row showing the strip of page under the line a moment later, so the shaded shape is the panel opening and closing');
     await page.context().close();
   });
