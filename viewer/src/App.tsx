@@ -305,9 +305,10 @@ const RATES = [0.1, 0.25, 0.5, 1];
 function useEased(to: Frame): Frame {
   const [frame, setFrame] = useState(to);
   const from = useRef(to);
+  const still = prefersReducedMotion();
   useEffect(() => {
     const start = from.current;
-    if (prefersReducedMotion() || (start.x === to.x && start.y === to.y && start.w === to.w && start.h === to.h)) {
+    if (still || (start.x === to.x && start.y === to.y && start.w === to.w && start.h === to.h)) {
       from.current = to;
       setFrame(to);
       return;
@@ -324,8 +325,9 @@ function useEased(to: Frame): Frame {
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [to]);
-  return frame;
+  }, [to, still]);
+  // With reduced motion the new frame is used in the same render, so nothing is ever drawn in the old one.
+  return still ? to : frame;
 }
 
 /** A screenshot cut down to the part of the window the stages frame, so the tracked elements fill it. */
