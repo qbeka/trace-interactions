@@ -42,7 +42,29 @@ const seek = (page: Page, ms: number) => page.locator('#time').evaluate((el: HTM
   el.dispatchEvent(new Event('input', { bubbles: true }));
 }, ms);
 const still = { reducedMotion: 'reduce' } as const;
-const reelX = (page: Page) => page.locator('#reel').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
+const stageData = (page: Page, key: string) => page.locator('#stage').evaluate((el: HTMLElement, k) => el.dataset[k] ?? '', key);
+/** Where a line or needle sits, from the transform the page gave it. */
+const offsetY = (page: Page, id: string) => page.locator(id).evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42);
+/** The rows of a core where the two builds' pictures are not the same, read from the canvases themselves. */
+const differingRows = (page: Page) => page.evaluate(() => {
+  const read = (id: string) => {
+    const c = document.getElementById(id) as HTMLCanvasElement;
+    return { w: c.width, h: c.height, px: new Uint32Array(c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data.buffer) };
+  };
+  const a = read('scan-good');
+  const b = read('scan-bad');
+  const rows: number[] = [];
+  for (let r = 0; r < a.h; r++) for (let x = 0; x < a.w; x++) if (a.px[r * a.w + x] !== b.px[r * b.w + x]) { rows.push(r); break; }
+  return rows;
+});
+/** The rows of a canvas that hold any pixel that is not black. */
+const litRows = (page: Page, id: string) => page.locator(id).evaluate((c: HTMLCanvasElement) => {
+  const px = new Uint32Array(c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data.buffer);
+  const rows: number[] = [];
+  for (let r = 0; r < c.height; r++) for (let x = 0; x < c.width; x++) if ((px[r * c.width + x]! & 0xffffff) !== 0) { rows.push(r); break; }
+  return rows;
+});
+const scanned = (page: Page, rows: number) => expect.poll(() => stageData(page, 'rows'), { timeout: 20000 }).toBe(String(rows));
 /** How many pixels of the viewer are brighter than a level, read from the canvas itself. */
 const lit = (page: Page, level: number, canvas = '#glow') => page.locator(canvas).evaluate((el: HTMLCanvasElement, min) => {
   const { data } = el.getContext('2d')!.getImageData(0, 0, el.width, el.height);
@@ -76,11 +98,13 @@ describe('project page', () => {
     const { page, problems, external } = await open(still);
     await expect.poll(() => page.locator('#verdict p.on').textContent()).toContain('starts 80 px to the right');
     expect(await clock(page)).toBe('4000 ms');
-    expect(await page.locator('.tag').textContent()).toBe('Recorded replay');
     expect(await page.locator('#source').textContent()).toBe('Recorded screenshots');
     expect(await page.locator('.title p').textContent()).toBe('Find the part where it broke');
-    expect(await page.locator('.cell.current .cell-ms').textContent()).toBe('4000');
+    expect(await page.locator('#now').textContent()).toBe('12Reopen');
+    expect(await button(page, 'The jump').getAttribute('aria-pressed')).toBe('true');
+    expect(await page.locator('#search').isVisible()).toBe(false);
     await page.waitForLoadState('networkidle');
+    await scanned(page, 89);
     expect(problems).toEqual([]);
     expect(external).toEqual([]);
     await page.context().close();
@@ -88,12 +112,14 @@ describe('project page', () => {
 
   it('holds the failure with the paragraphs hidden', async () => {
     const { page } = await open(still);
-    await page.addStyleTag({ content: 'p, .reading { visibility: hidden !important; }' });
-    await expect.poll(() => page.locator('#marks .ruler').getAttribute('visibility')).toBe('visible');
-    expect(await page.locator('#marks .m-label').textContent()).toBe('80 px');
-    expect(await page.locator('#marks .m-outline.bad').getAttribute('visibility')).toBe('visible');
-    expect(await page.locator('.peak').textContent()).toBe('80 px');
-    expect(await page.locator('.cell.differs').count()).toBe(15);
+    await page.addStyleTag({ content: 'p, .story { visibility: hidden !important; }' });
+    await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('visible');
+    expect(await page.locator('#marks-bad .m-label').textContent()).toBe('80 px');
+    expect(await page.locator('#marks-bad .m-outline.bad').getAttribute('visibility')).toBe('visible');
+    expect(await page.locator('#marks-good .ruler').getAttribute('visibility')).toBe('hidden');
+    // The bracket down the broken build's core says how long the two builds differ.
+    expect(await page.locator('#core-bad .c-label').textContent()).toBe('240 ms');
+    expect(await page.locator('#core-good .c-label').count()).toBe(0);
     await page.context().close();
   });
 
@@ -104,14 +130,30 @@ describe('project page', () => {
     const x = (side: string, t: number) => original[side].events.find((e: { k: string; target: string; t: number }) => e.k === 'geometry' && e.target === 'panel' && e.t === t).rect.x;
     for (const t of [4000, 4016, 4064, 4128]) {
       await seek(page, t);
-      await expect.poll(() => page.locator('#marks .m-label').textContent()).toBe(`${Math.round(x('candidate', t) - x('baseline', t))} px`);
+      await expect.poll(() => page.locator('#marks-bad .m-label').textContent()).toBe(`${Math.round(x('candidate', t) - x('baseline', t))} px`);
     }
     await seek(page, 4240);
-    await expect.poll(() => page.locator('#marks .ruler').getAttribute('visibility')).toBe('hidden');
+    await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('hidden');
     await seek(page, 4016);
-    await expect.poll(() => page.locator('#marks .ruler').getAttribute('visibility')).toBe('visible');
+    await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('visible');
     await seek(page, 3600);
-    await expect.poll(() => page.locator('#marks .ruler').getAttribute('visibility')).toBe('hidden');
+    await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('hidden');
+    await page.context().close();
+  });
+
+  it('draws the path each panel took through the failure, from the recorded rectangles', async () => {
+    const { page } = await open(still);
+    await expect.poll(() => page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('visible');
+    // Sixteen rectangles on each build, the broken one starting where the report says the panel first appeared.
+    const path = async (side: string) => (await page.locator(`#marks-${side} .m-path`).getAttribute('d'))!;
+    expect((await path('bad')).match(/M/g)).toHaveLength(16);
+    expect((await path('good')).match(/M/g)).toHaveLength(16);
+    expect(await path('bad')).toMatch(/^M903\.3 16h/);
+    expect(await path('good')).toMatch(/^M823\.3 16h/);
+    await seek(page, 3600);
+    await expect.poll(() => page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('hidden');
+    await seek(page, 4240);
+    expect(await page.locator('#marks-good .m-path').getAttribute('visibility')).toBe('hidden');
     await page.context().close();
   });
 
@@ -149,22 +191,153 @@ describe('project page', () => {
     await page.context().close();
   });
 
+  it('arrives in under 700 ms and then holds still, and does not arrive at all with reduced motion', async () => {
+    const { page } = await open();
+    const arriving = () => page.evaluate(() => document.getAnimations().filter((a) => (a as CSSAnimation).animationName === 'arrive').map((a) => Number(a.effect!.getComputedTiming().endTime)));
+    const ends = await arriving();
+    expect(ends.length).toBeGreaterThanOrEqual(3);
+    expect(Math.max(...ends)).toBeLessThanOrEqual(700);
+    await page.waitForTimeout(800);
+    expect(await arriving()).toEqual([]);
+    expect(await page.locator('#stage').evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    await page.context().close();
+    const calm = await open(still);
+    expect(await calm.page.evaluate(() => document.getAnimations().length)).toBe(0);
+    await calm.page.context().close();
+  });
+
   it('keeps one clock across views and sessions, and the framing does not move', async () => {
     const { page } = await open(still);
-    const box = await page.locator('#viewer').boundingBox();
+    const box = await page.locator('#pane-bad').boundingBox();
+    const stage = await page.locator('#stage').boundingBox();
     await seek(page, 4016);
-    for (const name of ['Swipe', 'Difference', 'Geometry', 'Overlay', 'The 4 that matter', 'All 14 steps']) {
+    for (const name of ['Difference', 'Geometry', 'Screenshots', 'The 4 that matter', 'All 14 steps']) {
       await button(page, name).click();
       expect(await clock(page)).toBe('4016 ms');
       expect(await button(page, name).getAttribute('aria-pressed')).toBe('true');
-      expect(await page.locator('#viewer').boundingBox()).toEqual(box);
+      expect(await page.locator('#pane-bad').boundingBox()).toEqual(box);
     }
+    // The search takes the whole stage, and the stage keeps its size.
+    await button(page, 'The search').click();
+    expect(await page.locator('#stage').boundingBox()).toEqual(stage);
+    await button(page, 'The jump').click();
+    expect(await page.locator('#pane-bad').boundingBox()).toEqual(box);
+    expect(await clock(page)).toBe('4016 ms');
+    await page.context().close();
+  });
+
+  it('cuts each core from the recorded frames, one row for each, and the two differ only in the jump', async () => {
+    const { page } = await open(still);
+    await scanned(page, 89);
+    const size = await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => [c.width, c.height]);
+    expect(size[1]).toBe(89);
+    expect(size[0]).toBeGreaterThan(300);
+    // Rows 71 to 85 are the fifteen frames where the builds differ. The first is above the opening scan line.
+    const rows = await differingRows(page);
+    expect(rows.length).toBeGreaterThanOrEqual(10);
+    expect(rows.every((r) => r >= 71 && r <= 85)).toBe(true);
+    expect(rows).not.toContain(71);
+    // The page under the scan line is the page in the frame: a row of the picture matches that line of the screenshot.
+    const match = await page.evaluate(async () => {
+      const data = JSON.parse(document.getElementById('trace-data')!.textContent!);
+      const name = data.runs['original-candidate'].frames.findLast((f: { t: number }) => f.t <= 4240).f;
+      const img = new Image();
+      img.src = `frames/${name}.webp`;
+      await img.decode();
+      const frame = document.createElement('canvas');
+      frame.width = img.naturalWidth;
+      frame.height = img.naturalHeight;
+      const fc = frame.getContext('2d')!;
+      fc.drawImage(img, 0, 0);
+      const s = data.frame.scale;
+      const line = fc.getImageData(data.crop.x * s, data.scanY * s, data.crop.w * s, 1).data;
+      const core = document.getElementById('scan-bad') as HTMLCanvasElement;
+      const row = core.getContext('2d')!.getImageData(0, 86, core.width, 1).data;
+      // Compare the two where the line is flat, well inside the panel and well outside it.
+      const at = (px: number) => { const x = Math.round(((px - data.crop.x) / data.crop.w) * core.width); const sx = Math.round((px - data.crop.x) * s); return [[row[x * 4], row[x * 4 + 1], row[x * 4 + 2]], [line[sx * 4], line[sx * 4 + 1], line[sx * 4 + 2]]]; };
+      return [at(700), at(478), at(915)];
+    });
+    for (const [core, frame] of match) expect(core).toEqual(frame);
+    expect(match[0]![0]).toEqual([255, 255, 255]);
+    await button(page, 'The 4 that matter').click();
+    await scanned(page, 49);
+    expect(await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.height)).toBe(49);
+    expect((await differingRows(page)).every((r) => r >= 33 && r <= 47)).toBe(true);
+    await page.context().close();
+  });
+
+  it('moves the scan line by pointer and by keyboard, and cuts the cores again along it', async () => {
+    const { page } = await open(still);
+    await scanned(page, 89);
+    const line = page.locator('#scanline');
+    expect(await line.getAttribute('aria-valuenow')).toBe('96');
+    expect(await line.getAttribute('aria-valuetext')).toBe('96 px from the top of the page');
+    const before = await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL());
+    const y0 = await offsetY(page, '#scanline');
+    await line.focus();
+    await page.keyboard.press('ArrowUp');
+    expect(await line.getAttribute('aria-valuenow')).toBe('94');
+    await page.keyboard.press('Shift+ArrowDown');
+    expect(await line.getAttribute('aria-valuenow')).toBe('110');
+    expect(await page.locator('#scan-y').textContent()).toBe('Row 110');
+    expect(await offsetY(page, '#scanline')).toBeGreaterThan(y0);
+    await expect.poll(() => page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL())).not.toBe(before);
+    expect(await clock(page)).toBe('4000 ms');
+    // Through the Inspect button the panel is under the line from its first frame, so the first row of the jump differs too.
+    const pane = (await page.locator('#pane-bad').boundingBox())!;
+    const scale = pane.width / JSON.parse(await page.locator('#trace-data').textContent() ?? '{}').crop.w;
+    await page.mouse.move(pane.x + 60, pane.y + 110 * scale);
+    await page.mouse.down();
+    await page.mouse.move(pane.x + 60, pane.y + 34 * scale, { steps: 5 });
+    await page.mouse.up();
+    expect(await line.getAttribute('aria-valuenow')).toBe('34');
+    await expect.poll(() => differingRows(page)).toContain(71);
+    await expect.poll(() => page.evaluate(() => location.search)).toBe('?row=34');
+    // The line stays inside the frame.
+    await line.focus();
+    await page.keyboard.press('Home');
+    expect(Number(await line.getAttribute('aria-valuenow'))).toBe(Number(await line.getAttribute('aria-valuemin')));
+    await page.keyboard.press('End');
+    expect(Number(await line.getAttribute('aria-valuenow'))).toBe(Number(await line.getAttribute('aria-valuemax')));
+    expect(Number(await line.getAttribute('aria-valuemax'))).toBeLessThan(320);
+    await page.context().close();
+  });
+
+  it('scrubs time from the cores, with the needle on the row of the frame on show', async () => {
+    const { page } = await open(still);
+    await scanned(page, 89);
+    const core = (await page.locator('#core-bad').boundingBox())!;
+    const bench = (await page.locator('#bench').boundingBox())!;
+    const row = core.height / 89;
+    const needleRow = async () => ((await offsetY(page, '#needle')) - (core.y - bench.y)) / row - 0.5;
+    expect(await needleRow()).toBeCloseTo(71, 1);
+    // A press goes to the row under the pointer, and a drag carries on from there.
+    await page.mouse.move(core.x + 40, core.y + row * 19.5);
+    await page.mouse.down();
+    expect(await clock(page)).toBe('1200 ms');
+    expect(await playLabel(page)).toBe('Play');
+    await page.mouse.move(core.x + 40, core.y + row * 54.5, { steps: 4 });
+    expect(await clock(page)).toBe('3200 ms');
+    expect(await stageData(page, 'frame')).toBe('54');
+    expect(await needleRow()).toBeCloseTo(54, 1);
+    // Past either end the needle stops on the first or last frame.
+    await page.mouse.move(core.x + 40, core.y + core.height + 200, { steps: 2 });
+    expect(await clock(page)).toBe('4800 ms');
+    await page.mouse.up();
+    // The needle itself can be taken hold of, on either core.
+    const good = (await page.locator('#core-good').boundingBox())!;
+    await page.mouse.move(good.x + 30, good.y + row * 88.5);
+    await page.mouse.down();
+    await page.mouse.move(good.x + 30, good.y + row * 71.5, { steps: 4 });
+    await page.mouse.up();
+    expect(await clock(page)).toBe('4000 ms');
+    await expect.poll(() => page.evaluate(() => location.search)).toBe('');
     await page.context().close();
   });
 
   it('shows each view from what was recorded, and says which it is', async () => {
     const { page } = await open(still);
-    await page.locator('.cell.ready').nth(20).waitFor();
+    await scanned(page, 89);
     await button(page, 'Difference').click();
     await seek(page, 3600);
     await expect.poll(() => page.locator('#readout').textContent()).toBe('No pixel differs in this frame');
@@ -172,87 +345,133 @@ describe('project page', () => {
     await seek(page, 4032);
     expect(await page.locator('#readout').textContent()).toBe('Lit where the two frames differ');
     await expect.poll(() => lit(page, 40)).toBeGreaterThan(500);
+    // The broken build's core is black wherever the two builds agree, which is everywhere but the jump.
+    await expect.poll(async () => (await litRows(page, '#scan-bad')).length).toBeGreaterThanOrEqual(10);
+    expect((await litRows(page, '#scan-bad')).every((r) => r >= 71 && r <= 85)).toBe(true);
+    expect((await litRows(page, '#scan-good')).length).toBe(89);
     await seek(page, 4800);
     await expect.poll(() => lit(page, 0)).toBe(0);
     await button(page, 'Geometry').click();
     expect(await page.locator('#source').textContent()).toBe('Recorded geometry');
-    await expect.poll(() => page.locator('#marks .g-panel.good').getAttribute('visibility')).toBe('visible');
-    expect(await lit(page, -1, '#screen')).toBe(0);
+    expect(await page.locator('#core-note').textContent()).toBe('Each row below is where the recorded rectangles cross this line');
+    await expect.poll(() => page.locator('#marks-good .g-panel').getAttribute('visibility')).toBe('visible');
+    expect(await lit(page, -1, '#shot-bad')).toBe(0);
     expect(await page.locator('#glow').isVisible()).toBe(false);
     await seek(page, 4032);
-    await expect.poll(() => page.locator('#marks .g-panel.bad').getAttribute('visibility')).toBe('visible');
+    await expect.poll(() => page.locator('#marks-bad .g-ghost').getAttribute('visibility')).toBe('visible');
     // The path starts where the report says the broken panel first appeared.
-    expect(await page.locator('#marks .g-fan.bad').getAttribute('d')).toContain('M903.3 16');
+    expect(await page.locator('#marks-bad .g-fan').getAttribute('d')).toContain('M903.3 16');
+    // In Geometry the cores are drawn here from the rectangles, one row for each frame.
+    expect(await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.height)).toBe(89);
+    await button(page, 'Screenshots').click();
+    expect(await page.locator('#core-note').textContent()).toBe('Each row below is this line of pixels in one recorded frame');
     await page.context().close();
   });
 
-  it('moves the swipe divider by pointer and by keyboard', async () => {
+  it('shows the whole frame at one press, and the framed part again at the next', async () => {
     const { page } = await open(still);
-    await button(page, 'Swipe').click();
-    const divider = page.locator('#divider');
-    const start = Number(await divider.getAttribute('aria-valuenow'));
-    await divider.focus();
-    await page.keyboard.press('ArrowLeft');
-    expect(Number(await divider.getAttribute('aria-valuenow'))).toBe(start - 2);
-    expect(await clock(page)).toBe('4000 ms');
-    const box = (await page.locator('#viewer').boundingBox())!;
-    await page.mouse.move(box.x + box.width * (start - 2) / 100, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(box.x + box.width * 0.25, box.y + box.height / 2, { steps: 4 });
-    await page.mouse.up();
-    expect(Number(await divider.getAttribute('aria-valuenow'))).toBe(25);
-    await button(page, 'Overlay').click();
-    expect(await divider.isVisible()).toBe(false);
+    await scanned(page, 89);
+    const crop = JSON.parse((await page.locator('#trace-data').textContent())!).crop as { x: number; w: number; h: number };
+    const view = async () => (await page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number);
+    expect(await view()).toEqual([crop.x, 0, crop.w, crop.h]);
+    expect(crop.w).toBeLessThan(600);
+    const box = await page.locator('#pane-bad').boundingBox();
+    const whole = page.locator('#whole');
+    expect(await whole.getAttribute('aria-label')).toBe('Show the whole frame');
+    const before = await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL());
+    await whole.click();
+    expect(await whole.getAttribute('aria-pressed')).toBe('true');
+    expect(await whole.getAttribute('aria-label')).toBe('Show the part where the panel opens');
+    expect((await view())[0]).toBe(0);
+    expect((await view())[2]).toBe(1000);
+    expect(await page.locator('#pane-bad').boundingBox()).toEqual(box);
+    await expect.poll(() => page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL())).not.toBe(before);
+    await expect.poll(() => page.evaluate(() => location.search)).toBe('?frame=whole');
+    await page.keyboard.press('w');
+    expect(await view()).toEqual([crop.x, 0, crop.w, crop.h]);
     await page.context().close();
   });
 
-  it('labels each session, and never asks for internal build names', async () => {
+  it('names every step of a session beside the row where it starts, and never asks for internal build names', async () => {
     const { page } = await open(still);
-    expect(await page.locator('#steps button[aria-disabled="false"]').count()).toBe(14);
-    expect(await page.locator('.cell').count()).toBe(89);
+    expect(await page.locator('#steps .step').count()).toBe(14);
+    expect(await stageData(page, 'cells')).toBe('89');
+    expect(await page.locator('#steps [aria-current="true"] span').textContent()).toBe('Reopen');
+    // A name goes to its step.
+    await page.locator('#steps .step', { hasText: 'Close with Escape' }).click();
+    expect(await clock(page)).toBe('3200 ms');
+    expect(await page.locator('#now').textContent()).toBe('10Close with Escape');
     await button(page, 'The 4 that matter').click();
-    const kept = await page.locator('#steps button[aria-disabled="false"] span').allTextContents();
-    expect(kept).toEqual(['Open', 'Close with Escape', 'Resize to 920 px', 'Reopen']);
-    expect(await page.locator('.cell').count()).toBe(49);
+    expect(await page.locator('#steps .step span').allTextContents()).toEqual(['Open', 'Close with Escape', 'Resize to 920 px', 'Reopen']);
+    expect(await stageData(page, 'cells')).toBe('49');
+    await seek(page, 4000);
     expect(await page.locator('#verdict p.on').textContent()).toContain('deleted the other 10 steps');
     expect(await page.locator('body').textContent()).not.toMatch(/stale-origin|inspector@|widen/);
+    // No two names sit on top of each other.
+    await button(page, 'All 14 steps').click();
+    const tops = await page.locator('#steps .step').evaluateAll((all) => all.map((el) => el.getBoundingClientRect().top));
+    for (let i = 1; i < tops.length; i++) expect(tops[i]! - tops[i - 1]!).toBeGreaterThanOrEqual(13);
     await page.context().close();
   });
 
-  it('draws every recorded attempt and ends on the four kept steps', async () => {
+  it('draws every recorded attempt of the search and ends on the four kept steps', async () => {
     const { page } = await open(still);
-    expect(await page.locator('.a-column.on').count()).toBe(26);
+    await button(page, 'The search').click();
+    expect(await page.locator('#bench').isVisible()).toBe(false);
+    await expect.poll(() => page.locator('.a-column.on').count()).toBe(26);
     expect(await page.locator('.a-column.a-invalid').count()).toBe(13);
     expect(await page.locator('.a-column.a-fails').count()).toBe(6);
     expect(await page.locator('.a-column.a-passes').count()).toBe(5);
     expect(await page.locator('.a-column.a-other-failure').count()).toBe(2);
-    expect(await page.locator('.a-life.kept').count()).toBe(4);
-    expect(await page.locator('#steps .step:not(.gone) span').allTextContents()).toEqual(['Open', 'Close with Escape', 'Resize to 920 px', 'Reopen']);
+    expect(await page.locator('.a-end').count()).toBe(4);
+    expect(await page.locator('#rows li:not(.gone) span').allTextContents()).toEqual(['Open', 'Close with Escape', 'Resize to 920 px', 'Reopen']);
+    expect(await page.locator('#result-steps li span').allTextContents()).toEqual(['Open', 'Close with Escape', 'Resize to 920 px', 'Reopen']);
+    expect(await page.locator('#result-count').textContent()).toBe('4of 14 steps are needed');
+    expect(await page.locator('#keys li').allTextContents()).toEqual(['6kept the failure', '5lost it', '13could not run', '2failed in another way']);
     expect(await page.locator('#attempt-note').textContent()).toBe('26 attempts left 4 steps, and taking any one of them away loses the jump');
     const attempts = JSON.parse(readFileSync(join(root, 'demo/reduction.attempts.json'), 'utf8')).state.attempts as { kept: number[] }[];
     for (const [i, attempt] of attempts.entries()) expect(await page.locator('.a-column').nth(i).locator('.a-cell').count()).toBe(attempt.kept.length);
+    // A band runs the whole way across for a kept step, and stops short for a dropped one.
+    const widths = await page.locator('.a-alive').evaluateAll((all) => all.map((el) => Number(el.getAttribute('width'))));
+    const full = Math.max(...widths);
+    expect(widths.filter((w) => w === full)).toHaveLength(4);
+    expect([0, 9, 10, 11].every((i) => widths[i] === full)).toBe(true);
     await page.context().close();
   });
 
-  it('scrubs the reduction one attempt at a time', async () => {
+  it('scrubs the search one attempt at a time, from the keyboard and on the grid', async () => {
     const { page } = await open(still);
+    await button(page, 'The search').click();
+    await expect.poll(() => page.locator('.a-column.on').count()).toBe(26);
     const range = page.locator('#attempt');
     await range.focus();
     await page.keyboard.press('Home');
     expect(await page.locator('.a-column.on').count()).toBe(0);
-    expect(await page.locator('#steps .step.gone').count()).toBe(0);
+    expect(await page.locator('#rows li.gone').count()).toBe(0);
+    expect(await page.locator('#result-count').textContent()).toBe('14of 14 steps still in play');
     expect(await page.locator('#attempt-note').textContent()).toContain('All 14 steps reproduce the jump');
     for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowRight');
     expect(await page.locator('.a-column.on').count()).toBe(4);
-    expect(await page.locator('#steps .step.gone').count()).toBe(4);
+    expect(await page.locator('#rows li.gone').count()).toBe(4);
     expect(await page.locator('#axis-count').textContent()).toBe('Attempt 4 of 26');
+    expect(await page.locator('#result-count').textContent()).toBe('10of 14 steps still in play');
     expect(await page.locator('#attempt-note').textContent()).toBe('Attempt 4 ran 10 steps and the panel still jumped, so the 4 steps it left out are gone for good');
-    expect(await clock(page)).toBe('4000 ms');
+    const grid = (await page.locator('#attempts').boundingBox())!;
+    const pitch = grid.width / 27;
+    await page.mouse.move(grid.x + pitch * 8.5, grid.y + 40);
+    await page.mouse.down();
+    expect(await page.locator('.a-column.on').count()).toBe(9);
+    await page.mouse.move(grid.x + pitch * 15.5, grid.y + 60, { steps: 3 });
+    await page.mouse.up();
+    expect(await page.locator('#axis-count').textContent()).toBe('Attempt 16 of 26');
+    expect(await range.inputValue()).toBe('16');
     await page.context().close();
   });
 
-  it('plays the reduction when asked, and lets the scrubber take over', async () => {
+  it('plays the search the first time it is opened, lets the scrubber take over, and plays the four steps from there', async () => {
     const { page } = await open();
+    await button(page, 'The search').click();
+    await page.waitForFunction(() => { const n = document.querySelectorAll('.a-column.on').length; return n > 0 && n < 26; });
     await page.waitForFunction(() => document.querySelectorAll('.a-column.on').length === 26, undefined, { timeout: 9000 });
     await page.locator('#reduce-play').click();
     await page.waitForFunction(() => { const n = document.querySelectorAll('.a-column.on').length; return n > 0 && n < 26; });
@@ -262,6 +481,12 @@ describe('project page', () => {
     });
     await page.waitForTimeout(700);
     expect(await page.locator('.a-column.on').count()).toBe(9);
+    await button(page, 'Play the four steps').click();
+    expect(await button(page, 'The jump').getAttribute('aria-pressed')).toBe('true');
+    expect(await button(page, 'The 4 that matter').getAttribute('aria-pressed')).toBe('true');
+    expect(await playLabel(page)).toBe('Pause');
+    expect(await page.locator('#bench').isVisible()).toBe(true);
+    expect(await stageData(page, 'cells')).toBe('49');
     await page.context().close();
   });
 
@@ -275,13 +500,17 @@ describe('project page', () => {
     expect(await clock(page)).toBe('0 ms');
     await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 9000 });
     expect(await clock(page)).toBe('4000 ms');
+    await button(page, 'The search').click();
+    await expect.poll(() => page.locator('.a-column.on').count()).toBe(26);
     expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+    // With nothing to arrive, the story is simply there.
+    expect(await page.locator('.reveal').first().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
     await page.context().close();
   });
 
   it('keeps a selected control readable in every state', async () => {
     const { page } = await open({ width: 1440, height: 900, ...still });
-    for (const name of ['Swipe', 'Difference', 'Geometry', 'Overlay', 'The 4 that matter', 'All 14 steps']) {
+    for (const name of ['Difference', 'Geometry', 'Screenshots', 'The 4 that matter', 'All 14 steps', 'The search', 'The jump']) {
       const control = button(page, name);
       if ((await control.getAttribute('aria-pressed')) !== 'true') await control.click();
       await page.mouse.move(0, 0);
@@ -318,7 +547,7 @@ describe('project page', () => {
     await page.locator('#time').focus();
     await page.keyboard.press('ArrowRight');
     expect(await clock(page)).toBe('4000 ms');
-    await expect.poll(() => page.locator('#marks .m-label').textContent()).toBe('80 px');
+    await expect.poll(() => page.locator('#marks-bad .m-label').textContent()).toBe('80 px');
     await page.keyboard.press('ArrowRight');
     expect(await clock(page)).toBe('4016 ms');
     await page.keyboard.press(']');
@@ -331,69 +560,78 @@ describe('project page', () => {
     expect(await clock(page)).toBe('0 ms');
     await page.keyboard.press('End');
     expect(await clock(page)).toBe('4800 ms');
-    await button(page, 'Overlay').focus();
+    await button(page, 'Screenshots').focus();
     await page.keyboard.press('f');
     expect(await clock(page)).toBe('4000 ms');
     expect(await page.locator('#time').getAttribute('aria-valuetext')).toBe('4000 ms, step 12: Reopen, frame 72 of 89');
+    // Anywhere else on the stage, up and down move the scan line and leave the clock alone.
+    await page.keyboard.press('ArrowDown');
+    expect(await page.locator('#scanline').getAttribute('aria-valuenow')).toBe('100');
+    expect(await clock(page)).toBe('4000 ms');
     await page.context().close();
   });
 
-  it('drags the film under the gate, and a flick keeps its speed after the release', async () => {
-    const { page } = await open();
-    const film = (await page.locator('#film').boundingBox())!;
-    const y = film.y + film.height / 2;
-    const x = film.x + film.width / 2;
-    await page.mouse.move(x, y);
-    await page.mouse.down();
-    await page.mouse.move(x + 220, y, { steps: 5 });
-    expect(await clock(page)).toBe('3440 ms');
-    expect(await playLabel(page)).toBe('Play');
-    // Held still before the release, the film stays on the frame it was dragged to.
-    await page.waitForTimeout(160);
-    await page.mouse.up();
-    await page.waitForTimeout(700);
-    expect(await clock(page)).toBe('3440 ms');
-    expect(Math.abs((await reelX(page)) % 1)).toBeLessThan(0.01);
-    // A fast drag, released while moving, carries on past where the pointer let go.
-    await page.mouse.move(x, y);
-    await page.mouse.down();
-    for (let i = 1; i <= 8; i++) await page.mouse.move(x + i * 45, y);
-    const atRelease = await reelX(page);
-    await page.mouse.up();
-    await page.waitForTimeout(900);
-    const rested = await reelX(page);
-    expect(rested - atRelease).toBeGreaterThan(60);
-    expect(await page.locator('.cell.current .cell-ms').textContent()).toBe((await clock(page))!.replace(' ms', ''));
-    // A press without a drag goes to the frame under the pointer.
-    const before = Number.parseInt((await clock(page))!, 10);
-    await page.mouse.click(x + 110, y);
-    await page.waitForTimeout(700);
-    expect(Number.parseInt((await clock(page))!, 10)).toBeGreaterThan(before);
+  it('lists its keys at a press of the question mark, and every key in the list does what it says', async () => {
+    const { page } = await open(still);
+    const help = page.locator('#help');
+    expect(await help.evaluate((d: HTMLDialogElement) => d.open)).toBe(false);
+    await page.locator('#play').focus();
+    await page.keyboard.press('?');
+    expect(await help.evaluate((d: HTMLDialogElement) => d.open)).toBe(true);
+    expect(await help.locator('dd').allTextContents()).toEqual(['Play or pause', 'One recorded frame', 'One step', 'Go to the jump', 'Move the scan line', 'Whole frame', 'The jump or the search', 'This list']);
+    // While the list is open the stage does not take keys.
+    await page.keyboard.press('2');
+    expect(await button(page, 'The search').getAttribute('aria-pressed')).toBe('false');
+    await page.keyboard.press('Escape');
+    expect(await help.evaluate((d: HTMLDialogElement) => d.open)).toBe(false);
+    await page.locator('#help-open').click();
+    expect(await help.evaluate((d: HTMLDialogElement) => d.open)).toBe(true);
+    await help.getByRole('button', { name: 'Close' }).click();
+    expect(await page.evaluate(() => document.activeElement?.id)).toBe('help-open');
+    await page.keyboard.press('2');
+    expect(await button(page, 'The search').getAttribute('aria-pressed')).toBe('true');
+    await page.keyboard.press('1');
+    expect(await button(page, 'The jump').getAttribute('aria-pressed')).toBe('true');
     await page.context().close();
   });
 
-  it('opens a link on the same frame, view and session, and keeps the link current', async () => {
+  it('opens a link on the same frame, view, session and scan line, and keeps the link current', async () => {
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
-    await page.goto(`${server.url}index.html?t=4032&view=difference&steps=4`);
+    await page.goto(`${server.url}index.html?t=4032&view=difference&steps=4&row=120`);
     await page.getByRole('heading', { level: 1 }).waitFor();
     expect(await clock(page)).toBe('4032 ms');
     expect(await button(page, 'Difference').getAttribute('aria-pressed')).toBe('true');
     expect(await button(page, 'The 4 that matter').getAttribute('aria-pressed')).toBe('true');
+    expect(await page.locator('#scanline').getAttribute('aria-valuenow')).toBe('120');
     expect(await playLabel(page)).toBe('Play');
     await button(page, 'Geometry').click();
     await seek(page, 4064);
-    await expect.poll(() => page.evaluate(() => location.search)).toBe('?t=4064&view=geometry&steps=4');
-    await button(page, 'Overlay').click();
+    await expect.poll(() => page.evaluate(() => location.search)).toBe('?t=4064&view=geometry&steps=4&row=120');
+    await button(page, 'The search').click();
+    await expect.poll(() => page.evaluate(() => location.search)).toBe('?t=4064&view=geometry&steps=4&row=120&act=search');
+    await page.reload();
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    expect(await button(page, 'The search').getAttribute('aria-pressed')).toBe('true');
+    expect(await page.locator('.a-column.on').count()).toBe(26);
+    await button(page, 'The jump').click();
+    await button(page, 'Screenshots').click();
     await button(page, 'All 14 steps').click();
+    await page.locator('#scanline').focus();
+    for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowUp');
     await page.locator('#jump').click();
     await expect.poll(() => page.evaluate(() => location.search)).toBe('');
+    // A view the page no longer has opens on the screenshots.
+    await page.goto(`${server.url}index.html?view=swipe`);
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    expect(await button(page, 'Screenshots').getAttribute('aria-pressed')).toBe('true');
     await context.close();
   });
 
   it('copies the four steps as a scenario Trace accepts, and the README commands', async () => {
     const { page } = await open(still);
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await button(page, 'The search').click();
     await page.locator('#copy').click();
     await expect.poll(() => page.locator('#copy span.on').textContent()).toBe('Copied as a scenario');
     const copied = parseScenario(JSON.parse(await page.evaluate(() => navigator.clipboard.readText())));
@@ -404,19 +642,38 @@ describe('project page', () => {
     const command = await page.evaluate(() => navigator.clipboard.readText());
     expect(command).toBe('pnpm trace run my.scenario.json --baseline tabs@main --candidate tabs@branch');
     expect(readFileSync(join(root, 'README.md'), 'utf8')).toContain(command);
+    await expect.poll(() => page.locator('[data-copy="cmd-run"] span.on').textContent()).toBe('Copied');
     await page.context().close();
   });
 
-  it('loads the frames behind the first paint, and fills the film as they arrive', async () => {
+  it('loads the frames behind the first paint, reads them in a worker, and fills the cores as they arrive', async () => {
     const html = readFileSync(join(root, 'demo/index.html'), 'utf8');
     expect(html.match(/frames\/[0-9a-f]+\.webp/g)).toHaveLength(2);
-    expect(html.length).toBeLessThan(200_000);
-    const { page } = await open(still);
-    await expect.poll(() => page.locator('.cell.ready').count(), { timeout: 15000 }).toBe(89);
-    await page.context().close();
+    expect(html.length).toBeLessThan(215_000);
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    const asked: string[] = [];
+    page.on('request', (r) => asked.push(new URL(r.url()).pathname));
+    // Hold every frame but the two on show, so the page has to stand up without them.
+    let release = () => {};
+    const held = new Promise<void>((done) => (release = done));
+    const first = html.match(/frames\/[0-9a-f]+\.webp/g)!;
+    await page.route('**/frames/*.webp', async (route) => {
+      if (!first.some((f) => route.request().url().endsWith(f))) await held;
+      await route.continue();
+    });
+    await page.goto(`${server.url}index.html`, { waitUntil: 'commit' });
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    await expect.poll(() => lit(page, 200, '#shot-bad')).toBeGreaterThan(1000);
+    expect(await clock(page)).toBe('4000 ms');
+    await expect.poll(() => stageData(page, 'rows')).toBe('1');
+    release();
+    await scanned(page, 89);
+    expect(asked.filter((p) => p.endsWith('/scan.js'))).toHaveLength(1);
+    await context.close();
   });
 
-  it('says when a frame did not load, and gets it the next time the film comes to it', async () => {
+  it('says when a frame did not load, and gets it the next time the needle comes to it', async () => {
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
     const frames = JSON.parse(readFileSync(join(root, 'demo/frames/index.json'), 'utf8')).runs['original-candidate'] as { t: number; f: string }[];
@@ -424,36 +681,58 @@ describe('project page', () => {
     let block = true;
     await page.route('**/frames/*.webp', (route) => (block && route.request().url().includes(lost) ? route.abort() : route.continue()));
     await page.goto(`${server.url}index.html?t=4064`);
-    await expect.poll(() => page.locator('#viewer').getAttribute('class')).toContain('is-failed');
-    expect(await page.locator('#viewer').evaluate((el) => getComputedStyle(el, '::before').content)).toBe('"This frame did not load"');
+    await expect.poll(() => page.locator('#pane-bad').getAttribute('class')).toContain('is-failed');
+    expect(await page.locator('#pane-bad').evaluate((el) => getComputedStyle(el, '::before').content)).toBe('"This frame did not load"');
     expect(await clock(page)).toBe('4064 ms');
+    // The row of the frame that did not load is left clear, and every other row is there.
+    await scanned(page, 88);
     block = false;
     await page.locator('#time').focus();
     await page.keyboard.press('ArrowLeft');
     await page.keyboard.press('ArrowRight');
-    await expect.poll(() => page.locator('#viewer').getAttribute('class')).toBe('viewer');
-    await expect.poll(() => page.locator('.cell.ready').count()).toBe(89);
+    await expect.poll(() => page.locator('#pane-bad').getAttribute('class')).toBe('pane bad');
+    await scanned(page, 89);
     await context.close();
   });
 
-  it('names the step in the gate at the left of the film', async () => {
-    const { page } = await open(still);
-    expect(await page.locator('#now').textContent()).toBe('12Reopen');
-    await seek(page, 3232);
-    expect(await page.locator('#now').textContent()).toBe('10Close with Escape');
-    expect(await page.locator('.cell.first:not(.is-behind) .cell-step').allTextContents()).toEqual(['11Resize to 920 px', '12Reopen', '13Focus the name', '14Last edit']);
-    await page.context().close();
+  it('still cuts the cores where a worker cannot start', async () => {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    const problems: string[] = [];
+    page.on('pageerror', (e) => problems.push(e.message));
+    await page.route('**/scan.js', (route) => route.abort());
+    await page.goto(`${server.url}index.html`);
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    await scanned(page, 89);
+    const rows = await differingRows(page);
+    expect(rows.length).toBeGreaterThanOrEqual(10);
+    expect(rows.every((r) => r >= 71 && r <= 85)).toBe(true);
+    expect(problems).toEqual([]);
+    await context.close();
   });
 
-  it('fits every width with no sideways scroll, and the film and Replay sit beside the result', async () => {
+  it('fits every width with no sideways scroll, and the frame, the cores and Replay share a screen', async () => {
     for (const [width, height] of [[1440, 900], [1280, 720], [1024, 768], [768, 1024], [390, 844], [320, 568]] as const) {
       const { page } = await open({ width, height, ...still });
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      const pane = (await page.locator('#pane-bad').boundingBox())!;
+      const core = (await page.locator('#core-bad').boundingBox())!;
       const play = (await page.locator('#play').boundingBox())!;
-      const viewer = (await page.locator('#viewer').boundingBox())!;
-      expect(play.y + play.height).toBeLessThanOrEqual(height);
-      expect(viewer.y).toBeGreaterThanOrEqual(0);
-      expect(viewer.height).toBeGreaterThan(140);
+      expect(pane.height).toBeGreaterThan(100);
+      expect(core.height).toBeGreaterThanOrEqual(170);
+      // The frame and the needle that moves it are on one screen, and from 720 px tall so is Replay.
+      expect(core.y + core.height - pane.y).toBeLessThanOrEqual(height);
+      if (height >= 720) expect(play.y + play.height).toBeLessThanOrEqual(height);
+      // The frame and its core share a left and a right edge, so a place on one is the same place on the other.
+      expect(Math.abs(pane.x + pane.width - (core.x + core.width))).toBeLessThan(1);
+      expect(await page.locator('#pane-good').isVisible()).toBe(width >= 600);
+      expect(await page.locator('#steps').isVisible()).toBe(width >= 920);
+      await button(page, 'The search').click();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      expect((await page.locator('#attempts').boundingBox())!.width).toBeGreaterThan(150);
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(150);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await page.context().close();
     }
   });
@@ -463,23 +742,31 @@ describe('project page', () => {
     const lines = new Set<string>();
     const collect = async () => {
       const seen = await page.evaluate(() => {
-        const stage = document.getElementById('stage')!;
-        const text = [...stage.querySelectorAll('#verdict p, #attempt-note, #readout, #source, #now, #axis-count, .chip, .tag, .hint, .keys span, .cell-step, button, .peak')].map((el) => el.textContent ?? '');
-        const labels = [...stage.querySelectorAll('[aria-label], [aria-valuetext], [title]')].flatMap((el) => ['aria-label', 'aria-valuetext', 'title'].map((a) => el.getAttribute(a) ?? ''));
-        const before = [getComputedStyle(document.getElementById('viewer')!, '::before').content];
+        const text = [...document.querySelectorAll('#stage #verdict p, #attempt-note, #readout, #core-note, #source, #now, #axis-count, #result-count, #scan-y, .chip, .tag, #keys li, #result-steps li, #rows li, #stage button, #help dd, #help h2, #help button, .c-label, .story h2, .story h3, .story figcaption, .story .cap, .story th, .story .mark, .story small, .story dt, .story .big span, .limits-list li, .next b, .next span, #ends-say, #ends-time')].map((el) => el.textContent ?? '');
+        const labels = [...document.querySelectorAll('[aria-label], [aria-valuetext], [title]')].flatMap((el) => ['aria-label', 'aria-valuetext', 'title'].map((a) => el.getAttribute(a) ?? ''));
+        const before = [getComputedStyle(document.getElementById('pane-bad')!, '::before').content];
         return [...text, ...labels, ...before, document.getElementById('status')!.textContent ?? ''];
       });
       for (const line of seen) if (line.trim()) lines.add(line.trim());
     };
-    for (const view of ['Overlay', 'Swipe', 'Difference', 'Geometry']) {
+    for (const view of ['Screenshots', 'Difference', 'Geometry']) {
       await button(page, view).click();
       for (const t of [0, 3600, 4000, 4032, 4800]) {
         await seek(page, t);
         await collect();
       }
     }
+    await page.locator('#whole').click();
+    await collect();
+    await page.locator('#scanline').focus();
+    await page.keyboard.press('ArrowUp');
+    await collect();
     await button(page, 'The 4 that matter').click();
     await collect();
+    await page.locator('#play').click();
+    await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 9000 });
+    await collect();
+    await button(page, 'The search').click();
     const range = page.locator('#attempt');
     await range.focus();
     await page.keyboard.press('Home');
@@ -487,35 +774,146 @@ describe('project page', () => {
       await collect();
       await page.keyboard.press('ArrowRight');
     }
-    await page.locator('#play').click();
-    await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 9000 });
+    await page.locator('#reduce-play').click();
     await collect();
-    expect(lines.size).toBeGreaterThan(80);
+    // The figure under the stage says something for each frame it can show.
+    await page.locator('#ends').scrollIntoViewIfNeeded();
+    await page.locator('.ends-cell').nth(17).waitFor();
+    for (const i of [0, 1, 8, 15, 16, 17]) {
+      await page.locator('#ends-range').evaluate((el: HTMLInputElement, v) => { el.value = String(v); el.dispatchEvent(new Event('input', { bubbles: true })); }, i);
+      await collect();
+    }
+    expect(lines.size).toBeGreaterThan(170);
     expect([...lines].filter((line) => lineProblem(line))).toEqual([]);
     await page.context().close();
   });
 
+  it('shows that the last frames match and where the builds part, from the recorded frames', async () => {
+    const { page } = await open({ width: 1280, height: 900, ...still });
+    await page.locator('#ends').scrollIntoViewIfNeeded();
+    const cells = page.locator('.ends-cell');
+    await cells.nth(17).waitFor();
+    expect(await cells.count()).toBe(18);
+    expect(await page.locator('.ends-cell.differs').count()).toBe(15);
+    expect(await cells.last().getAttribute('class')).toBe('ends-cell on');
+    expect(await page.locator('#ends-sign').textContent()).toBe('=');
+    expect(await page.locator('#ends-time').textContent()).toBe('4800 ms');
+    expect(await page.locator('#ends-say').textContent()).toBe('The last frame of each build is the same frame');
+    // The two large pictures are the same pixels.
+    const same = () => page.evaluate(() => {
+      const url = (id: string) => (document.getElementById(id) as HTMLCanvasElement).toDataURL();
+      return url('ends-good') === url('ends-bad');
+    });
+    await expect.poll(() => lit(page, 200, '#ends-bad')).toBeGreaterThan(1000);
+    expect(await same()).toBe(true);
+    // Moving across the frames, without pressing, shows the frame under the pointer.
+    const strip = (await page.locator('#ends-strip').boundingBox())!;
+    await page.mouse.move(strip.x + (strip.width / 18) * 1.5, strip.y + 20);
+    expect(await page.locator('#ends-time').textContent()).toBe('4016 ms');
+    expect(await page.locator('#ends-sign').textContent()).toBe('≠');
+    expect(await page.locator('#ends-say').textContent()).toBe('The broken build is 58 px to the right');
+    await expect.poll(same).toBe(false);
+    await page.mouse.move(strip.x + (strip.width / 18) * 15.5, strip.y + 20);
+    expect(await page.locator('#ends-time').textContent()).toBe('4240 ms');
+    expect(await page.locator('#ends-say').textContent()).toBe('Both builds show the same frame');
+    // Leaving puts the last frame back, and the keyboard moves through the frames too.
+    await page.mouse.move(strip.x + 10, strip.y - 120);
+    expect(await page.locator('#ends-time').textContent()).toBe('4800 ms');
+    await page.locator('#ends-range').focus();
+    await page.keyboard.press('Home');
+    expect(await page.locator('#ends-time').textContent()).toBe('4000 ms');
+    expect(await page.locator('#ends-say').textContent()).toBe('The broken build is 80 px to the right');
+    expect(await page.locator('#ends-range').getAttribute('aria-valuetext')).toBe('4000 ms, The broken build is 80 px to the right');
+    await page.context().close();
+  });
+
+  it('judges each build against the same list, and draws each result as marks that add up', async () => {
+    const { page } = await open(still);
+    const report = JSON.parse(readFileSync(join(root, 'demo/regression/report.json'), 'utf8'));
+    const original = report.cases.find((c: { id: string }) => c.id === 'original');
+    const rows = page.locator('.rules tbody tr');
+    expect(await rows.count()).toBe(original.scenario.requirements.length);
+    // Each row carries the requirement exactly as the scenario states it.
+    const code = await rows.locator('code').allTextContents();
+    expect(code.map((c) => JSON.parse(c))).toEqual(original.scenario.requirements);
+    expect(await page.locator('.rules tr.broke').count()).toBe(1);
+    expect(await page.locator('.rules tr.broke td').allTextContents()).toEqual([expect.stringContaining('geometry-origin'), 'Held', 'Broken, 80 px off at 4000 ms']);
+    expect(await page.locator('.rules .mark.broken').count()).toBe(1);
+    expect(await page.locator('.verdicts b').allTextContents()).toEqual(['Pass', 'Regression', 'Fixed', 'Shared failure']);
+    expect(await page.locator('.verdicts .here b').textContent()).toBe('Regression');
+    expect(await page.locator('.verdicts a').getAttribute('href')).toBe('fixed/');
+    // The held-out figure shows the six caught and the one clean build wrongly flagged, side by side.
+    const tally = (n: number) => page.locator('.measure').nth(n).locator('.tally > div');
+    expect(await tally(0).nth(0).locator('.dot:not(.none)').count()).toBe(6);
+    expect(await tally(0).nth(1).locator('.dot.none').count()).toBe(3);
+    expect(await tally(0).nth(1).locator('.dot.wrong').count()).toBe(1);
+    expect(await page.locator('.measure').nth(0).locator('.big').textContent()).toBe('6 of 6seeded bugs caught1 of 4clean builds wrongly flagged');
+    // The tuned score is never drawn without the comparison that matches it.
+    expect(await tally(1).nth(0).locator('.dot').count()).toBe(18);
+    expect(await tally(1).nth(1).locator('.dot').count()).toBe(18);
+    expect(await tally(2).nth(0).locator('.dot').count()).toBe(14);
+    expect(await tally(2).nth(0).locator('.dot:not(.none)').count()).toBe(4);
+    expect(await tally(2).nth(1).locator('.dot').count()).toBe(18);
+    expect(await tally(2).nth(2).locator('.dot:not(.none)').count()).toBe(10);
+    expect(await tally(2).nth(3).locator('.dot.none').count()).toBe(3);
+    expect(await page.locator('.field i').count()).toBe(295);
+    expect(await page.locator('.field i.wrong').count()).toBe(2);
+    await page.context().close();
+  });
+
+  it('brings the story in as it is scrolled to, and it is all there without scripts', async () => {
+    const { page } = await open();
+    const chapters = page.locator('.chapter.reveal');
+    expect(await chapters.count()).toBe(7);
+    await expect.poll(() => chapters.last().evaluate((el) => getComputedStyle(el).opacity)).toBe('0');
+    await chapters.last().scrollIntoViewIfNeeded();
+    await expect.poll(() => chapters.last().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    await page.context().close();
+    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, javaScriptEnabled: false });
+    const plain = await context.newPage();
+    await plain.goto(`${server.url}index.html`);
+    expect(await plain.locator('.chapter').last().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    expect(await plain.locator('.limits-list li').count()).toBe(6);
+    expect(await plain.locator('noscript').count()).toBe(1);
+    await context.close();
+  });
+
   it('quotes the tuned score only with its limit, and keeps the wording rules', async () => {
     const { page } = await open(still);
-    const text = await page.locator('#details').textContent();
-    expect(text).toContain('18 of 18 seeded bugs caught');
+    const text = (await page.locator('#details').textContent())!;
+    expect(text).toContain('18 of 18for Trace, and for a plain comparison');
     expect(text).toContain('also finds all 18');
     expect(text).toContain('on a corpus I wrote');
-    expect(text).toContain('6 of 6 seeded bugs caught');
-    expect(text).toContain('2 of 295 sessions flagged');
-    expect(text).not.toMatch(/independent review|No false alarms/i);
+    expect(text).toContain('seeded bugs');
+    expect(text).toContain('It ran once on an earlier oracle'.slice(7));
+    expect(text).toContain('2 of 295sessions on correct builds flagged');
+    expect(text).toContain('10 of 10 fresh runs and 0 of 3 baseline runs');
+    expect(text).not.toMatch(/independent review|No false alarms|INP of/i);
+    // Every 18 of 18 on the page sits in the figure that draws the comparison beside it.
+    expect(text.match(/18 of 18/g)).toHaveLength(1);
     expect(await page.locator('body').textContent()).not.toMatch(/[–—]/);
     await page.context().close();
   });
 
-  it('links to reports that exist, as folders, and keeps every path relative', async () => {
+  it('links to reports that exist, as folders, keeps every path relative, and carries a share card and a tab icon', async () => {
     const { page } = await open(still);
     const links = await page.locator('main a').evaluateAll((all) => all.map((a) => a.getAttribute('href')!));
     const local = links.filter((href) => !href.startsWith('http') && !href.startsWith('#'));
-    expect(local).toEqual(['regression/', 'regression/', 'fixed/']);
+    expect(local).toEqual(['regression/', 'fixed/', 'regression/', 'fixed/']);
     for (const href of local) expect(existsSync(join(root, 'demo', href, 'index.html'))).toBe(true);
     const html = await page.content();
     expect(html).not.toMatch(/\/Users\/|href="\/|src="\/|index\.html/);
+    const meta = (name: string) => page.locator(`meta[property="${name}"], meta[name="${name}"]`).getAttribute('content');
+    expect(await meta('og:title')).toBe('Trace');
+    expect(await meta('og:description')).toBe('Find the part where it broke');
+    expect(await meta('og:url')).toBe('https://www.qendrimbeka.com/projects/trace/');
+    expect(await meta('og:image')).toBe('https://www.qendrimbeka.com/projects/trace/og.png');
+    expect(await meta('twitter:card')).toBe('summary_large_image');
+    expect(await meta('twitter:image')).toBe('https://www.qendrimbeka.com/projects/trace/og.png');
+    const card = readFileSync(join(root, 'demo/og.png'));
+    expect([card.readUInt32BE(16), card.readUInt32BE(20)]).toEqual([1200, 630]);
+    expect(await page.locator('link[rel="icon"]').getAttribute('href')).toBe('./favicon.svg');
+    expect(readFileSync(join(root, 'demo/favicon.svg'), 'utf8')).toContain('<svg');
     await page.context().close();
   });
 });
