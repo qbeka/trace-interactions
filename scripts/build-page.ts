@@ -79,7 +79,7 @@ export function stageLines(data: { steps: { label: string }[]; attempts: { kept:
     ...VIEWS.flatMap((v) => [readout(v, true), readout(v, false), coreNote(v)]),
     SAID.finished, SAID.scenario, SAID.command, SAID.copyFailed, SAID.replaying(data.attempts.length), ...VIEWS.map((v) => SAID.view(v)),
     SAID.scan(96), SAID.scanShort(96), SAID.whole(true), SAID.whole(false), SAID.wholeLabel(true), SAID.wholeLabel(false), SAID.act(true), SAID.act(false),
-    SAID.duration(240), SAID.inPlay(14, true), SAID.inPlay(14, false), SAID.goodAt(4000), SAID.makeFrame(11, 16, 160),
+    SAID.inPlay(14, true), SAID.inPlay(14, false), SAID.goodAt(4000), SAID.makeFrame(11, 16, 160), SAID.axisStart, SAID.axisEnd, SAID.breakHow(80), SAID.breakWhen(240, 'Reopen'),
     endsLine(true, 58, false), endsLine(true, 0, false), endsLine(false, 0, true), endsLine(false, 0, false),
     ...[[true, 80], [true, 0], [false, 0]].map(([differs, px]) => frameLabel(4000, 12, data.steps.length, 'Reopen', differs as boolean, px as number)),
     ...markupLines(template),
@@ -181,10 +181,11 @@ export async function buildPage(demoDir: string): Promise<void> {
   const lowest = Math.max(...panels.map((r) => r.y + r.h));
   const crop = { x: Math.floor((leftmost - 12) / 8) * 8, y: 0, w: 0, h: 0 };
   crop.w = frames.width - crop.x;
-  crop.h = Math.ceil((lowest + 18) / 4) * 4;
-  if (crop.h > frames.height || crop.w < 400) throw new Error('The panel no longer fits the part of the frame the page shows.');
-  // The scan line opens on a row the panel covers from its second frame to its last.
-  const scanY = 96;
+  // The full height of the capture, so the frame is tall enough to be the first thing on the stage.
+  crop.h = frames.height;
+  if (lowest + 40 > crop.h || crop.w < 400) throw new Error('The panel no longer fits the part of the frame the page shows.');
+  // The scan line opens on a row the panel covers from its second frame to its last, above its heading, so the band it draws is plain.
+  const scanY = 84;
   const during = panelRects(original.candidate.events).filter((p) => p.t > jumpT && p.t <= settled);
   if (during.some((p) => scanY < p.rect.y || scanY > p.rect.y + p.rect.h)) throw new Error('The opening scan line no longer crosses the panel during the jump.');
 
@@ -284,7 +285,7 @@ export async function buildPage(demoDir: string): Promise<void> {
     '</div>',
     `<figcaption>The first time the panel opens, in ${firstOpen} recorded frames, where the line across each frame becomes one row of the picture beside it</figcaption>`,
     '</figure>',
-    '<p class="prose" style="margin-top:28px">The good build draws the same funnel every time the panel opens. The broken build draws it once more at the bottom, pushed to the right and flat against the edge of the window, and the dashed line beside it is where the recorded rectangles say it should have been. Move the scan line up to the row through Inspect, and the broken panel starts in line with where Inspect stood at the top of the picture, before the window changed size.</p>',
+    '<p class="prose" style="margin-top:28px">The good build draws the same funnel every time the panel opens. The broken build draws it once more at the bottom, pushed to the right and flat against the edge of the window, and the dashed line beside it is where the recorded rectangles say it should have been. The shading over each picture is drawn from those rectangles too, so the panel can be told from the page around it. Move the scan line up to the row through Inspect, and the broken panel starts in line with where Inspect stood at the top of the picture, before the window changed size.</p>',
     '</section>',
 
     '<section class="chapter reveal">',
@@ -350,7 +351,7 @@ export async function buildPage(demoDir: string): Promise<void> {
 
     '<section class="chapter reveal">',
     '<h2 class="display">Read the report Trace wrote</h2>',
-    '<p class="prose">The frames are screenshots of the real fixture, taken by Trace on a rerun of the saved scenarios and kept only because the rerun recorded the same geometry as the saved report. The frames and the slit scans show those screenshots and change nothing in them, and Difference lights the pixels where the two builds disagree. The dashed outlines, the ruler, the bracket and everything in Geometry are drawn from the rectangles in that report. Playback slows down at the failure and skips the quiet stretches, and the clock always shows the recorded time.</p>',
+    '<p class="prose">The frames are screenshots of the real fixture, taken by Trace on a rerun of the saved scenarios and kept only because the rerun recorded the same geometry as the saved report. The frames and the slit scans are those screenshots, and Difference lights the pixels where the two builds disagree. The dashed outlines, the ruler, the shading and the note over the slit scans, and everything in Geometry are drawn from the rectangles in that report, and nothing in the pictures under them is changed. Playback slows down at the failure and skips the quiet stretches, and the clock always shows the recorded time.</p>',
     '<nav class="next" aria-label="What to open next">',
     `<a href="regression/"><b>The full report${arrow}</b><span>What Trace writes for every run, with each requirement, action and sample</span></a>`,
     `<a href="fixed/"><b>After the fix${arrow}</b><span>The same four steps on the repaired build, reported as fixed</span></a>`,
