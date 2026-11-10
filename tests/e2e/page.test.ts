@@ -742,7 +742,7 @@ describe('project page', () => {
     const lines = new Set<string>();
     const collect = async () => {
       const seen = await page.evaluate(() => {
-        const text = [...document.querySelectorAll('#stage #verdict p, #attempt-note, #readout, #core-note, #source, #now, #axis-count, #result-count, #scan-y, .chip, .tag, #keys li, #result-steps li, #rows li, #stage button, #help dd, #help h2, #help button, .c-label, .story h2, .story h3, .story figcaption, .story .cap, .story th, .story .mark, .story small, .story dt, .story .big span, .limits-list li, .next b, .next span, #ends-say, #ends-time')].map((el) => el.textContent ?? '');
+        const text = [...document.querySelectorAll('#stage #verdict p, #attempt-note, #readout, #core-note, #source, #now, #axis-count, #result-count, #scan-y, .chip, .tag, #keys li, #result-steps li, #rows li, #stage button, #help dd, #help h2, #help button, .c-label, .story h2, .story h3, .story figcaption, .story .cap, .story th, .story .mark, .story small, .story dt, .story .big span, .limits-list li, .next b, .next span, #ends-say, #ends-time, #make-n')].map((el) => el.textContent ?? '');
         const labels = [...document.querySelectorAll('[aria-label], [aria-valuetext], [title]')].flatMap((el) => ['aria-label', 'aria-valuetext', 'title'].map((a) => el.getAttribute(a) ?? ''));
         const before = [getComputedStyle(document.getElementById('pane-bad')!, '::before').content];
         return [...text, ...labels, ...before, document.getElementById('status')!.textContent ?? ''];
@@ -825,6 +825,37 @@ describe('project page', () => {
     expect(await page.locator('#ends-say').textContent()).toBe('The broken build is 80 px to the right');
     expect(await page.locator('#ends-range').getAttribute('aria-valuetext')).toBe('4000 ms, The broken build is 80 px to the right');
     await page.context().close();
+  });
+
+  it('builds a slit scan one row at a time, from the first frames of the recording', async () => {
+    const { page } = await open({ width: 1280, height: 900, ...still });
+    await page.locator('#make').scrollIntoViewIfNeeded();
+    // With reduced motion the picture is whole, on the last frame of the first opening.
+    await expect.poll(() => page.locator('#make-n').textContent()).toBe('Frame 16 of 16, at 240 ms');
+    expect(await page.locator('#make-core').evaluate((c: HTMLCanvasElement) => c.height / 16)).toBe(12);
+    await expect.poll(async () => (await litRows(page, '#make-core')).length, { timeout: 15000 }).toBe(16 * 12);
+    // Each row is one colour from top to bottom, because it is one line of the frame.
+    const flat = await page.locator('#make-core').evaluate((c: HTMLCanvasElement) => {
+      const px = new Uint32Array(c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data.buffer);
+      for (let row = 0; row < 16; row++) for (let y = 1; y < 12; y++) for (let x = 0; x < c.width; x += 7) if (px[(row * 12 + y) * c.width + x] !== px[row * 12 * c.width + x]) return false;
+      return true;
+    });
+    expect(flat).toBe(true);
+    await page.locator('#make-range').focus();
+    await page.keyboard.press('Home');
+    expect(await page.locator('#make-n').textContent()).toBe('Frame 1 of 16, at 0 ms');
+    expect(await page.locator('#make').evaluate((el) => el.style.getPropertyValue('--row'))).toBe('0');
+    const rows = (await page.locator('#make-rows').boundingBox())!;
+    await page.mouse.move(rows.x + 30, rows.y + (rows.height / 16) * 6.5);
+    expect(await page.locator('#make-n').textContent()).toBe('Frame 7 of 16, at 96 ms');
+    // The thread runs from the line on the frame to the row it became.
+    expect(await page.locator('#make-link').getAttribute('d')).toMatch(/^M[\d.]+ [\d.]+C/);
+    await page.context().close();
+    const moving = await open({ width: 1280, height: 900 });
+    await moving.page.locator('#make').scrollIntoViewIfNeeded();
+    await expect.poll(() => moving.page.locator('#make-n').textContent()).toMatch(/^Frame [2-9] of 16/);
+    await expect.poll(() => moving.page.locator('#make-n').textContent(), { timeout: 8000 }).toBe('Frame 16 of 16, at 240 ms');
+    await moving.page.context().close();
   });
 
   it('judges each build against the same list, and draws each result as marks that add up', async () => {
