@@ -1,37 +1,18 @@
-import type { TraceEvent } from '../src/trace/types.ts';
+import { cellsOf, type Cell, type Data, type Phase, type Rect, type Run, type Session } from './cells.ts';
 import { focusAt, lastAt, rectAt, timelines, viewportAt, type Timelines } from '../viewer/src/model.ts';
-import { frameLabel, readout, SAID, SOURCE, type View } from './lines.ts';
+import { initFigures } from './figures.ts';
+import { coreNote, frameLabel, OUTCOMES, readout, SAID, SOURCE, VIEWS, type View } from './lines.ts';
 import { aliveAfter, attemptNote, diedAt } from './reduction.ts';
+import { compose, pack, type Packed, type ScanRequest, type ScanResult } from './scan.ts';
 
 /**
- * The public project page. One viewer compares two recorded builds, a film strip
- * of the recorded frames moves under a fixed needle, and a grid replays every
- * attempt of the reduction. All numbers and sentences arrive in the data block,
- * written from the saved runs.
+ * The public project page. Each build is shown as the frame on the clock, with a
+ * slit scan of every recorded frame under it, and one needle runs through both.
+ * A second act replays every attempt of the reduction. All numbers and sentences
+ * arrive in the data block, written from the saved runs.
  */
-interface Rect { x: number; y: number; w: number; h: number }
-interface Run { frames: { t: number; f: string }[]; events: TraceEvent[] }
-type Phase = 'before' | 'jump' | 'after';
-interface Session {
-  id: 'original' | 'reduced';
-  count: string;
-  kept: number[];
-  good: string;
-  bad: string;
-  verdict: Record<Phase, string>;
-}
-interface Data {
-  frame: { width: number; height: number; scale: number };
-  axisEnd: number;
-  jump: { t: number; settled: number; px: number; step: number };
-  steps: { at: number; label: string }[];
-  attempts: { kept: number[]; outcome: string }[];
-  targets: { name: string; id: string; label: string }[];
-  sessions: Session[];
-  runs: Record<string, Run>;
-  scenario: string;
-}
-interface Cell { t: number; good: string; bad: string; step: number; first: boolean; differs: boolean }
+type Act = 'jump' | 'search';
+type Side = 'good' | 'bad';
 
 const data: Data = JSON.parse(document.getElementById('trace-data')!.textContent!);
 const SVG = 'http://www.w3.org/2000/svg';
@@ -54,19 +35,19 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text = '') 
 };
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-const VIEWS: View[] = ['overlay', 'swipe', 'difference', 'geometry'];
 
 const stage = $('stage');
-const viewer = $('viewer');
-const screen = $<HTMLCanvasElement>('screen');
-const ctx = screen.getContext('2d')!;
-const marks = $<SVGSVGElement>('marks');
-const divider = $('divider');
-const film = $('film');
-const reel = $('reel');
+const bench = $('bench');
+const panes: Record<Side, HTMLElement> = { good: $('pane-good'), bad: $('pane-bad') };
+const shots: Record<Side, HTMLCanvasElement> = { good: $<HTMLCanvasElement>('shot-good'), bad: $<HTMLCanvasElement>('shot-bad') };
+const cores: Record<Side, HTMLElement> = { good: $('core-good'), bad: $('core-bad') };
+const scans: Record<Side, HTMLCanvasElement> = { good: $<HTMLCanvasElement>('scan-good'), bad: $<HTMLCanvasElement>('scan-bad') };
+const scanline = $('scanline');
+const needle = $('needle');
 const range = $<HTMLInputElement>('time');
 const playButton = $('play');
 const jumpButton = $('jump');
+const wholeButton = $('whole');
 const status = $('status');
 const { steps, jump, attempts, frame, axisEnd } = data;
 
@@ -74,6 +55,7 @@ const { steps, jump, attempts, frame, axisEnd } = data;
 const images = new Map<string, HTMLImageElement>();
 const loaded = new Set<string>();
 const failed = new Set<string>();
+const watchers: ((name: string) => void)[] = [];
 let queue: string[] = [];
 let active = 0;
 
@@ -123,9 +105,11 @@ let badLine!: Timelines;
 let cells: Cell[] = [];
 let jumpIndex = 0;
 let settledIndex = 0;
-let view: View = 'overlay';
-let split = 0.56;
-/** Where the film sits under the needle, in frames. The frame on screen is the nearest one. */
+let view: View = 'shots';
+let act: Act = 'jump';
+let whole = false;
+let scanY = data.scanY;
+/** Where the needle sits, in frames. The frame on screen is the nearest one. */
 let pos = 0;
 let index = -1;
 let velocity = 0;
@@ -150,70 +134,108 @@ let onScreen = true;
 
 const time = () => cells[index]?.t ?? 0;
 const phaseAt = (t: number): Phase => (t < jump.t ? 'before' : t < jump.settled ? 'jump' : 'after');
+const lineOf = (side: Side) => (side === 'good' ? goodLine : badLine);
 const offsetAt = (t: number): number => {
   const a = rectAt(goodLine, 'panel', t);
   const b = rectAt(badLine, 'panel', t);
   return a && b ? b.x - a.x : 0;
 };
 
-/* The viewer: one canvas of screenshots, and marks drawn in the same coordinates */
+/* The two frames: a canvas of the screenshot, and marks drawn in the same coordinates */
 interface Camera { x: number; y: number; w: number; h: number; scale: number }
-let cam: Camera = { x: 0, y: 0, w: 1, h: 1, scale: 1 };
+let cam: Camera = { ...data.crop, scale: 1 };
 /** Where the two frames differ, kept as its own layer so the browser blends and scales it off the main thread. */
 const glow = $<HTMLCanvasElement>('glow');
 const scratch = document.createElement('canvas');
 let drawn = '';
 
-const world = shape('g', 'world', marks);
-const worldView = shape('rect', 'g-view', world);
-const nodes = new Map(data.targets.map((t) => [t.name, { rect: shape('rect', 'g-node', world), name: shape('text', 'g-name', world) }]));
-for (const t of data.targets) nodes.get(t.name)!.name.textContent = t.label;
-const fanGood = shape('path', 'g-fan good', world);
-const fanBad = shape('path', 'g-fan bad', world);
-const panelGood = shape('rect', 'g-panel good', world);
-const panelBad = shape('rect', 'g-panel bad', world);
-const focusRing = shape('rect', 'g-focus', world);
-// Past the edge of the window there is no page, and the hatching says so.
-const defs = shape('defs', '', marks);
-const hatch = shape('pattern', '', defs);
-set(hatch, { id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' });
-set(shape('line', 'm-hatch', hatch), { x1: 0, y1: 0, x2: 0, y2: 6 });
-const outside = shape('rect', 'm-outside', marks);
-marks.prepend(outside);
-marks.prepend(defs);
-const edge = shape('line', 'm-edge', marks);
-const ruler = shape('g', 'ruler', marks);
-const outlineGood = shape('rect', 'm-outline good', ruler);
-const outlineBad = shape('rect', 'm-outline bad', ruler);
-const extend = shape('path', 'm-extend', ruler);
-const span = shape('path', 'm-span', ruler);
-const pill = shape('rect', 'm-pill', ruler);
-const label = shape('text', 'm-label', ruler);
+interface Marks {
+  svg: SVGSVGElement;
+  outside: Element; edge: Element; world: Element; view: Element;
+  nodes: Map<string, { rect: Element; name: Element }>;
+  fan: Element; ghost: Element; panel: Element; focus: Element;
+  path: Element; ruler: Element; outlineGood: Element; outlineBad: Element; extend: Element; span: Element; pill: Element; label: Element;
+}
+function makeMarks(side: Side): Marks {
+  const svg = $<SVGSVGElement>(`marks-${side}`);
+  // Past the edge of the window there is no page, and the hatching says so.
+  const defs = shape('defs', '', svg);
+  const hatch = shape('pattern', '', defs);
+  set(hatch, { id: `hatch-${side}`, width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' });
+  set(shape('line', 'm-hatch', hatch), { x1: 0, y1: 0, x2: 0, y2: 6 });
+  const outside = shape('rect', 'm-outside', svg);
+  set(outside, { fill: `url(#hatch-${side})` });
+  const edge = shape('line', 'm-edge', svg);
+  const world = shape('g', 'world', svg);
+  const view = shape('rect', 'g-view', world);
+  const nodes = new Map(data.targets.map((t) => [t.name, { rect: shape('rect', 'g-node', world), name: shape('text', 'g-name', world) }]));
+  for (const t of data.targets) nodes.get(t.name)!.name.textContent = t.label;
+  const fan = shape('path', `g-fan ${side}`, world);
+  const ghost = shape('rect', 'g-ghost', world);
+  const panel = shape('rect', `g-panel ${side}`, world);
+  const focus = shape('rect', 'g-focus', world);
+  const path = shape('path', `m-path ${side}`, svg);
+  const ruler = shape('g', 'ruler', svg);
+  const outlineGood = shape('rect', 'm-outline good', ruler);
+  const outlineBad = shape('rect', 'm-outline bad', ruler);
+  const extend = shape('path', 'm-extend', ruler);
+  const span = shape('path', 'm-span', ruler);
+  const pill = shape('rect', 'm-pill', ruler);
+  const label = shape('text', 'm-label', ruler);
+  return { svg, outside, edge, world, view, nodes, fan, ghost, panel, focus, path, ruler, outlineGood, outlineBad, extend, span, pill, label };
+}
+const marks: Record<Side, Marks> = { good: makeMarks('good'), bad: makeMarks('bad') };
+
+/* Sizes, read once per layout so that nothing else has to measure */
+let paneW = 0;
+let paneH = 0;
+let coreW = 0;
+let coreH = 0;
+let coreTop = 0;
+let rowH = 4;
+let wide = false;
 
 function layout(): void {
-  const { width, height } = viewer.getBoundingClientRect();
-  if (!width || !height) return;
-  // On a narrow viewer the labels would sit on the Inspect button, so the window starts below them.
-  const head = width < 560 ? 34 : 0;
-  // Large enough to read, and never so large that the open panel leaves the picture.
-  const scale = Math.min(Math.max((height - head) / 300, width / frame.width), width / 548, 1.6);
-  const w = Math.min(frame.width, width / scale);
-  const h = height / scale;
-  cam = { x: frame.width - w, y: -head / scale, w, h, scale: width / w };
-  // The canvas holds the screenshot's own pixels for the part in view, so a frame is copied
-  // across without resampling, and the browser scales the finished picture to fit.
-  screen.width = Math.round(w * frame.scale);
-  screen.height = Math.round(h * frame.scale);
-  for (const canvas of [glow, scratch]) {
-    canvas.width = screen.width;
-    canvas.height = screen.height;
+  const box = panes.bad.getBoundingClientRect();
+  if (!box.width || !box.height) return;
+  const core = cores.bad.getBoundingClientRect();
+  const outer = bench.getBoundingClientRect();
+  paneW = box.width;
+  paneH = box.height;
+  coreW = core.width;
+  coreH = core.height;
+  coreTop = core.top - outer.top;
+  // The needle is drawn over each core and leaves the names between them clear.
+  const first = cores.good.getBoundingClientRect();
+  for (const [name, at] of [['--n0', first.left], ['--n1', first.right], ['--n2', core.left], ['--n3', core.right]] as const) bench.style.setProperty(name, `${(at - outer.left).toFixed(1)}px`);
+  wide = $('spine').getBoundingClientRect().width > 0;
+  if (whole) {
+    const scale = paneW / frame.width;
+    const h = paneH / scale;
+    cam = { x: 0, y: -(h - frame.height) / 2, w: frame.width, h, scale };
+  } else {
+    cam = { ...data.crop, scale: paneW / data.crop.w };
   }
-  set(marks, { viewBox: `${cam.x} ${cam.y} ${cam.w} ${cam.h}` });
+  // A canvas holds the screenshot's own pixels for the part in view, so a frame is copied
+  // across without resampling, and the browser scales the finished picture to fit.
+  for (const canvas of [shots.good, shots.bad, glow, scratch]) {
+    canvas.width = Math.round(cam.w * frame.scale);
+    canvas.height = Math.round(cam.h * frame.scale);
+  }
   const unit = 1 / cam.scale;
-  set(label, { 'font-size': 12 * unit });
-  for (const n of nodes.values()) set(n.name, { 'font-size': 11 * unit });
+  for (const m of Object.values(marks)) {
+    set(m.svg, { viewBox: `${cam.x} ${cam.y} ${cam.w} ${cam.h}` });
+    set(m.label, { 'font-size': 12 * unit });
+    for (const n of m.nodes.values()) set(n.name, { 'font-size': 11 * unit });
+  }
+  rowH = coreH / Math.max(1, cells.length);
   drawn = '';
   dirty = true;
+  placeScan();
+  placeSteps();
+  drawCoreMarks();
+  scanDirty = true;
+  if (index >= 0) render();
 }
 
 function blit(to: CanvasRenderingContext2D, name: string): void {
@@ -238,54 +260,41 @@ function flat(canvas: HTMLCanvasElement, name: string): CanvasRenderingContext2D
   return c;
 }
 
+const ctxGood = shots.good.getContext('2d')!;
+const ctxBad = shots.bad.getContext('2d')!;
+
 function paint(): void {
   const cell = cells[index];
   if (!cell) return;
-  const key = `${view}|${cell.good}|${cell.bad}|${view === 'swipe' ? split.toFixed(4) : ''}`;
+  const key = `${view}|${cell.good}|${cell.bad}`;
   if (key === drawn) return;
-  const { width: W, height: H } = screen;
+  const { width: W, height: H } = shots.bad;
   if (view === 'geometry') {
-    ctx.clearRect(0, 0, W, H);
+    ctxGood.clearRect(0, 0, W, H);
+    ctxBad.clearRect(0, 0, W, H);
     drawn = key;
     return;
   }
   // A frame still on its way leaves the last one up, so nothing flashes empty.
   if (!loaded.has(cell.good) || !loaded.has(cell.bad)) {
     const lost = failed.has(cell.good) || failed.has(cell.bad);
-    viewer.classList.toggle('is-failed', lost);
+    panes.bad.classList.toggle('is-failed', lost);
     waiting(!lost);
-    // A frame that failed is tried again when the film next comes to it, not in a loop.
+    // A frame that failed is tried again when the needle next comes to it, not in a loop.
     if (!lost) want([cell.good, cell.bad]);
     return;
   }
-  viewer.classList.remove('is-failed');
+  panes.bad.classList.remove('is-failed');
   waiting(false);
-  ctx.globalCompositeOperation = 'source-over';
-  ctx.globalAlpha = 1;
-  if (view === 'overlay') {
-    ctx.clearRect(0, 0, W, H);
-    blit(ctx, cell.good);
-    if (cell.differs) {
-      ctx.globalAlpha = 0.5;
-      blit(ctx, cell.bad);
-      ctx.globalAlpha = 1;
-    }
-  } else if (view === 'swipe') {
-    const x = Math.round(split * W);
-    ctx.clearRect(0, 0, W, H);
-    blit(ctx, cell.good);
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x, 0, W - x, H);
-    ctx.clip();
-    ctx.clearRect(x, 0, W - x, H);
-    blit(ctx, cell.bad);
-    ctx.restore();
+  ctxGood.clearRect(0, 0, W, H);
+  blit(ctxGood, cell.good);
+  ctxBad.clearRect(0, 0, W, H);
+  if (view === 'shots') {
+    blit(ctxBad, cell.bad);
   } else {
     // Difference: black where the two frames agree, lit where they do not. The last
     // good build sits underneath, dimmed by the stylesheet, to show where things are.
-    ctx.clearRect(0, 0, W, H);
-    blit(ctx, cell.good);
+    blit(ctxBad, cell.good);
     const a = glow.getContext('2d')!;
     if (cell.differs) {
       // The stylesheet brightens and tints this layer, so the main thread only subtracts.
@@ -304,13 +313,17 @@ function waiting(on: boolean): void {
   if (!on) {
     clearTimeout(waitTimer);
     waitTimer = 0;
-    viewer.classList.remove('is-waiting');
+    panes.bad.classList.remove('is-waiting');
   } else if (!waitTimer) {
-    waitTimer = window.setTimeout(() => viewer.classList.add('is-waiting'), 180);
+    waitTimer = window.setTimeout(() => panes.bad.classList.add('is-waiting'), 180);
   }
 }
 
 const rectPath = (r: Rect) => `M${r.x} ${r.y}h${r.w}v${r.h}h${-r.w}z`;
+/** Every rectangle a panel recorded from the reopen until the two builds agree again. */
+function opening(line: Timelines): string {
+  return (line.rects.get('panel') ?? []).flatMap((g) => (g.rect && g.t >= jump.t && g.t <= jump.settled ? [rectPath(g.rect)] : [])).join('');
+}
 /** Every rectangle a panel recorded since it last appeared, up to `t`. */
 function fan(line: Timelines, t: number): string {
   const samples = line.rects.get('panel') ?? [];
@@ -329,209 +342,365 @@ function drawMarks(): void {
   const geometry = view === 'geometry';
   const vp = viewportAt(goodLine, t, { width: frame.width, height: frame.height });
   const narrow = vp.width < frame.width;
-  show(edge, narrow && !geometry);
-  show(outside, narrow);
-  if (narrow) {
-    set(edge, { x1: vp.width, y1: 0, x2: vp.width, y2: frame.height });
-    set(outside, { x: vp.width, y: 0, width: frame.width - vp.width, height: frame.height });
-  }
-
   const a = rectAt(goodLine, 'panel', t);
   const b = rectAt(badLine, 'panel', t);
   const gap = a && b ? b.x - a.x : 0;
   const on = !!a && !!b && Math.abs(gap) >= 0.5;
-  show(ruler, on);
-  if (on && a && b) {
-    for (const [node, r] of [[outlineGood, a], [outlineBad, b]] as const) set(node, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 5 });
-    show(outlineGood, !geometry);
-    show(outlineBad, !geometry);
-    // A dimension line under the panels, the way a drawing marks a distance.
-    const y = Math.min(266, cam.y + cam.h - 16 * unit);
-    const from = a.x;
-    const to = a.x + gap * grow;
-    const foot = Math.min(a.y + a.h, b.y + b.h) + 5 * unit;
-    set(extend, { d: `M${a.x} ${foot}V${y + 6 * unit}M${b.x} ${foot}V${y + 6 * unit}` });
-    let d = `M${from} ${y}H${to}`;
-    for (let x = 0; x <= Math.abs(to - from) + 0.01; x += 10) d += `M${from + Math.sign(gap) * x} ${y - (x % 50 === 0 ? 5 : 3) * unit}V${y}`;
-    set(span, { d });
-    const text = `${Math.round(Math.abs(gap))} px`;
-    if (label.textContent !== text) label.textContent = text;
-    const wide = (text.length * 6.6 + 14) * unit;
-    const fits = Math.abs(gap) > wide + 6 * unit;
-    // Beside the line when it cannot sit over it, on whichever side still has room.
-    const right = Math.max(a.x, b.x) + 8 * unit + wide / 2;
-    const cx = fits ? (a.x + b.x) / 2 : right + wide / 2 < cam.x + cam.w - 4 * unit ? right : Math.min(a.x, b.x) - 8 * unit - wide / 2;
-    const cy = fits ? y - 15 * unit : y - 1 * unit;
-    set(pill, { x: cx - wide / 2, y: cy - 10 * unit, width: wide, height: 20 * unit, rx: 10 * unit });
-    set(label, { x: cx, y: cy + 4.2 * unit });
-    const done = grow > 0.85;
-    show(pill, done);
-    show(label, done);
-  }
 
-  show(world, geometry);
-  if (!geometry) return;
-  set(worldView, { x: 0.5, y: 0.5, width: vp.width - 1, height: frame.height - 0.5 });
-  for (const [name, node] of nodes) {
-    const r = rectAt(goodLine, name, t);
-    show(node.rect, !!r);
-    show(node.name, !!r && r.w >= 60);
-    if (!r) continue;
-    set(node.rect, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 4 });
-    set(node.name, { x: r.x + r.w / 2, y: r.y + r.h / 2 + 4 * unit });
-  }
-  for (const [node, r] of [[panelGood, a], [panelBad, b]] as const) {
-    show(node, !!r);
-    if (r) set(node, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 6 });
-  }
-  // Where the builds agree, one rectangle is enough.
-  if (!on) show(panelBad, false);
-  set(fanGood, { d: fan(goodLine, t) });
-  set(fanBad, { d: on || t >= jump.t ? fan(badLine, t) : '' });
-  const focus = focusAt(goodLine, t);
-  const focused = focus && data.targets.find((x) => x.id === focus.traceId);
-  const box = focused ? rectAt(goodLine, focused.name, t) : null;
-  show(focusRing, !!box);
-  if (box) set(focusRing, { x: box.x - 3, y: box.y - 3, width: box.w + 6, height: box.h + 6, rx: 6 });
-}
-
-/* The film strip: one cell for each recorded frame, moving under a fixed needle */
-let pitch = 88;
-let thumbs: { canvas: HTMLCanvasElement; drawn: string }[] = [];
-/** The corner of the window where the panel opens, which is all a small frame can show. */
-const THUMB = { x: 568, y: 0, w: 432, h: 270 };
-const THUMB_PX = { w: 208, h: 130 };
-
-function buildReel(): void {
-  reel.replaceChildren();
-  thumbs = cells.map((cell, i) => {
-    const node = el('div', 'cell');
-    node.style.setProperty('--i', String(i));
-    if (cell.differs) node.classList.add('differs');
-    if (cell.first) {
-      node.classList.add('first');
-      const step = el('span', 'cell-step');
-      step.append(el('b', '', String(cell.step + 1)), steps[cell.step]!.label);
-      if (cell.step === jump.step) step.classList.add('bad');
-      // A label may run on over the frames of its own step, and no further.
-      node.style.setProperty('--span', String(cells.filter((c) => c.step === cell.step).length));
-      node.append(step);
+  for (const side of ['good', 'bad'] as const) {
+    const m = marks[side];
+    const line = lineOf(side);
+    show(m.edge, narrow && !geometry);
+    show(m.outside, narrow);
+    if (narrow) {
+      set(m.edge, { x1: vp.width, y1: 0, x2: vp.width, y2: frame.height });
+      set(m.outside, { x: vp.width, y: 0, width: frame.width - vp.width, height: frame.height });
     }
-    const canvas = el('canvas');
-    canvas.width = THUMB_PX.w;
-    canvas.height = THUMB_PX.h;
-    node.append(canvas, el('span', 'cell-ms', String(cell.t)));
-    reel.append(node);
-    return { canvas, drawn: '' };
-  });
-  cells.forEach((_, i) => thumb(i));
+    // Through the jump, every rectangle the panel recorded on its way open, so the whole path shows in one frame.
+    show(m.path, !geometry && t >= jump.t && t < jump.settled);
+    show(m.world, geometry);
+    if (!geometry) continue;
+    set(m.view, { x: 0.5, y: 0.5, width: vp.width - 1, height: frame.height - 0.5 });
+    for (const [name, node] of m.nodes) {
+      const r = rectAt(line, name, t);
+      show(node.rect, !!r);
+      show(node.name, !!r && r.w >= 60);
+      if (!r) continue;
+      set(node.rect, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 4 });
+      set(node.name, { x: r.x + r.w / 2, y: r.y + r.h / 2 + 4 * unit });
+    }
+    const own = side === 'good' ? a : b;
+    show(m.panel, !!own);
+    if (own) set(m.panel, { x: own.x, y: own.y, width: own.w, height: own.h, rx: 6 });
+    // The broken build's drawing also shows where the last good build has its panel.
+    show(m.ghost, side === 'bad' && on);
+    if (side === 'bad' && on && a) set(m.ghost, { x: a.x, y: a.y, width: a.w, height: a.h, rx: 6 });
+    set(m.fan, { d: side === 'good' || on || t >= jump.t ? fan(line, t) : fan(goodLine, t) });
+    const focus = focusAt(line, t);
+    const focused = focus && data.targets.find((x) => x.id === focus.traceId);
+    const box = focused ? rectAt(line, focused.name, t) : null;
+    show(m.focus, !!box);
+    if (box) set(m.focus, { x: box.x - 3, y: box.y - 3, width: box.w + 6, height: box.h + 6, rx: 6 });
+  }
+
+  // The ruler lives on the broken build, between where the panel is and where it should be.
+  const m = marks.bad;
+  show(marks.good.ruler, false);
+  show(m.ruler, on);
+  if (!on || !a || !b) return;
+  for (const [node, r] of [[m.outlineGood, a], [m.outlineBad, b]] as const) set(node, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 5 });
+  show(m.outlineGood, !geometry);
+  show(m.outlineBad, !geometry);
+  // A dimension line under the panels, the way a drawing marks a distance.
+  const y = Math.min(258, cam.y + cam.h - 16 * unit);
+  const from = a.x;
+  const to = a.x + gap * grow;
+  const foot = Math.min(a.y + a.h, b.y + b.h) + 5 * unit;
+  set(m.extend, { d: `M${a.x} ${foot}V${y + 6 * unit}M${b.x} ${foot}V${y + 6 * unit}` });
+  let d = `M${from} ${y}H${to}`;
+  for (let x = 0; x <= Math.abs(to - from) + 0.01; x += 10) d += `M${from + Math.sign(gap) * x} ${y - (x % 50 === 0 ? 5 : 3) * unit}V${y}`;
+  set(m.span, { d });
+  const text = `${Math.round(Math.abs(gap))} px`;
+  if (m.label.textContent !== text) m.label.textContent = text;
+  const pillW = (text.length * 6.6 + 14) * unit;
+  const fits = Math.abs(gap) > pillW + 6 * unit;
+  // Beside the line when it cannot sit over it, on whichever side still has room.
+  const right = Math.max(a.x, b.x) + 8 * unit + pillW / 2;
+  const cx = fits ? (a.x + b.x) / 2 : right + pillW / 2 < cam.x + cam.w - 4 * unit ? right : Math.min(a.x, b.x) - 8 * unit - pillW / 2;
+  const cy = fits ? y - 15 * unit : y - 1 * unit;
+  set(m.pill, { x: cx - pillW / 2, y: cy - 10 * unit, width: pillW, height: 20 * unit, rx: 10 * unit });
+  set(m.label, { x: cx, y: cy + 4.2 * unit });
+  const done = grow > 0.85;
+  show(m.pill, done);
+  show(m.label, done);
 }
 
-function thumb(i: number): void {
-  const cell = cells[i];
-  const slot = thumbs[i];
-  if (!cell || !slot || slot.drawn === cell.bad || !loaded.has(cell.bad)) return;
-  const c = slot.canvas.getContext('2d')!;
-  const s = frame.scale;
-  c.clearRect(0, 0, THUMB_PX.w, THUMB_PX.h);
-  c.imageSmoothingQuality = 'high';
-  c.drawImage(images.get(cell.bad)!, THUMB.x * s, THUMB.y * s, THUMB.w * s, THUMB.h * s, 0, 0, THUMB_PX.w, THUMB_PX.h);
-  slot.drawn = cell.bad;
-  slot.canvas.parentElement!.classList.add('ready');
+/* The scan line */
+const scanRange = (): [number, number] => [Math.max(2, Math.ceil(cam.y) + 2), Math.min(frame.height - 2, Math.floor(cam.y + cam.h) - 2)];
+
+function placeScan(): void {
+  const [lo, hi] = scanRange();
+  const y = clamp(scanY, lo, hi);
+  scanline.style.setProperty('--y', `${((y - cam.y) * cam.scale).toFixed(2)}px`);
+  set(scanline, { 'aria-valuemin': lo, 'aria-valuemax': hi, 'aria-valuenow': y, 'aria-valuetext': SAID.scan(y) });
+  const text = SAID.scanShort(y);
+  if ($('scan-y').textContent !== text) $('scan-y').textContent = text;
 }
 
-function arrived(name: string): void {
-  cells.forEach((cell, i) => {
-    if (cell.bad === name) thumb(i);
-  });
-  const cell = cells[index];
-  if (cell && (cell.good === name || cell.bad === name)) {
-    dirty = true;
-    schedule();
+function setScan(y: number): void {
+  const [lo, hi] = scanRange();
+  const next = clamp(Math.round(y), lo, hi);
+  if (next === scanY) return;
+  scanY = next;
+  placeScan();
+  drawCoreMarks();
+  scanDirty = true;
+  saveUrl();
+  schedule();
+}
+
+/* The cores. The pictures come from a worker, and the rectangles are drawn here. */
+let scanDirty = true;
+let scanBusy = false;
+let scanId = 0;
+let worker: Worker | null = null;
+/** Without a worker, as when the page is opened from a file, the same code runs here a frame at a time. */
+const local = new Map<string, Packed>();
+let localQueue: string[] = [];
+let localBusy = false;
+const STEP = frame.scale;
+
+function startScans(): void {
+  try {
+    worker = new Worker(new URL('scan.js', location.href));
+    worker.onmessage = (e: MessageEvent<{ type: 'frame' } | ({ type: 'scan' } & ScanResult)>) => {
+      if (e.data.type === 'scan') showScan(e.data);
+      else {
+        scanDirty = true;
+        schedule();
+      }
+    };
+    worker.onerror = () => {
+      worker = null;
+      scanBusy = false;
+      localQueue = [...loaded];
+      readLocal();
+    };
+    worker.postMessage({ type: 'setup', scale: frame.scale, step: STEP, base: new URL('.', location.href).href });
+    worker.postMessage({ type: 'have', names: [...loaded] });
+  } catch {
+    worker = null;
+    localQueue = [...loaded];
+    readLocal();
   }
 }
 
-function measureFilm(): void {
-  pitch = parseFloat(getComputedStyle(film).getPropertyValue('--pitch')) || 88;
-  placeReel();
+function readLocal(): void {
+  if (localBusy || !localQueue.length) return;
+  localBusy = true;
+  setTimeout(() => {
+    localBusy = false;
+    const name = localQueue.shift();
+    const img = name && images.get(name);
+    if (name && img && !local.has(name)) {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const c = canvas.getContext('2d', { willReadFrequently: true })!;
+      c.drawImage(img, 0, 0);
+      local.set(name, pack(c.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height, STEP));
+      scanDirty = true;
+      schedule();
+    }
+    readLocal();
+  }, 30);
 }
 
-/**
- * During playback the film moves a frame at a time: it rests with a whole frame
- * in the gate, then slides to the next, so the picture and the film change together.
- */
-function settle(p: number): number {
-  const whole = Math.floor(p);
-  const e = clamp((p - whole - 0.5) / 0.5, 0, 1);
-  return whole + e * e * (3 - 2 * e);
-}
-const stepped = () => (playing || idle) && !dragging && target === null;
-
-function placeReel(): void {
-  reel.style.transform = `translate3d(${(-(stepped() ? settle(pos) : pos) * pitch).toFixed(2)}px,0,0)`;
-}
-
-/* The lane: the whole recording on one line, with how far apart the builds are */
-const scope = $<SVGSVGElement>('scope');
-set(scope, { viewBox: '0 0 1000 40' });
-const scopeBase = shape('line', 's-base', scope);
-set(scopeBase, { x1: 0, y1: 30, x2: 1000, y2: 30 });
-const scopeDone = shape('line', 's-done', scope);
-const scopeTicks = steps.map((step, i) => {
-  const x = (step.at / axisEnd) * 1000;
-  const tick = shape('line', i === jump.step ? 's-tick jump' : 's-tick', scope);
-  set(tick, { x1: x, y1: 25, x2: x, y2: 35 });
-  return tick;
-});
-const scopeTrace = shape('path', 's-trace', scope);
-const peak = el('span', 'peak', `${jump.px} px`);
-peak.style.setProperty('--at', String(jump.t / axisEnd));
-$('lane').append(peak);
-
-function drawScope(): void {
-  // One sample per recorded tick, so the line is the recording and nothing between.
-  const times = [...new Set([...good.events, ...bad.events].flatMap((e) => (e.k === 'geometry' ? [e.t] : [])))].sort((a, b) => a - b);
-  let d = 'M0 30';
-  let was = 0;
-  for (const t of times) {
-    const off = Math.abs(offsetAt(t));
-    const x = ((t / axisEnd) * 1000).toFixed(1);
-    // The builds part on one tick, so the line rises straight up there.
-    if (off && !was) d += `M${x} 30`;
-    if (off || was) d += `L${x} ${(30 - (off / jump.px) * 24).toFixed(1)}`;
-    was = off;
+function requestScan(): void {
+  if (view === 'geometry') {
+    scanDirty = false;
+    drawGeometryCores();
+    return;
   }
-  set(scopeTrace, { d });
-  set(scopeBase, { x2: (cells.at(-1)!.t / axisEnd) * 1000 });
-  scopeTicks.forEach((tick, i) => tick.classList.toggle('dropped', !session.kept.includes(i)));
+  if (scanBusy || !coreW || !started) return;
+  scanDirty = false;
+  const width = Math.min(1400, Math.max(64, Math.round(coreW * Math.min(2, devicePixelRatio || 1))));
+  const request: ScanRequest = {
+    id: ++scanId, good: cells.map((c) => c.good), bad: cells.map((c) => c.bad), y: scanY,
+    x0: Math.max(0, cam.x), x1: Math.min(frame.width, cam.x + cam.w), width, mode: view === 'difference' ? 'difference' : 'shots',
+  };
+  if (worker) {
+    scanBusy = true;
+    worker.postMessage({ type: 'scan', ...request });
+  } else showScan(compose(local, request, frame.scale, STEP));
 }
 
-/* Steps, and every attempt of the reduction */
-const matrix = $('matrix');
-const attemptRange = $<HTMLInputElement>('attempt');
-const attemptsSvg = $<SVGSVGElement>('attempts');
+function showScan(result: ScanResult): void {
+  scanBusy = false;
+  // A picture for an older line or session is dropped, and the newest one is on its way.
+  if (result.id === scanId && view !== 'geometry' && result.rows) {
+    for (const side of ['good', 'bad'] as const) {
+      const canvas = scans[side];
+      if (canvas.width !== result.width || canvas.height !== result.rows) {
+        canvas.width = result.width;
+        canvas.height = result.rows;
+      }
+      canvas.getContext('2d')!.putImageData(new ImageData(new Uint8ClampedArray(result[side]), result.width, result.rows), 0, 0);
+    }
+    stage.dataset.rows = String(result.rows - result.missing);
+  }
+  if (scanDirty) schedule();
+}
+
+/** Geometry: each row shows where the window, Inspect and the panel cross the scan line. */
+function drawGeometryCores(): void {
+  const W = Math.max(64, Math.round(coreW));
+  const x0 = Math.max(0, cam.x);
+  const k = W / (Math.min(frame.width, cam.x + cam.w) - x0);
+  for (const side of ['good', 'bad'] as const) {
+    const canvas = scans[side];
+    canvas.width = W;
+    canvas.height = cells.length;
+    const c = canvas.getContext('2d')!;
+    const line = lineOf(side);
+    cells.forEach((cell, row) => {
+      const vp = viewportAt(goodLine, cell.t, { width: frame.width, height: frame.height });
+      c.fillStyle = '#fbf8f4';
+      c.fillRect(0, row, (vp.width - x0) * k, 1);
+      const band = (name: string, fill: string) => {
+        const r = rectAt(line, name, cell.t);
+        if (!r || scanY < r.y || scanY > r.y + r.h) return;
+        c.fillStyle = fill;
+        c.fillRect((r.x - x0) * k, row, r.w * k, 1);
+      };
+      for (const t of data.targets) band(t.name, '#e9e2d8');
+      const differs = side === 'bad' && Math.abs(offsetAt(cell.t)) >= 0.5;
+      band('panel', differs ? '#e3b08e' : '#b9c7bd');
+    });
+  }
+  stage.dataset.rows = String(cells.length);
+}
+
+const coreMarks = $<SVGSVGElement>('core-marks');
+const coreMarksGood = shape('svg', 'core-marks', cores.good) as SVGSVGElement;
+function drawCoreMarks(): void {
+  if (!coreW || !cells.length) return;
+  const x0 = Math.max(0, cam.x);
+  const x = (px: number) => ((px - x0) / (Math.min(frame.width, cam.x + cam.w) - x0)) * coreW;
+  const crosses = (r: Rect | null): r is Rect => !!r && scanY >= r.y && scanY <= r.y + r.h;
+  for (const side of ['good', 'bad'] as const) {
+    const svg = side === 'good' ? coreMarksGood : coreMarks;
+    svg.replaceChildren();
+    set(svg, { viewBox: `0 0 ${coreW} ${coreH}` });
+    // A seam wherever the recording held one frame for longer than a tick.
+    let seams = '';
+    // The left edge of the panel, traced from the recorded rectangles wherever the scan line crosses it.
+    let edge = '';
+    let off = '';
+    let ghost = '';
+    let pen = '';
+    cells.forEach((cell, i) => {
+      if (i && cell.t - cells[i - 1]!.t > 16) seams += `M0 ${(i * rowH).toFixed(2)}H${coreW}`;
+      const own = rectAt(lineOf(side), 'panel', cell.t);
+      const other = rectAt(goodLine, 'panel', cell.t);
+      const apart = side === 'bad' && !!own && !!other && Math.abs(own.x - other.x) >= 0.5;
+      const kind = !crosses(own) ? '' : apart ? 'off' : 'edge';
+      const seg = crosses(own) ? `${pen === kind ? 'L' : 'M'}${x(own.x).toFixed(1)} ${(i * rowH).toFixed(1)}V${((i + 1) * rowH).toFixed(1)}` : '';
+      if (kind === 'off') off += seg;
+      else if (kind === 'edge') edge += seg;
+      if (apart && crosses(other)) ghost += `${ghost && pen === 'off' ? 'L' : 'M'}${x(other.x).toFixed(1)} ${(i * rowH).toFixed(1)}V${((i + 1) * rowH).toFixed(1)}`;
+      pen = kind;
+    });
+    set(shape('path', 'c-seam', svg), { d: seams });
+    set(shape('path', 'c-edge', svg), { d: edge });
+    if (side === 'good') continue;
+    // On the broken build, the edge the panel should have followed, from the last good build's rectangles.
+    set(shape('path', 'c-ghost', svg), { d: ghost });
+    set(shape('path', 'c-edge off', svg), { d: off });
+    // A bracket down the rows where the two builds show different frames.
+    const top = jumpIndex * rowH;
+    const bottom = settledIndex * rowH;
+    const bx = coreW - 9;
+    set(shape('path', 'c-span', svg), { d: `M${bx - 5} ${top}H${bx}V${bottom}H${bx - 5}` });
+    const text = SAID.duration(jump.settled - jump.t);
+    const w = text.length * 6.2 + 14;
+    const cy = clamp((top + bottom) / 2, 12, coreH - 12);
+    set(shape('rect', 'c-pill', svg), { x: bx - w - 7, y: cy - 10, width: w, height: 20, rx: 10 });
+    const label = shape('text', 'c-label', svg);
+    set(label, { x: bx - 7 - w / 2, y: cy + 4 });
+    label.textContent = text;
+  }
+}
+
+/* The spine: a name for each step, tied to the row where it starts */
+const stepList = $('steps');
+const leaders = $<SVGSVGElement>('leaders');
 const stepButtons = steps.map((step, i) => {
   const row = el('li');
   const button = el('button', i === jump.step ? 'step is-jump' : 'step');
   button.type = 'button';
   button.append(el('i', '', String(i + 1)), el('span', '', step.label));
   button.addEventListener('click', () => {
-    if (button.getAttribute('aria-disabled') === 'true') return;
     poster = false;
     seek(step.at, true);
   });
   row.append(button);
-  $('steps').append(row);
-  return button;
+  return { row, button, leader: null as Element | null };
 });
+
+function placeSteps(): void {
+  if (!wide || !coreH) return;
+  const spineW = $('spine').getBoundingClientRect().width;
+  const kept = session.kept;
+  const rows = kept.map((s) => Math.max(0, cells.findIndex((c) => c.step === s && c.first)));
+  const truth = rows.map((r) => (r + 0.5) * rowH);
+  // Labels keep to their rows where they can, and move apart where steps start close together.
+  const gap = Math.min(16, (coreH - 12) / Math.max(1, kept.length - 1));
+  const at = truth.map((y) => clamp(y, 8, coreH - 8));
+  for (let i = 1; i < at.length; i++) at[i] = Math.max(at[i]!, at[i - 1]! + gap);
+  if (at.length && at.at(-1)! > coreH - 8) {
+    at[at.length - 1] = coreH - 8;
+    for (let i = at.length - 2; i >= 0; i--) at[i] = Math.min(at[i]!, at[i + 1]! - gap);
+  }
+  set(leaders, { viewBox: `0 0 ${spineW} ${coreH}` });
+  leaders.replaceChildren();
+  stepList.replaceChildren(...kept.map((s, i) => {
+    const item = stepButtons[s]!;
+    item.row.style.setProperty('--at', `${at[i]!.toFixed(2)}px`);
+    item.leader = shape('path', s === jump.step ? 'is-jump' : '', leaders);
+    const [from, to] = [truth[i]!.toFixed(1), at[i]!.toFixed(1)];
+    set(item.leader, { d: `M0 ${from}h3L11 ${to}h3M${spineW} ${from}h-3L${spineW - 11} ${to}h-3` });
+    return item.row;
+  }));
+  nowStep = -1;
+}
+
+/**
+ * During playback the needle moves a frame at a time: it rests on a whole frame,
+ * then slides to the next, so the picture and the needle change together.
+ */
+function settle(p: number): number {
+  const full = Math.floor(p);
+  const e = clamp((p - full - 0.5) / 0.5, 0, 1);
+  return full + e * e * (3 - 2 * e);
+}
+const stepped = () => (playing || idle) && !dragging && target === null;
+
+function placeNeedle(): void {
+  const at = clamp(stepped() ? settle(pos) : pos, 0, cells.length - 1);
+  needle.style.setProperty('--y', `${(coreTop + (at + 0.5) * rowH).toFixed(2)}px`);
+}
+
+/* The search: steps down the side, and every attempt of the reduction across */
+const matrix = $('matrix');
+const attemptRange = $<HTMLInputElement>('attempt');
+const attemptsSvg = $<SVGSVGElement>('attempts');
+const finalKept = aliveAfter(attempts, steps.length, attempts.length);
+const rowItems = steps.map((step, i) => {
+  const row = el('li', `${i === jump.step ? 'is-jump' : ''}${finalKept.includes(i) ? ' kept' : ''}`.trim());
+  row.append(el('i', '', String(i + 1)), el('span', '', step.label));
+  $('rows').append(row);
+  return row;
+});
+for (const i of finalKept) {
+  const row = el('li', i === jump.step ? 'is-jump' : '');
+  row.append(el('i', '', String(i + 1)), el('span', '', steps[i]!.label));
+  $('result-steps').append(row);
+}
+for (const [outcome, label] of Object.entries(OUTCOMES)) {
+  const row = el('li');
+  row.append(el('i', `k-${outcome}`), el('b', '', String(attempts.filter((a) => a.outcome === outcome).length)), el('span', '', label));
+  $('keys').append(row);
+}
 attemptRange.max = String(attempts.length);
 attemptRange.value = attemptRange.max;
 let shownAttempt = attempts.length;
 let reducing = 0;
-let lifelines: SVGElement[] = [];
+let bands: SVGElement[] = [];
 let columns: SVGElement[] = [];
 let cursor: SVGElement | null = null;
 let colPitch = 8;
+let searched = false;
 
 function buildMatrix(): void {
   const box = attemptsSvg.getBoundingClientRect();
@@ -540,49 +709,52 @@ function buildMatrix(): void {
   set(attemptsSvg, { viewBox: `0 0 ${box.width} ${box.height}` });
   const row = box.height / steps.length;
   colPitch = box.width / (attempts.length + 1);
-  const cell = { w: Math.max(3, Math.min(7, colPitch - 2.5)), h: Math.max(6, Math.min(12, row - 8)) };
+  const cell = { w: Math.max(3, Math.min(11, colPitch - 5)), h: Math.max(6, Math.min(16, row - 9)) };
   const x = (c: number) => (c + 0.5) * colPitch;
-  cursor = shape('rect', 'a-cursor', attemptsSvg);
-  set(cursor, { y: 0, width: colPitch, height: box.height, rx: 3 });
-  // A line for each step, for as long as the reducer still had it in play.
-  lifelines = steps.map((_, r) => {
-    const end = diedAt(attempts, r);
-    const line = shape('line', end === null ? 'a-life kept' : 'a-life', attemptsSvg) as SVGElement;
-    set(line, { x1: 0, y1: (r + 0.5) * row, x2: 0, y2: (r + 0.5) * row });
-    line.dataset.end = String(end ?? attempts.length + 1);
-    if (end === null) set(shape('circle', 'a-end', attemptsSvg), { cx: box.width - 3.5, cy: (r + 0.5) * row, r: 3.5 });
-    return line;
+  set(shape('rect', 'a-ground', attemptsSvg), { x: 0, y: 0, width: box.width, height: box.height, rx: 6 });
+  // A band for each step, as long as the reducer still had it in play. Together they are the search closing in.
+  bands = steps.map((_, r) => {
+    const band = shape('rect', 'a-alive', attemptsSvg) as SVGElement;
+    set(band, { x: 0, y: r * row, width: 0, height: row });
+    band.dataset.end = String(diedAt(attempts, r) ?? attempts.length + 1);
+    return band;
   });
+  for (let r = 1; r < steps.length; r++) set(shape('line', 'a-rule', attemptsSvg), { x1: 0, y1: r * row, x2: box.width, y2: r * row });
+  cursor = shape('rect', 'a-cursor', attemptsSvg);
+  set(cursor, { y: 0, width: colPitch, height: box.height });
   columns = attempts.map((attempt, c) => {
     const column = shape('g', `a-column a-${attempt.outcome}`, attemptsSvg) as SVGElement;
-    for (const r of attempt.kept) set(shape('rect', 'a-cell', column), { x: x(c) - cell.w / 2, y: (r + 0.5) * row - cell.h / 2, width: cell.w, height: cell.h, rx: 1.5 });
+    for (const r of attempt.kept) set(shape('rect', 'a-cell', column), { x: x(c) - cell.w / 2, y: (r + 0.5) * row - cell.h / 2, width: cell.w, height: cell.h, rx: 2 });
     return column;
   });
+  // The last column is the answer: the steps that are left.
+  for (const r of finalKept) set(shape('rect', 'a-end', attemptsSvg), { x: x(attempts.length) - cell.w / 2, y: (r + 0.5) * row - cell.h / 2, width: cell.w, height: cell.h, rx: 2 });
   showAttempt(shownAttempt);
 }
 
 function showAttempt(n: number): void {
   shownAttempt = n;
+  const total = attempts.length;
   const alive = new Set(aliveAfter(attempts, steps.length, n));
   columns.forEach((column, c) => column.classList.toggle('on', c < n));
-  const width = attemptsSvg.viewBox.baseVal.width;
-  lifelines.forEach((line) => {
-    // A line is drawn up to the attempt on screen, and stops where its step was dropped.
-    const end = Number(line.dataset.end);
-    const survives = end > attempts.length;
-    set(line, { x2: survives && n === attempts.length ? width - 3.5 : Math.min(end, n) * colPitch });
+  bands.forEach((band) => {
+    // A band runs up to the attempt on show, and stops at the attempt that dropped its step.
+    const end = Number(band.dataset.end);
+    set(band, { width: Math.max(0, (end > total && n === total ? total + 1 : Math.min(end, n)) * colPitch) });
   });
-  attemptsSvg.classList.toggle('done', n === attempts.length);
+  attemptsSvg.classList.toggle('done', n === total);
   if (cursor) {
-    show(cursor, n > 0 && n < attempts.length);
+    show(cursor, n > 0 && n < total);
     set(cursor, { x: (n - 1) * colPitch });
   }
-  stepButtons.forEach((button, i) => button.classList.toggle('gone', !alive.has(i)));
+  rowItems.forEach((row, i) => row.classList.toggle('gone', !alive.has(i)));
   $('attempt-note').textContent = attemptNote(attempts, steps.length, n);
-  $('axis-count').textContent = n === attempts.length ? `${attempts.length} attempts` : `Attempt ${n} of ${attempts.length}`;
+  $('axis-count').textContent = n === total ? `${total} attempts` : `Attempt ${n} of ${total}`;
+  const count = $('result-count');
+  (count.firstElementChild as HTMLElement).textContent = String(alive.size);
+  (count.lastElementChild as HTMLElement).textContent = SAID.inPlay(alive.size, steps.length, n === total);
   attemptRange.value = String(n);
-  attemptRange.setAttribute('aria-valuetext', `${n === 0 ? 'Before the first attempt' : `Attempt ${n} of ${attempts.length}`}, ${alive.size} steps left`);
-  matrix.style.setProperty('--attempt', String(n / attempts.length));
+  attemptRange.setAttribute('aria-valuetext', `${n === 0 ? 'Before the first attempt' : `Attempt ${n} of ${total}`}, ${alive.size} steps left`);
 }
 
 /** Plays the attempts in order. Any touch of the scrubber takes over. */
@@ -590,6 +762,7 @@ function playReduction(): void {
   cancelAnimationFrame(reducing);
   if (calm()) return showAttempt(attempts.length);
   const start = performance.now();
+  attemptsSvg.classList.add('playing');
   showAttempt(0);
   const step = (now: number) => {
     // A slow start, so the first halvings can be read as they happen.
@@ -597,8 +770,14 @@ function playReduction(): void {
     const n = clamp(Math.floor(elapsed < 1.6 ? elapsed * 5 : 8 + (elapsed - 1.6) * 9), 0, attempts.length);
     if (n !== shownAttempt) showAttempt(n);
     if (n < attempts.length) reducing = requestAnimationFrame(step);
+    else attemptsSvg.classList.remove('playing');
   };
   reducing = requestAnimationFrame(step);
+}
+
+function stopReduction(): void {
+  cancelAnimationFrame(reducing);
+  attemptsSvg.classList.remove('playing');
 }
 
 /* The verdict lines all share one grid cell, so the stage never changes height */
@@ -634,27 +813,26 @@ function render(): void {
   }
   const off = Math.round(Math.abs(offsetAt(t)));
   $('readout').textContent = readout(view, cell.differs);
-  $('source').textContent = SOURCE[view];
-  screen.setAttribute('aria-label', frameLabel(t, cell.step + 1, steps.length, steps[cell.step]!.label, cell.differs, off));
+  shots.bad.setAttribute('aria-label', frameLabel(t, cell.step + 1, steps.length, steps[cell.step]!.label, cell.differs, off));
+  shots.good.setAttribute('aria-label', SAID.goodAt(t));
   range.value = String(t);
   range.setAttribute('aria-valuetext', `${t} ms, step ${cell.step + 1}: ${steps[cell.step]!.label}, frame ${index + 1} of ${cells.length}`);
-  set(scopeDone, { x1: 0, y1: 30, x2: (t / axisEnd) * 1000, y2: 30 });
   $('clock').textContent = `${t} ms`;
-  stepButtons.forEach((button, i) => (i === cell.step ? button.setAttribute('aria-current', 'true') : button.removeAttribute('aria-current')));
   jumpButton.setAttribute('aria-disabled', String(t === jump.t));
-  reel.querySelector('.cell.current')?.classList.remove('current');
-  reel.children[index]?.classList.add('current');
-  // The step in the gate is named at the left of the film, and the steps ahead keep their own labels.
+  // The step under the needle is named in the transport, and marked on the spine.
   if (nowStep !== cell.step) {
     nowStep = cell.step;
     const now = $('now');
     now.replaceChildren(el('b', '', String(cell.step + 1)), steps[cell.step]!.label);
     now.classList.toggle('bad', cell.step === jump.step);
-    cells.forEach((c, i) => {
-      if (c.first) reel.children[i]!.classList.toggle('is-behind', c.step <= cell.step);
+    stepButtons.forEach((item, i) => {
+      if (i === cell.step) item.button.setAttribute('aria-current', 'true');
+      else item.button.removeAttribute('aria-current');
+      item.leader?.classList.toggle('now', i === cell.step);
     });
   }
   stage.classList.toggle('in-jump', phase === 'jump');
+  stage.dataset.frame = String(index);
 }
 
 function setIndex(next: number): void {
@@ -713,7 +891,7 @@ function tick(now: number): void {
     }
   } else if (playing && !holding && !calm()) {
     const next = cells[Math.min(index + 1, cells.length - 1)]!;
-    // A frame still on its way holds the film, so the picture never falls behind the clock.
+    // A frame still on its way holds the needle, so the picture never falls behind the clock.
     if (loaded.has(next.good) && loaded.has(next.bad)) {
       const before = index;
       pos = Math.min(pos + dt / dwell(index), cells.length - 1);
@@ -739,7 +917,7 @@ function tick(now: number): void {
     moving = playing;
   } else if (!playing && !dragging) {
     if (target !== null) {
-      // A spring to the frame asked for. It starts from whatever speed the film already has.
+      // A spring to the frame asked for. It starts from whatever speed the needle already has.
       const a = -210 * (pos - target) - 29 * velocity;
       velocity += a * dt;
       pos += velocity * dt;
@@ -748,11 +926,6 @@ function tick(now: number): void {
         velocity = 0;
         target = null;
       } else moving = true;
-    } else if (velocity) {
-      velocity *= Math.exp(-4.2 * dt);
-      pos += velocity * dt;
-      if (pos < 0 || pos > cells.length - 1 || Math.abs(velocity) < 3) target = clamp(Math.round(pos + velocity * 0.06), 0, cells.length - 1);
-      moving = true;
     }
     setIndex(Math.round(pos));
   }
@@ -765,12 +938,13 @@ function tick(now: number): void {
     else moving = true;
   }
 
-  placeReel();
+  placeNeedle();
   if (dirty) {
     dirty = false;
     paint();
     drawMarks();
   }
+  if (scanDirty) requestScan();
   if (moving || playing && !holding) schedule();
 }
 
@@ -847,12 +1021,12 @@ function place(i: number): void {
   schedule();
 }
 
-/** Moves to the frame showing at `t`. With `glide` the film rolls there instead of cutting. */
+/** Moves to the frame showing at `t`. With `glide` the needle rolls there instead of cutting. */
 function seek(t: number, glide = false): void {
   stop();
   const to = clamp(lastAt(cells, t), 0, cells.length - 1);
   if (glide && !calm()) {
-    // A long way off, the film cuts most of the distance and rolls the rest.
+    // A long way off, the needle cuts most of the distance and rolls the rest.
     if (Math.abs(to - pos) > 9) pos = to - Math.sign(to - pos) * 9;
     target = to;
     const cell = cells[to]!;
@@ -880,29 +1054,24 @@ function toJump(): void {
   idleLabel();
 }
 
-/* Sessions and views */
+/* Sessions, views and acts */
 function setSession(next: Session, at = time()): void {
   session = next;
   good = data.runs[next.good]!;
   bad = data.runs[next.bad]!;
   goodLine = timelines(good.events);
   badLine = timelines(bad.events);
-  // A cell wherever the picture changed, and one where each step begins even if it changed nothing.
-  const times = [...new Set([...[...good.frames, ...bad.frames].map((f) => f.t), ...next.kept.map((i) => steps[i]!.at)])].sort((a, b) => a - b);
-  const stepAt = (t: number) => next.kept.findLast((i) => steps[i]!.at <= t) ?? next.kept[0]!;
-  cells = times.map((t, i) => {
-    const g = good.frames[Math.max(0, lastAt(good.frames, t))]!.f;
-    const b = bad.frames[Math.max(0, lastAt(bad.frames, t))]!.f;
-    const step = stepAt(t);
-    return { t, good: g, bad: b, step, first: i === 0 || stepAt(times[i - 1]!) !== step, differs: g !== b };
-  });
+  cells = cellsOf(good, bad, steps, next.kept);
   jumpIndex = lastAt(cells, jump.t);
   settledIndex = lastAt(cells, jump.settled);
   for (const button of $('sessions').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.session === next.id));
-  steps.forEach((_, i) => stepButtons[i]!.setAttribute('aria-disabled', String(!next.kept.includes(i))));
   stage.dataset.session = next.id;
-  buildReel();
-  drawScope();
+  stage.dataset.cells = String(cells.length);
+  rowH = coreH / Math.max(1, cells.length);
+  for (const side of ['good', 'bad'] as const) set(marks[side].path, { d: opening(lineOf(side)) });
+  placeSteps();
+  drawCoreMarks();
+  scanDirty = true;
   index = -1;
   spoken = '';
   nowStep = -1;
@@ -921,24 +1090,47 @@ function setView(next: View): void {
   view = next;
   stage.dataset.view = next;
   for (const button of $('views').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.view === next));
-  divider.tabIndex = next === 'swipe' ? 0 : -1;
+  $('source').textContent = SOURCE[next];
+  $('core-note').textContent = coreNote(next);
   drawn = '';
   dirty = true;
+  scanDirty = true;
   if (index >= 0) render();
   saveUrl();
   schedule();
 }
 
-function setSplit(next: number): void {
-  split = clamp(next, 0.04, 0.96);
-  viewer.style.setProperty('--split', String(split));
-  divider.setAttribute('aria-valuenow', String(Math.round(split * 100)));
-  divider.setAttribute('aria-valuetext', `${Math.round(split * 100)} percent last good build`);
-  dirty = true;
+function setWhole(next: boolean): void {
+  whole = next;
+  wholeButton.setAttribute('aria-pressed', String(next));
+  wholeButton.setAttribute('aria-label', SAID.wholeLabel(next));
+  wholeButton.title = SAID.wholeLabel(next);
+  stage.classList.toggle('is-whole', next);
+  layout();
+  saveUrl();
   schedule();
 }
 
-/* A link that opens on the same frame, view and session */
+function setAct(next: Act): void {
+  act = next;
+  stage.dataset.act = next;
+  for (const button of $('acts').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.act === next));
+  if (next === 'search') {
+    stop();
+    idleLabel();
+    // The search plays once, the first time it is opened.
+    if (!searched && !calm()) requestAnimationFrame(() => requestAnimationFrame(playReduction));
+    searched = true;
+  } else {
+    stopReduction();
+    showAttempt(attempts.length);
+    layout();
+  }
+  saveUrl();
+  schedule();
+}
+
+/* A link that opens on the same frame, view, session and scan line */
 let urlTimer = 0;
 let urlReady = false;
 function saveUrl(): void {
@@ -947,8 +1139,11 @@ function saveUrl(): void {
   urlTimer = window.setTimeout(() => {
     const q = new URLSearchParams();
     if (time() !== jump.t) q.set('t', String(time()));
-    if (view !== 'overlay') q.set('view', view);
+    if (view !== 'shots') q.set('view', view);
     if (session.id !== 'original') q.set('steps', String(session.kept.length));
+    if (scanY !== data.scanY) q.set('row', String(scanY));
+    if (whole) q.set('frame', 'whole');
+    if (act === 'search') q.set('act', 'search');
     const text = q.toString();
     try {
       history.replaceState(null, '', `${location.pathname}${text ? `?${text}` : ''}${location.hash}`);
@@ -990,13 +1185,27 @@ function copyButton(button: HTMLElement, text: () => string, said: string): void
   });
 }
 
+function arrived(name: string): void {
+  const cell = cells[index];
+  if (cell && (cell.good === name || cell.bad === name)) {
+    dirty = true;
+    schedule();
+  }
+  if (!loaded.has(name)) return;
+  if (worker) worker.postMessage({ type: 'have', names: [name] });
+  else if (started) {
+    localQueue.push(name);
+    readLocal();
+  }
+  for (const watch of watchers) watch(name);
+}
+
 /* Wiring */
 for (const button of $('sessions').querySelectorAll<HTMLButtonElement>('button')) {
   button.addEventListener('click', () => {
     const next = data.sessions.find((s) => s.id === button.dataset.session)!;
     if (next === session) return;
-    const wasPlaying = playing;
-    if (wasPlaying) stop();
+    if (playing) stop();
     setSession(next);
     saveUrl();
     // The pressed button names the session, so the status only has to say what is on screen.
@@ -1009,9 +1218,27 @@ for (const button of $('views').querySelectorAll<HTMLButtonElement>('button')) {
     status.textContent = $('readout').textContent || SAID.view(button.textContent ?? '');
   });
 }
+for (const button of $('acts').querySelectorAll<HTMLButtonElement>('button')) {
+  button.addEventListener('click', () => {
+    if (button.dataset.act === act) return;
+    setAct(button.dataset.act as Act);
+    status.textContent = SAID.act(act === 'search');
+  });
+}
+wholeButton.addEventListener('click', () => {
+  setWhole(!whole);
+  status.textContent = SAID.whole(whole);
+});
 playButton.addEventListener('click', () => (playing ? pause() : play()));
 jumpButton.addEventListener('click', () => {
   if (jumpButton.getAttribute('aria-disabled') !== 'true') toJump();
+});
+$('play-kept').addEventListener('click', () => {
+  setAct('jump');
+  setSession(data.sessions[1]!, 0);
+  poster = true;
+  play();
+  playButton.focus({ preventScroll: true });
 });
 range.max = String(axisEnd);
 range.addEventListener('input', () => {
@@ -1021,8 +1248,8 @@ range.addEventListener('input', () => {
 range.addEventListener('keydown', (e) => {
   // The native steps are in ms and most of them land between frames, so the keys move by frame.
   const move: Record<string, () => void> = {
-    ArrowRight: () => stepBy(1), ArrowUp: () => stepBy(1), ArrowLeft: () => stepBy(-1), ArrowDown: () => stepBy(-1),
-    PageUp: () => stepTo(1), PageDown: () => stepTo(-1), Home: () => seek(0, true), End: () => seek(cells.at(-1)!.t, true),
+    ArrowRight: () => stepBy(1), ArrowDown: () => stepBy(1), ArrowLeft: () => stepBy(-1), ArrowUp: () => stepBy(-1),
+    PageDown: () => stepTo(1), PageUp: () => stepTo(-1), Home: () => seek(0, true), End: () => seek(cells.at(-1)!.t, true),
   };
   const action = move[e.key];
   if (!action || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -1031,139 +1258,140 @@ range.addEventListener('keydown', (e) => {
   if (e.key === 'Home' || e.key === 'End') poster = false;
   action();
 });
+
+const help = $<HTMLDialogElement>('help');
+const openHelp = () => {
+  if (!help.open) help.showModal();
+};
+$('help-open').addEventListener('click', openHelp);
+help.addEventListener('click', (e) => {
+  if (e.target === help) help.close();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || help.open) return;
+  const on = e.target as HTMLElement;
+  if (on.tagName === 'INPUT' && on !== range && on !== attemptRange || on.tagName === 'TEXTAREA') return;
+  if (e.key === '?') {
+    e.preventDefault();
+    openHelp();
+  }
+});
 stage.addEventListener('keydown', (e) => {
   if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
   const on = e.target as HTMLElement;
-  const slider = on === divider || on === attemptRange;
+  const slider = on === scanline || on === attemptRange;
   const press = on.tagName === 'BUTTON' || on.tagName === 'A';
-  if (e.key === 'Escape' && playing) pause();
+  if (e.key === '1') setAct('jump');
+  else if (e.key === '2') setAct('search');
+  else if (act === 'search') return;
+  else if (e.key === 'Escape' && playing) pause();
   else if (e.key === '[') stepTo(-1);
   else if (e.key === ']') stepTo(1);
   else if (e.key === 'f' || e.key === 'F') toJump();
+  else if (e.key === 'w' || e.key === 'W') setWhole(!whole);
   else if (e.key === ' ' && !press) (playing ? pause() : play());
   else if (e.key === 'ArrowLeft' && !slider) stepBy(-1);
   else if (e.key === 'ArrowRight' && !slider) stepBy(1);
+  else if (e.key === 'ArrowUp' && !slider) setScan(scanY - (e.shiftKey ? 16 : 4));
+  else if (e.key === 'ArrowDown' && !slider) setScan(scanY + (e.shiftKey ? 16 : 4));
   else return;
   e.preventDefault();
 });
 
-/* Dragging the film, with the speed of the hand carried into the release */
+/* Scrubbing time from the cores. A mouse drags anywhere, and a finger taps or drags the needle, so the page still scrolls. */
 {
-  let startX = 0;
-  let startPos = 0;
-  let moved = 0;
-  let trail: { x: number; t: number }[] = [];
-  film.addEventListener('pointerdown', (e) => {
+  const rowAt = (e: PointerEvent) => clamp(Math.floor((e.clientY - cores.bad.getBoundingClientRect().top) / rowH), 0, cells.length - 1);
+  const grab = (e: PointerEvent, node: HTMLElement) => {
     if (e.button) return;
     stop();
-    idleLabel();
     poster = false;
     dragging = true;
-    startX = e.clientX;
-    startPos = pos;
-    moved = 0;
-    velocity = 0;
-    target = null;
-    trail = [{ x: e.clientX, t: e.timeStamp }];
-    film.setPointerCapture(e.pointerId);
-    film.classList.add('is-dragging');
-  });
-  film.addEventListener('pointermove', (e) => {
+    node.setPointerCapture(e.pointerId);
+    stage.classList.add('is-scrubbing');
+    place(rowAt(e));
+    idleLabel();
+  };
+  const move = (e: PointerEvent) => {
     if (!dragging) return;
-    const dx = e.clientX - startX;
-    moved = Math.max(moved, Math.abs(dx));
-    let next = startPos - dx / pitch;
-    // Past either end the film gives a little and no more.
-    const end = cells.length - 1;
-    if (next < 0) next = -Math.sqrt(-next) * 0.35;
-    if (next > end) next = end + Math.sqrt(next - end) * 0.35;
-    pos = next;
-    trail.push({ x: e.clientX, t: e.timeStamp });
-    while (trail.length > 2 && e.timeStamp - trail[0]!.t > 90) trail.shift();
-    setIndex(Math.round(pos));
-    const cell = cells[index]!;
-    want([cell.good, cell.bad]);
-    schedule();
-  });
-  const release = (e: PointerEvent) => {
+    const row = rowAt(e);
+    if (row !== index) place(row);
+  };
+  const release = () => {
     if (!dragging) return;
     dragging = false;
-    film.classList.remove('is-dragging');
-    if (moved < 4) {
-      // A press without a drag goes to the frame under the pointer.
-      const box = film.getBoundingClientRect();
-      target = clamp(Math.round(pos + (e.clientX - (box.left + box.width / 2)) / pitch), 0, cells.length - 1);
-    } else {
-      const first = trail[0]!;
-      const span = e.timeStamp - first.t;
-      // A hand that stopped before letting go leaves the film where it is.
-      const moving = e.timeStamp - trail.at(-1)!.t < 70;
-      velocity = moving && span > 8 && e.type === 'pointerup' && !calm() ? -((e.clientX - first.x) / span) * 1000 / pitch : 0;
-      if (Math.abs(velocity) < 3) {
-        velocity = 0;
-        target = clamp(Math.round(pos), 0, cells.length - 1);
-      }
-    }
-    if (calm() && target !== null) return place(target);
-    last = performance.now();
-    schedule();
+    stage.classList.remove('is-scrubbing');
+    saveUrl();
   };
-  film.addEventListener('pointerup', release);
-  film.addEventListener('pointercancel', release);
-  let wheelEnd = 0;
-  film.addEventListener('wheel', (e) => {
-    const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
-    if (!dx) return;
-    e.preventDefault();
-    stop();
-    idleLabel();
-    poster = false;
-    velocity = 0;
-    target = null;
-    pos = clamp(pos + dx / pitch, 0, cells.length - 1);
-    setIndex(Math.round(pos));
-    placeReel();
-    clearTimeout(wheelEnd);
-    wheelEnd = window.setTimeout(() => {
-      target = index;
-      last = performance.now();
-      schedule();
-    }, 140);
-    schedule();
-  }, { passive: false });
+  for (const node of [cores.good, cores.bad, needle]) {
+    node.addEventListener('pointerdown', (e) => {
+      if (node === needle || e.pointerType === 'mouse') grab(e, node);
+    });
+    node.addEventListener('pointermove', move);
+    node.addEventListener('pointerup', release);
+    node.addEventListener('pointercancel', release);
+  }
+  for (const node of [cores.good, cores.bad]) {
+    node.addEventListener('click', (e) => {
+      // A tap goes to the row under the finger. A mouse has already been there on the way down.
+      if ((e as PointerEvent).pointerType === 'mouse') return;
+      stop();
+      poster = false;
+      place(rowAt(e as PointerEvent));
+      idleLabel();
+    });
+  }
 }
 
-/* The swipe divider */
+/* Moving the scan line, from its grip or from either frame */
 {
   let grabbed = false;
-  const at = (e: PointerEvent) => {
-    const box = viewer.getBoundingClientRect();
-    setSplit((e.clientX - box.left) / box.width);
-  };
-  divider.addEventListener('pointerdown', (e) => {
-    grabbed = true;
-    divider.setPointerCapture(e.pointerId);
-    at(e);
-  });
-  divider.addEventListener('pointermove', (e) => grabbed && at(e));
-  for (const type of ['pointerup', 'pointercancel'] as const) divider.addEventListener(type, () => (grabbed = false));
-  divider.addEventListener('keydown', (e) => {
-    const by = e.shiftKey ? 0.1 : 0.02;
-    if (e.key === 'ArrowLeft') setSplit(split - by);
-    else if (e.key === 'ArrowRight') setSplit(split + by);
-    else if (e.key === 'Home') setSplit(0);
-    else if (e.key === 'End') setSplit(1);
+  const at = (e: PointerEvent) => setScan(cam.y + (e.clientY - panes.bad.getBoundingClientRect().top) / cam.scale);
+  for (const node of [scanline, panes.good, panes.bad]) {
+    node.addEventListener('pointerdown', (e) => {
+      if (e.button || node !== scanline && e.pointerType !== 'mouse') return;
+      grabbed = true;
+      node.setPointerCapture(e.pointerId);
+      at(e);
+    });
+    node.addEventListener('pointermove', (e) => grabbed && at(e));
+    for (const type of ['pointerup', 'pointercancel'] as const) node.addEventListener(type, () => (grabbed = false));
+  }
+  for (const node of [panes.good, panes.bad]) node.addEventListener('click', (e) => (e as PointerEvent).pointerType !== 'mouse' && at(e as PointerEvent));
+  scanline.addEventListener('keydown', (e) => {
+    const by = e.shiftKey ? 16 : 2;
+    const [lo, hi] = scanRange();
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') setScan(scanY - by);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') setScan(scanY + by);
+    else if (e.key === 'Home') setScan(lo);
+    else if (e.key === 'End') setScan(hi);
     else return;
     e.preventDefault();
     e.stopPropagation();
   });
 }
 
-/* The reduction scrubber */
+/* The search scrubber, and the grid itself */
 attemptRange.addEventListener('input', () => {
-  cancelAnimationFrame(reducing);
+  stopReduction();
   showAttempt(Number(attemptRange.value));
 });
+{
+  let grabbed = false;
+  const at = (e: PointerEvent) => {
+    stopReduction();
+    showAttempt(clamp(Math.ceil((e.clientX - attemptsSvg.getBoundingClientRect().left) / colPitch), 0, attempts.length));
+  };
+  attemptsSvg.addEventListener('pointerdown', (e) => {
+    if (e.button || e.pointerType !== 'mouse') return;
+    grabbed = true;
+    attemptsSvg.setPointerCapture(e.pointerId);
+    at(e);
+  });
+  attemptsSvg.addEventListener('pointermove', (e) => grabbed && at(e));
+  for (const type of ['pointerup', 'pointercancel'] as const) attemptsSvg.addEventListener(type, () => (grabbed = false));
+  attemptsSvg.addEventListener('click', (e) => (e as PointerEvent).pointerType !== 'mouse' && at(e as PointerEvent));
+}
 $('reduce-play').addEventListener('click', () => {
   playReduction();
   status.textContent = SAID.replaying(attempts.length);
@@ -1173,27 +1401,28 @@ for (const button of document.querySelectorAll<HTMLElement>('[data-copy]')) copy
 
 /* Start */
 const query = new URLSearchParams(location.search);
-const startView = VIEWS.find((v) => v === query.get('view')) ?? 'overlay';
+const startView = VIEWS.find((v) => v === query.get('view')) ?? 'shots';
 const startSession = query.get('steps') === String(data.sessions[1]!.kept.length) ? data.sessions[1]! : data.sessions[0]!;
 const startTime = query.has('t') ? clamp(Number(query.get('t')) || 0, 0, axisEnd) : jump.t;
+let started = false;
 poster = startTime === jump.t;
+whole = query.get('frame') === 'whole';
+if (query.has('row')) scanY = clamp(Number(query.get('row')) || data.scanY, 2, frame.height - 2);
 
 new ResizeObserver(() => {
   layout();
   schedule();
-}).observe(viewer);
-new ResizeObserver(() => {
-  measureFilm();
-  schedule();
-}).observe(film);
-// The first report from this observer builds the grid, a frame after the viewer is up.
+}).observe(bench);
 new ResizeObserver(buildMatrix).observe(attemptsSvg);
-layout();
-measureFilm();
-setSplit(split);
 view = startView;
 setSession(startSession, startTime);
 setView(startView);
+if (whole) setWhole(true);
+else layout();
+if (query.get('act') === 'search') {
+  searched = true;
+  setAct('search');
+}
 status.textContent = '';
 urlReady = true;
 
@@ -1206,17 +1435,20 @@ if (!calm() && poster && !location.search) {
       onScreen = entries.some((e) => e.isIntersecting);
       last = performance.now();
       if (onScreen) schedule();
-    }).observe(viewer);
+    }).observe(bench);
   }
   schedule();
 }
 
-// The reduction plays once, the first time it is on screen.
-if (!calm() && 'IntersectionObserver' in window) {
-  const seen = new IntersectionObserver((entries) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    seen.disconnect();
-    playReduction();
-  }, { threshold: 0.6 });
-  seen.observe(matrix);
-}
+// The cores and the figures further down wait until the first frame is on screen.
+const later = (run: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(run, { timeout: 600 }) : setTimeout(run, 120));
+requestAnimationFrame(() => later(() => {
+  started = true;
+  startScans();
+  scanDirty = true;
+  schedule();
+  later(() => initFigures({
+    data, images, loaded, want,
+    watch: (fn) => watchers.push(fn),
+  }));
+}));
