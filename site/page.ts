@@ -1081,7 +1081,8 @@ function setSession(next: Session, at = time()): void {
   velocity = 0;
   target = null;
   setIndex(pos);
-  want(cells.slice(Math.max(0, index - 6), index + 8).flatMap((c) => [c.good, c.bad]));
+  // The frame on show first, then the ones the needle will reach next, then the ones behind it.
+  want([...cells.slice(index, index + 8), ...cells.slice(Math.max(0, index - 6), index).reverse()].flatMap((c) => [c.good, c.bad]));
   wantLater(cells.flatMap((c) => [c.bad, c.good]));
   if (!playing) idleLabel();
   schedule();
