@@ -355,7 +355,7 @@ export async function buildPage(demoDir: string): Promise<void> {
     bundle: true,
     format,
     target: 'es2022',
-    minify: true,
+    minify: !process.env.TRACE_PAGE_DEBUG,
     write: false,
     logLevel: 'warning',
   });
