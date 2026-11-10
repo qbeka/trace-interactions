@@ -34,7 +34,7 @@ if (!process.argv.includes('--only')) {
   await page.goto(`${demo.url}index.html?t=4032`);
   await page.getByRole('heading', { level: 1 }).waitFor();
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForFunction(() => document.querySelectorAll('.cell.ready').length === document.querySelectorAll('.cell').length);
+  await page.waitForFunction(() => { const stage = document.getElementById('stage')!; return stage.dataset.rows === stage.dataset.cells; });
   await pause(page, 400);
   await page.screenshot({ path: join(assets, 'cover.png') });
   await context.close();
@@ -76,39 +76,53 @@ async function caption(page: Page, text: string): Promise<void> {
   }, text);
 }
 
-// The signature interaction, 15 to 25 seconds, on the project page.
+// The signature interaction, 20 to 30 seconds, on the project page.
 await record('trace-demo', async (page) => {
   await page.goto(`${demo.url}index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
-  await pause(page, 2600);
-  await page.getByRole('button', { name: 'Replay', exact: true }).click();
-  await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 20000 });
-  await pause(page, 500);
-  await page.getByRole('button', { name: 'Difference', exact: true }).click();
-  await page.locator('#jump').click();
-  await pause(page, 1500);
-  // Drag the film through the failure by hand, there and back.
-  const film = (await page.locator('#film').boundingBox())!;
-  const y = film.y + film.height / 2;
-  const x = film.x + film.width / 2;
-  await page.mouse.move(x + 300, y);
+  await page.waitForFunction(() => { const stage = document.getElementById('stage')!; return stage.dataset.rows === stage.dataset.cells; });
+  await pause(page, 2200);
+  // Move the scan line up through the Inspect button and back down through the panel, and the cores are cut again.
+  const pane = (await page.locator('#pane-bad').boundingBox())!;
+  const lineY = (row: number) => pane.y + (row / 260) * pane.height;
+  const glide = async (x: number, from: number, to: number, steps: number) => {
+    for (let i = 0; i <= steps; i++) {
+      const p = i / steps;
+      await page.mouse.move(x, from + (to - from) * (p * p * (3 - 2 * p)));
+      await pause(page, 24);
+    }
+  };
+  await page.mouse.move(pane.x + pane.width * 0.3, lineY(96));
   await page.mouse.down();
-  for (let i = 0; i <= 60; i++) {
-    await page.mouse.move(x + 300 - i * 14, y);
-    await pause(page, 30);
-  }
-  for (let i = 0; i <= 40; i++) {
-    await page.mouse.move(x - 540 + i * 12, y);
-    await pause(page, 30);
-  }
-  await pause(page, 200);
+  await glide(pane.x + pane.width * 0.3, lineY(96), lineY(34), 38);
+  await pause(page, 500);
+  await glide(pane.x + pane.width * 0.3, lineY(34), lineY(150), 44);
+  await pause(page, 300);
+  await glide(pane.x + pane.width * 0.3, lineY(150), lineY(96), 26);
   await page.mouse.up();
-  await pause(page, 900);
+  await pause(page, 400);
+  // Drag down the broken build's core, which moves through time, and come to rest in the jump.
+  const core = (await page.locator('#core-bad').boundingBox())!;
+  const rowY = (row: number) => core.y + ((row + 0.5) / 89) * core.height;
+  await page.mouse.move(core.x + core.width * 0.3, rowY(0));
+  await page.mouse.down();
+  await glide(core.x + core.width * 0.3, rowY(0), rowY(88), 70);
+  await glide(core.x + core.width * 0.3, rowY(88), rowY(73), 24);
+  await page.mouse.up();
+  await pause(page, 700);
+  await page.getByRole('button', { name: 'Difference', exact: true }).click();
+  await pause(page, 1500);
   await page.getByRole('button', { name: 'Geometry', exact: true }).click();
-  await pause(page, 1600);
-  await page.getByRole('button', { name: 'Overlay', exact: true }).click();
-  await page.locator('#reduce-play').click();
-  await pause(page, 4200);
+  await pause(page, 1500);
+  await page.getByRole('button', { name: 'Screenshots', exact: true }).click();
+  await pause(page, 400);
+  // The search plays when it is opened, and ends on the four steps that are left.
+  await page.getByRole('button', { name: 'The search', exact: true }).click();
+  await page.waitForFunction(() => document.querySelectorAll('.a-column.on').length === 26, undefined, { timeout: 15000 });
+  await pause(page, 900);
+  await page.getByRole('button', { name: 'Play the four steps', exact: true }).click();
+  await page.waitForFunction(() => document.querySelector('#play span.on')!.textContent === 'Replay', undefined, { timeout: 20000 });
+  await pause(page, 700);
 });
 
 // The technical walkthrough, 60 to 90 seconds, with captions and no voice.
@@ -133,7 +147,7 @@ await record('trace-walkthrough', async (page) => {
   await pause(page, 7000);
   // Bring the two stages up under the bar at the top, so the caption does not cover them.
   await page.evaluate(() => window.scrollTo({ top: document.querySelector('.deck')!.getBoundingClientRect().top + scrollY - 68, behavior: 'smooth' }));
-  await caption(page, 'Both stages are drawn from recorded rectangles on one virtual clock, with the same actions at the same times');
+  await caption(page, 'Both stages open close on the failure, with the recorded rectangles drawn over a screenshot of the same moment');
   await pause(page, 7000);
   await page.getByRole('button', { name: '0.1x' }).click();
   await seek(page, 3990);
