@@ -43,7 +43,7 @@ describe('one-line strings on the stage', () => {
       ...VIEWS.flatMap((v) => [readout(v, true), readout(v, false), coreNote(v)]),
       ...Object.values(OUTCOMES),
       ...[2, 96, 318].flatMap((y) => [SAID.scan(y), SAID.scanShort(y)]),
-      ...[true, false].flatMap((on) => [SAID.whole(on), SAID.wholeLabel(on), SAID.act(on), SAID.inPlay(4, 14, on)]),
+      ...[true, false].flatMap((on) => [SAID.whole(on), SAID.wholeLabel(on), SAID.act(on), SAID.inPlay(14, on)]),
       SAID.duration(240), SAID.goodAt(4000), SAID.makeFrame(1, 16, 0),
       endsLine(true, 58, false), endsLine(true, 0, false), endsLine(false, 0, true), endsLine(false, 0, false),
     ];

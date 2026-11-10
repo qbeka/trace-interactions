@@ -79,7 +79,7 @@ export function stageLines(data: { steps: { label: string }[]; attempts: { kept:
     ...VIEWS.flatMap((v) => [readout(v, true), readout(v, false), coreNote(v)]),
     SAID.finished, SAID.scenario, SAID.command, SAID.copyFailed, SAID.replaying(data.attempts.length), ...VIEWS.map((v) => SAID.view(v)),
     SAID.scan(96), SAID.scanShort(96), SAID.whole(true), SAID.whole(false), SAID.wholeLabel(true), SAID.wholeLabel(false), SAID.act(true), SAID.act(false),
-    SAID.duration(240), SAID.inPlay(4, 14, true), SAID.inPlay(8, 14, false), SAID.goodAt(4000), SAID.makeFrame(11, 16, 160),
+    SAID.duration(240), SAID.inPlay(14, true), SAID.inPlay(14, false), SAID.goodAt(4000), SAID.makeFrame(11, 16, 160),
     endsLine(true, 58, false), endsLine(true, 0, false), endsLine(false, 0, true), endsLine(false, 0, false),
     ...[[true, 80], [true, 0], [false, 0]].map(([differs, px]) => frameLabel(4000, 12, data.steps.length, 'Reopen', differs as boolean, px as number)),
     ...markupLines(template),

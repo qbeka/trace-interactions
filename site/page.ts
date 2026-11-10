@@ -712,7 +712,6 @@ function placeNeedle(): void {
 }
 
 /* The search: steps down the side, and every attempt of the reduction across */
-const matrix = $('matrix');
 const attemptRange = $<HTMLInputElement>('attempt');
 const attemptsSvg = $<SVGSVGElement>('attempts');
 const finalKept = aliveAfter(attempts, steps.length, attempts.length);
@@ -792,7 +791,7 @@ function showAttempt(n: number): void {
   $('axis-count').textContent = n === total ? `${total} attempts` : `Attempt ${n} of ${total}`;
   const count = $('result-count');
   (count.firstElementChild as HTMLElement).textContent = String(alive.size);
-  (count.lastElementChild as HTMLElement).textContent = SAID.inPlay(alive.size, steps.length, n === total);
+  (count.lastElementChild as HTMLElement).textContent = SAID.inPlay(steps.length, n === total);
   attemptRange.value = String(n);
   attemptRange.setAttribute('aria-valuetext', `${n === 0 ? 'Before the first attempt' : `Attempt ${n} of ${total}`}, ${alive.size} steps left`);
 }

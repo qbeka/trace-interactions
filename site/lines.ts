@@ -60,7 +60,7 @@ export const SAID = {
   wholeLabel: (on: boolean) => (on ? 'Show the part where the panel opens' : 'Show the whole frame'),
   act: (search: boolean) => (search ? 'The search for the steps that matter' : 'The jump, frame by frame'),
   duration: (ms: number) => `${ms} ms`,
-  inPlay: (alive: number, total: number, done: boolean) => (done ? `of ${total} steps are needed` : `of ${total} steps still in play`),
+  inPlay: (total: number, done: boolean) => (done ? `of ${total} steps are needed` : `of ${total} steps still in play`),
   goodAt: (t: number) => `Last good build at ${t} ms`,
   makeFrame: (n: number, total: number, t: number) => `Frame ${n} of ${total}, at ${t} ms`,
 };
