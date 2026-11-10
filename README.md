@@ -28,7 +28,7 @@ screenshot of the same moment. On the page and in a report, `Space` plays, `[` a
 action, and `F` jumps to the failure. On the page, `?` lists the other keys. In a report, `R`
 switches between the reduced and original sequence.
 
-You can also watch the [27 second demo](docs/assets/trace-demo.mp4) or the
+You can also watch the [28 second demo](docs/assets/trace-demo.mp4) or the
 [70 second walkthrough](docs/assets/trace-walkthrough.mp4), which has captions and no voice.
 
 ## Run it
