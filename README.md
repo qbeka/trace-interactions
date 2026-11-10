@@ -26,7 +26,7 @@ screenshot of the same moment. On the page and in a report, `Space` plays, `[` a
 action, and `F` jumps to the failure. On the page, `?` lists the other keys. In a report, `R`
 switches between the reduced and original sequence.
 
-You can also watch the [25 second demo](docs/assets/trace-demo.mp4) or the
+You can also watch the [27 second demo](docs/assets/trace-demo.mp4) or the
 [70 second walkthrough](docs/assets/trace-walkthrough.mp4), which has captions and no voice.
 
 ## Run it
@@ -166,8 +166,8 @@ The full method, raw runs and failures are in [docs/REPORT.md](docs/REPORT.md).
 | Command | What it does | Time here |
 |---|---|---|
 | `pnpm check` | Type checks everything | Under 1 s |
-| `pnpm test` | 141 unit tests | Under 1 s |
-| `pnpm test:e2e` | 96 real browser tests on all three engines | About 5 minutes |
+| `pnpm test` | 152 unit tests | Under 1 s |
+| `pnpm test:e2e` | 106 real browser tests on all three engines | About 6 minutes |
 | `pnpm bench:smoke` | One good pair and one seeded failure | About 4 s |
 | `pnpm bench` | The full measurement | 42 minutes |
 | `pnpm demo` | Rebuilds the reports, the page's screenshots and the project page in `demo/` | About 4 minutes |
