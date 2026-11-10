@@ -388,7 +388,7 @@ export async function buildPage(demoDir: string): Promise<void> {
     return problem ? [`"${line}" ${problem}`] : [];
   });
   if (wrong.length) throw new Error(`A status line, hint, caption, heading or label must be one sentence with no closing period:\n${wrong.join('\n')}`);
-  if (/[–—]/.test(story + template)) throw new Error('The page must not use an em dash or an en dash.');
+  if (/[\u2013\u2014]/.test(story + template)) throw new Error('The page must not use an em dash or an en dash.');
   const first = [frames.runs['original-baseline']!, frames.runs['original-candidate']!].map((list) => atOrBefore(list, jumpT));
   const preload = first.map((f) => `<link rel="preload" href="./frames/${f}.webp" as="image" type="image/webp">`).join('\n');
   // Replacers are functions, so a `$` in the data is never read as a pattern.
