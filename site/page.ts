@@ -939,7 +939,8 @@ function tick(now: number): void {
   }
 
   placeNeedle();
-  if (dirty) {
+  // Nothing is painted until the stage has been measured once.
+  if (dirty && paneW) {
     dirty = false;
     paint();
     drawMarks();
@@ -1417,8 +1418,13 @@ new ResizeObserver(buildMatrix).observe(attemptsSvg);
 view = startView;
 setSession(startSession, startTime);
 setView(startView);
-if (whole) setWhole(true);
-else layout();
+// The first measurement is left to the observer above, which reports after the browser's own first layout.
+if (whole) {
+  wholeButton.setAttribute('aria-pressed', 'true');
+  wholeButton.setAttribute('aria-label', SAID.wholeLabel(true));
+  wholeButton.title = SAID.wholeLabel(true);
+  stage.classList.add('is-whole');
+}
 if (query.get('act') === 'search') {
   searched = true;
   setAct('search');
