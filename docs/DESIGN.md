@@ -95,27 +95,37 @@ the verdict, which is saved with the run and shown as it was written.
 The page shows each build twice: as the frame on the clock, and as a slit scan under it. A
 slit scan takes one row of pixels at the same height from every recorded frame and stacks
 the rows in time order, so a whole session is one picture. An opening panel draws a funnel,
-a resize draws a step, and the failure is the place where the two pictures part. A frame
-and its scan share one horizontal scale, so a place on one is the same place on the other.
-The scan line can be moved, and both pictures are cut again along it.
+a resize draws a step, and the failure is the place where the two pictures part. The scan
+line can be moved, and both pictures are cut again along it.
 
-Two builds side by side replaced the earlier single viewer, because each scan has to sit
-under its own frame. The broken build still carries both outlines and the ruler, so the
-distance is read in one set of coordinates. The frames are cut to the part of the window
-where the panel is from the reopen onward, and the whole frame is one press away. Through
-the failure each frame also draws every rectangle the panel recorded on its way open, so
-the two paths can be compared without playing anything.
+The frames come first. The page opens on the first frame of the failure, close on the
+Inspect button and the two places the panel starts, so the distance between them is the
+largest thing on the stage. As the panel grows, the view opens out to the part of the
+window where the panel is from the reopen onward, and away from the failure a frame and
+its scan share that view and one horizontal scale. The whole frame is one press away. The
+broken build carries both outlines and the ruler, so the distance is read in one set of
+coordinates. Over a screenshot, only where the panel starts and where it ends are outlined,
+and every rectangle between them is left to Geometry.
+
+A scan has to read as a picture of time to someone who has never seen one. One line between
+the frames and the scans says what they are. Over each scan, the panel's band is toned and
+everything outside it is muted, so the shape the panel makes can be told from the page
+around it. On the broken build the rows where the panel is out of place are toned as a
+failure, the last good build's edge is dashed beside them, the gap between the two is
+hatched, and one note says how far off the panel opened, for how long and on which step.
+All of that is drawn from the report's rectangles, and the pixels under it are not changed.
 
 The scans are read off the main thread. A worker keeps each frame as runs of equal pixels,
 which is a few kilobytes for a screenshot of an interface, and answers with both pictures
 whenever the line, the session or the view changes. Where a worker cannot start, as when the
-page is opened from a file, the same code runs on the page a frame at a time.
+page is opened from a file, the rows are copied straight from the frames on the page, a few
+each tick.
 
 Difference lights the pixels where the two builds disagree, in the frame and in the scan,
 where everything outside the failure is black. Geometry draws the report's rectangles in the
-frame, and in the scans the places where they cross the line. The outlines, the ruler, the
-traced edge of the panel and the bracket are always drawn from the report's rectangles,
-never from the pictures.
+frame, with the whole path of the panel, and in the scans the places where they cross the
+line. The outlines, the ruler, the toning and the note are always drawn from the report's
+rectangles, never from the pictures.
 
 The reduction has the stage to itself in a second act. It is a grid with one row for each
 step and one column for each attempt the reducer saved, over a band for each step that runs

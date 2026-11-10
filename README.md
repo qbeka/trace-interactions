@@ -7,13 +7,15 @@ A panel can look right in its final screenshot and still have lost focus, accept
 stale transition or jumped during a resize. Trace finds those failures and explains
 each one in a sentence, with two aligned replays that show where the builds part.
 
-![The Trace project page, where each build is its frame above a slit scan of all 89 recorded frames, with a ruler on the broken build 32 ms into the failure and a bracket down the 240 ms where the two scans differ](docs/assets/cover.png)
+![The Trace project page, held on the first frame of the failure, with the broken build close on the Inspect button and its panel starting 80 px to the right, above slit scans of all 89 recorded frames where the broken build's last opening is shaded and marked](docs/assets/cover.png)
 
 ## See a report
 
-**[Watch the replay](https://www.qendrimbeka.com/projects/trace/)** in your browser. Each build is shown as the frame on the clock above
-a slit scan: one row of pixels from every recorded frame, stacked in time order, so the whole
-session is one picture and the failure is the place where the two pictures part. Drag the scan
+**[Watch the replay](https://www.qendrimbeka.com/projects/trace/)** in your browser. It opens close on the first frame of the
+failure, with the distance the panel is off drawn between the two places it starts. Under each
+build's frame is a slit scan: one row of pixels from every recorded frame, stacked in time
+order, so the whole session is one picture and the failure is the place where the two
+pictures part. Drag the scan
 line to cut the pictures along another row, drag down a picture to move through time, and
 switch to the difference or to the recorded rectangles. A second view replays all 26 attempts
 of the reduction to four steps, and you can copy those four steps as a scenario. No install
