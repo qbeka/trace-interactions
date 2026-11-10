@@ -27,11 +27,11 @@ async function seek(page: Page, ms: number): Promise<void> {
   }, ms);
 }
 
-// Cover, from the project page, held two frames into the failure with motion off.
+// Cover, from the project page, held on the first frame of the failure with motion off.
 if (!process.argv.includes('--only')) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 760 }, deviceScaleFactor: 2, reducedMotion: 'reduce' });
   const page = await context.newPage();
-  await page.goto(`${demo.url}index.html?t=4032`);
+  await page.goto(`${demo.url}index.html`);
   await page.getByRole('heading', { level: 1 }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => { const stage = document.getElementById('stage')!; return stage.dataset.rows === stage.dataset.cells; });
@@ -82,9 +82,14 @@ await record('trace-demo', async (page) => {
   await page.getByRole('heading', { level: 1 }).waitFor();
   await page.waitForFunction(() => { const stage = document.getElementById('stage')!; return stage.dataset.rows === stage.dataset.cells; });
   await pause(page, 2200);
-  // Move the scan line up through the Inspect button and back down through the panel, and the cores are cut again.
+  // Hold the stage on the first frame of the failure, then move the scan line up through the
+  // Inspect button and back down, and the cores are cut again.
+  await page.locator('#time').focus();
+  await page.keyboard.press('f');
+  await pause(page, 600);
   const pane = (await page.locator('#pane-bad').boundingBox())!;
-  const lineY = (row: number) => pane.y + (row / 260) * pane.height;
+  const [, top, , tall] = (await page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number);
+  const lineY = (row: number) => pane.y + ((row - top!) / tall!) * pane.height;
   const glide = async (x: number, from: number, to: number, steps: number) => {
     for (let i = 0; i <= steps; i++) {
       const p = i / steps;
@@ -92,13 +97,13 @@ await record('trace-demo', async (page) => {
       await pause(page, 24);
     }
   };
-  await page.mouse.move(pane.x + pane.width * 0.3, lineY(96));
+  await page.mouse.move(pane.x + pane.width * 0.2, lineY(84));
   await page.mouse.down();
-  await glide(pane.x + pane.width * 0.3, lineY(96), lineY(34), 38);
+  await glide(pane.x + pane.width * 0.2, lineY(84), lineY(34), 38);
   await pause(page, 500);
-  await glide(pane.x + pane.width * 0.3, lineY(34), lineY(150), 44);
+  await glide(pane.x + pane.width * 0.2, lineY(34), lineY(116), 44);
   await pause(page, 300);
-  await glide(pane.x + pane.width * 0.3, lineY(150), lineY(96), 26);
+  await glide(pane.x + pane.width * 0.2, lineY(116), lineY(84), 26);
   await page.mouse.up();
   await pause(page, 400);
   // Drag down the broken build's core, which moves through time, and come to rest in the jump.
