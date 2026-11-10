@@ -1,5 +1,5 @@
 import type { Action, Requirement, Scenario } from '../../src/scenario/schema.ts';
-import type { NodeRef, Rect, TraceEvent, Violation } from '../../src/trace/types.ts';
+import type { NodeRef, Rect, Screenshot, TraceEvent, Violation } from '../../src/trace/types.ts';
 import type { ReportCase, RunSide } from './types.ts';
 
 /**
@@ -88,20 +88,74 @@ export interface Frame {
   h: number;
 }
 
-/**
- * The region the stages show: every rect either build recorded, plus a margin.
- * Both stages share it, so a position on one means the same thing on the other.
- * The full viewport would leave the action as a speck in a corner.
- */
-export function frameOf(lines: Timelines[], fallback: { width: number; height: number }): Frame {
-  const rects = lines.flatMap((l) => [...l.rects.values()].flat()).flatMap((g) => (g.rect ? [g.rect] : []));
-  if (rects.length === 0) return { x: 0, y: 0, w: fallback.width, h: fallback.height };
+/** The stages are drawn at this shape, so the deck keeps its height whatever they frame. */
+export const STAGE_ASPECT = 2;
+
+/** Adds a margin to a box and widens or deepens it to the stage's shape, about its centre. */
+export function fit(box: Frame, margin = Math.max(12, Math.max(box.w, box.h) * 0.08)): Frame {
+  let w = box.w + margin * 2;
+  let h = box.h + margin * 2;
+  if (w / h < STAGE_ASPECT) w = h * STAGE_ASPECT;
+  else h = w / STAGE_ASPECT;
+  return { x: box.x + box.w / 2 - w / 2, y: box.y + box.h / 2 - h / 2, w, h };
+}
+
+function bounds(rects: Rect[]): Frame {
   const left = Math.min(...rects.map((r) => r.x));
   const top = Math.min(...rects.map((r) => r.y));
-  const right = Math.max(...rects.map((r) => r.x + r.w));
-  const bottom = Math.max(...rects.map((r) => r.y + r.h));
-  const margin = Math.max(12, Math.max(right - left, bottom - top) * 0.06);
-  return { x: left - margin, y: top - margin, w: right - left + margin * 2, h: bottom - top + margin * 2 };
+  return { x: left, y: top, w: Math.max(...rects.map((r) => r.x + r.w)) - left, h: Math.max(...rects.map((r) => r.y + r.h)) - top };
+}
+
+/** The stretch of the run an action owns: from its start to the start of the next one. */
+export function actionSpan(line: Timelines, time: number): { from: number; to: number } {
+  const next = line.actions.find((a) => a.t > time);
+  const from = line.actions.filter((a) => a.t <= time).at(-1)?.t ?? 0;
+  return { from, to: next?.t ?? Infinity };
+}
+
+/**
+ * The region the stages show while one action plays out: everything either build
+ * recorded from that action until the next, and whatever was already in place.
+ * Both stages share it, so a position on one means the same thing on the other,
+ * and it only changes when the action does, so the frame never moves under a motion.
+ * The full viewport would leave the action as a speck in a corner.
+ */
+export function frameAt(lines: Timelines[], time: number, fallback: { width: number; height: number }): Frame {
+  const { from, to } = actionSpan(lines[0]!, time);
+  const rects = lines.flatMap((line) => [...line.rects.entries()].flatMap(([target, samples]) => {
+    const standing = rectAt(line, target, from);
+    const during = samples.flatMap((g) => (g.rect && g.t >= from && g.t < to ? [g.rect] : []));
+    return standing ? [standing, ...during] : during;
+  }));
+  if (rects.length === 0) return fit({ x: 0, y: 0, w: fallback.width, h: fallback.height }, 0);
+  return fit(bounds(rects));
+}
+
+/** The close view of a measured failure: where the target should have started, and where it did. */
+export function failureFrame(gap: OriginGap): Frame {
+  const box = bounds([gap.from, gap.to]);
+  return fit(box, Math.max(24, Math.max(box.w, box.h) * 0.34));
+}
+
+/**
+ * The screenshot that shows the page as the trace has it at `time`, or null.
+ * Screenshots come from a separate pass, so one is only offered under controlled
+ * time, where both passes reach the same state at the same moment. An action's
+ * own screenshot is taken after it ran and comes last among those at its time.
+ */
+export function shotAt(side: RunSide, time: number, within: number): Screenshot | null {
+  if (side.clock.mode !== 'controlled') return null;
+  return side.screenshots.filter((s) => Math.abs(s.t - time) < within).at(-1) ?? null;
+}
+
+/** Whether a screenshot was taken as the clock reached an action's time, before that action ran. */
+export function takenBefore(shot: Screenshot, shots: Screenshot[]): boolean {
+  return shot.label.startsWith('at ') && shots.findLast((s) => s.t === shot.t) !== shot;
+}
+
+/** The whole window, at the stage's shape. */
+export function windowFrame(viewport: { width: number; height: number }): Frame {
+  return fit({ x: 0, y: 0, w: viewport.width, h: viewport.height }, 0);
 }
 
 /** The path a target took since it last appeared, up to `time`. */

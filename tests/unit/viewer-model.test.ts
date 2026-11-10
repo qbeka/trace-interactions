@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { ReportData } from '../../viewer/src/types.ts';
 import type { Requirement } from '../../src/scenario/schema.ts';
 import { lineProblem } from '../../site/lines.ts';
-import { actionName, describeRequirement, originGap, alignTime, focusAt, frameOf, lastAt, primaryTarget, rectAt, skipIdle, stateAt, stateSegments, timelines, trailAt } from '../../viewer/src/model.ts';
+import { actionName, actionSpan, describeRequirement, failureFrame, fit, frameAt, originGap, alignTime, focusAt, lastAt, primaryTarget, rectAt, shotAt, skipIdle, STAGE_ASPECT, stateAt, stateSegments, takenBefore, timelines, trailAt, windowFrame } from '../../viewer/src/model.ts';
 import { scenario, trace } from './helpers.ts';
 
 const box = (x: number) => ({ x, y: 0, w: 10, h: 10 });
@@ -58,14 +58,26 @@ describe('viewer model', () => {
     expect(skipIdle(busy, 2000)).toBe(2000);
   });
 
-  it('frames every rect on either build, and falls back to the viewport', () => {
-    const a = timelines(trace().at(0).rect('panel', { x: 500, y: 20, w: 100, h: 50 }).events);
-    const b = timelines(trace().at(0).rect('panel', { x: 300, y: 40, w: 100, h: 50 }).events);
-    const f = frameOf([a, b], { width: 900, height: 600 });
-    expect(f.x).toBeLessThan(300);
-    expect(f.x + f.w).toBeGreaterThan(600);
-    expect(f.w).toBeLessThan(900);
-    expect(frameOf([timelines([])], { width: 900, height: 600 })).toEqual({ x: 0, y: 0, w: 900, h: 600 });
+  it('frames what either build recorded during the action under the clock, at one shape', () => {
+    const build = (x: number) => timelines(trace()
+      .at(0).action(0, 'activate').rect('trigger', { x: 700, y: 10, w: 80, h: 30 }).rect('panel', { x, y: 40, w: 100, h: 50 })
+      .at(16).rect('panel', { x: x - 100, y: 40, w: 200, h: 90 })
+      .at(400).action(1, 'activate').rect('panel', null)
+      .at(416).rect('trigger', { x: 100, y: 10, w: 80, h: 30 }).events);
+    const lines = [build(500), build(520)];
+    const first = frameAt(lines, 8, { width: 900, height: 600 });
+    // Both builds, and the trigger that was standing when the action began.
+    expect(first.x).toBeLessThan(400);
+    expect(first.x + first.w).toBeGreaterThan(780);
+    expect(first.w / first.h).toBeCloseTo(STAGE_ASPECT);
+    // The frame holds still for the whole action, and moves on with the next one.
+    expect(frameAt(lines, 300, { width: 900, height: 600 })).toEqual(first);
+    const second = frameAt(lines, 410, { width: 900, height: 600 });
+    expect(second).not.toEqual(first);
+    expect(second.x).toBeLessThan(100);
+    expect(actionSpan(lines[0]!, 8)).toEqual({ from: 0, to: 400 });
+    expect(actionSpan(lines[0]!, 500)).toEqual({ from: 400, to: Infinity });
+    expect(frameAt([timelines([])], 0, { width: 900, height: 600 })).toEqual({ x: -150, y: 0, w: 1200, h: 600 });
   });
 
   it('picks the target a geometry requirement names', () => {
@@ -94,6 +106,36 @@ describe('what a report says about an action and a measured gap', () => {
     const gap = originGap(fixed.cases[0]!)!;
     expect(gap.px).toBe(80);
     expect(fixed.cases[0]!.comparison.verdict).toBe('fixed');
+  });
+
+  it('closes in on the two rectangles of a measured failure, and can show the whole window', () => {
+    const gap = originGap(report.cases[0]!)!;
+    const close = failureFrame(gap);
+    for (const r of [gap.from, gap.to]) {
+      expect(r.x).toBeGreaterThan(close.x);
+      expect(r.x + r.w).toBeLessThan(close.x + close.w);
+      expect(r.y).toBeGreaterThan(close.y);
+      expect(r.y + r.h).toBeLessThan(close.y + close.h);
+    }
+    expect(close.w).toBeLessThan(400);
+    expect(close.w / close.h).toBeCloseTo(STAGE_ASPECT);
+    expect(windowFrame({ width: 1000, height: 640 })).toEqual({ x: -140, y: 0, w: 1280, h: 640 });
+    expect(fit({ x: 0, y: 0, w: 400, h: 100 }, 0)).toEqual({ x: 0, y: -50, w: 400, h: 200 });
+  });
+
+  it('offers the screenshot of a moment only where it shows the page as the trace has it', () => {
+    const c = report.cases.find((x) => x.id === 'reduced')!;
+    const shots = c.candidate.screenshots;
+    // Two screenshots share the failure's time. The clock's one came before the action, and the action's one after.
+    const at = shots.filter((s) => s.t === 4000);
+    expect(at.map((s) => s.label)).toEqual(['at 4000 ms', 'reopen']);
+    expect(takenBefore(at[0]!, shots)).toBe(true);
+    expect(takenBefore(at[1]!, shots)).toBe(false);
+    expect(shotAt(c.candidate, 4000, 8)).toBe(at[1]);
+    expect(shotAt(c.candidate, 4016, 8)).toBeNull();
+    expect(shotAt(c.candidate, 4500, 8)?.label).toBe('settled');
+    // Wall clock runs do not line up with the screenshot pass, so they get none.
+    expect(shotAt({ ...c.candidate, clock: { ...c.candidate.clock, mode: 'wall' } }, 4000, 8)).toBeNull();
   });
 
   it('has no gap to draw when nothing failed', () => {
