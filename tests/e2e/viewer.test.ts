@@ -97,16 +97,58 @@ describe('portable report', () => {
     await page.context().close();
   });
 
-  it('steps along the screenshots, and marks the one taken at the failure', async () => {
+  it('opens close on the failure, over the screenshot of that moment', async () => {
+    const page = await open(failing.url, 1280, { reducedMotion: 'reduce' });
+    const stages = page.locator('figure.stage');
+    const box = async (i: number) => (await stages.nth(i).locator('svg').getAttribute('viewBox'))!.split(' ').map(Number);
+    const close = await box(1);
+    expect(close[2]).toBeLessThan(400);
+    expect(await box(0)).toEqual(close);
+    // Both builds have a screenshot taken just after the action at the failure, and each stage shows its own.
+    expect(await stages.nth(0).locator('image').getAttribute('href')).toMatch(/^screenshots\/reduced-baseline-\d+\.png$/);
+    expect(await stages.nth(1).locator('image').getAttribute('href')).toMatch(/^screenshots\/reduced-candidate-\d+\.png$/);
+    expect(await stages.nth(1).locator('.stage-source dd').textContent()).toBe('screenshot at 4000 ms');
+    const height = (await page.locator('.deck').boundingBox())!.height;
+    // One sample on there is no screenshot, and the frame opens out to the whole action.
+    await page.locator('body').click({ position: { x: 2, y: 2 } });
+    await page.keyboard.press('ArrowRight');
+    expect(await stages.locator('image').count()).toBe(0);
+    expect(await stages.nth(1).locator('.stage-source dd').textContent()).toBe('recorded rectangles');
+    const action = await box(1);
+    expect(action[2]).toBeGreaterThan(close[2]! + 100);
+    expect(action[2]).toBeLessThan(900);
+    expect(await box(0)).toEqual(action);
+    // The frame holds still through the rest of the action.
+    for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowRight');
+    expect(await box(1)).toEqual(action);
+    await page.getByRole('button', { name: 'Show the whole window' }).click();
+    expect((await box(1))[2]).toBe(1280);
+    await page.getByRole('button', { name: 'Frame the tracked elements' }).click();
+    expect(await box(1)).toEqual(action);
+    expect((await page.locator('.deck').boundingBox())!.height).toBe(height);
+    await page.context().close();
+  });
+
+  it('steps along the screenshots, and marks the one that shows the failure', async () => {
     const page = await open(failing.url);
     const frames = page.locator('.film .frame');
     expect(await frames.count()).toBeGreaterThan(4);
     expect(await page.locator('.film .frame[aria-current="true"] .frame-name').textContent()).toBe('failure');
-    expect(await frames.locator('.frame-name').allTextContents()).toContain('resize to 920 × 640');
+    const names = await frames.locator('.frame-name').allTextContents();
+    expect(names).toContain('resize to 920 × 640');
+    // The screenshot taken as the clock reached the failure came before the action, and says so.
+    expect(names.indexOf('before reopen')).toBe(names.indexOf('failure') - 1);
+    expect(names.filter((n) => n === 'failure')).toHaveLength(1);
     await frames.nth(2).click();
     expect(await time(page)).toBe(3200);
     expect(await frames.nth(2).getAttribute('aria-current')).toBe('true');
-    for (const img of await page.locator('.film img').all()) expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+    const hrefs = await page.locator('.film .crop image').evaluateAll((els) => els.map((el) => el.getAttribute('href')!));
+    expect(hrefs.length).toBe(await frames.count());
+    for (const href of hrefs) expect((await page.request.get(new URL(href, failing.url).href)).headers()['content-type']).toBe('image/png');
+    // Under the tables, the pair of screenshots is the pair that shows the failure, with the whole window a click away.
+    const pair = await page.locator('.shots .crop image').evaluateAll((els) => els.map((el) => el.getAttribute('href')!));
+    expect(pair[1]).toBe(hrefs[names.indexOf('failure')]);
+    expect(await page.locator('.shots a').first().getAttribute('href')).toBe(pair[0]);
     await page.context().close();
   });
 
@@ -135,7 +177,7 @@ describe('portable report', () => {
       await page.evaluate(() => document.querySelectorAll('details').forEach((d) => (d.open = true)));
       const lines = await page.evaluate(() => {
         const own = (el: Element) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent ?? '').join('').trim();
-        const whole = [...document.querySelectorAll('.lede, .note, .broken-text, .film-title, .legend li, .stage-outcome, .frame-name, th, h2, .button, .facts dt')].map((el) => (el.textContent ?? '').trim());
+        const whole = [...document.querySelectorAll('.lede, .note, .broken-text, .film-title, .legend li, .stage-outcome, .frame-name, .framing, .stage-source dd, .shots a, th, h2, .button, .facts dt')].map((el) => (el.textContent ?? '').trim());
         const cells = [...document.querySelectorAll('.checks td:first-child')].map(own);
         const labels = [...document.querySelectorAll('[aria-label]')].map((el) => el.getAttribute('aria-label') ?? '');
         return [...whole, ...cells, ...labels].filter(Boolean);
