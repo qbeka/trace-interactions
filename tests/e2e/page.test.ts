@@ -394,7 +394,8 @@ describe('project page', () => {
 
   it('names every step of a session beside the row where it starts, and never asks for internal build names', async () => {
     const { page } = await open(still);
-    expect(await page.locator('#steps .step').count()).toBe(14);
+    // The names are placed once the stage has been measured, a frame after it appears.
+    await expect.poll(() => page.locator('#steps .step').count()).toBe(14);
     expect(await stageData(page, 'cells')).toBe('89');
     expect(await page.locator('#steps [aria-current="true"] span').textContent()).toBe('Reopen');
     // A name goes to its step.
