@@ -50,11 +50,10 @@
 .bench {
   position: relative; display: grid; min-height: 0; padding: 0 12px;
   /* On a short window the frames give up width, so the cores under them keep their height. */
-  --pane-max: calc((var(--stage-height) - 148px) * .86);
+  --pane-max: calc((var(--stage-height) - 148px) * .8);
   grid-template-columns: minmax(0, var(--pane-max)) var(--spine) minmax(0, var(--pane-max));
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   justify-content: center;
-  row-gap: 8px;
   --m-good: var(--forest); --m-bad: var(--bad); --m-paper: var(--paper); --m-text: var(--bad-text);
 }
 .pane {
@@ -101,15 +100,16 @@
 .m-hatch { stroke: #11151114; stroke-width: 1.5; }
 .m-outside { fill: url(#hatch); }
 .stage[data-view='difference'] .pane.bad .m-outside { visibility: hidden; }
-.m-outline { fill: none; stroke-width: 1.25; stroke-dasharray: 4 3; vector-effect: non-scaling-stroke; }
+.m-outline { fill: none; stroke-width: 1.5; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke; }
 .m-outline.good { stroke: var(--m-good); }
 .m-outline.bad { stroke: var(--m-bad); }
-.m-path { fill: none; stroke-width: 1; vector-effect: non-scaling-stroke; stroke: var(--m-good); opacity: .24; }
-.m-path.bad { stroke: var(--m-bad); opacity: .4; }
+.m-path { fill: none; stroke-width: 1; vector-effect: non-scaling-stroke; stroke: var(--m-good); opacity: .22; }
+.m-path.bad { stroke: var(--m-bad); opacity: .34; }
 .m-extend { fill: none; stroke: var(--m-bad); stroke-width: 1; opacity: .55; vector-effect: non-scaling-stroke; }
-.m-span { fill: none; stroke: var(--m-bad); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.m-pill { fill: var(--m-paper); stroke: var(--m-bad); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.m-label { fill: var(--m-text); font-family: var(--sans); font-weight: 500; text-anchor: middle; font-variant-numeric: tabular-nums; }
+.m-span { fill: none; stroke: var(--m-bad); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.m-pill { fill: var(--m-bad); stroke: var(--m-bad); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.m-label { fill: #fff; font-family: var(--sans); font-weight: 500; text-anchor: middle; font-variant-numeric: tabular-nums; }
+.stage[data-view='difference'] .pane.bad .m-label { fill: #111511; }
 
 /* Rectangles, for Geometry */
 .g-view { fill: #fbf8f4; stroke: var(--line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; }
@@ -122,8 +122,8 @@
 .g-fan.bad { stroke: #b4561a5c; }
 .g-focus { fill: none; stroke: var(--forest); stroke-width: 1.5; stroke-dasharray: 2 2; vector-effect: non-scaling-stroke; }
 
-/* Between the two frames, a line that says what the pictures under them are */
-.gap-note { grid-area: 1 / 2; align-self: end; margin: 0; padding: 0 12px 6px; font-size: 11.5px; line-height: 15px; color: var(--muted); text-align: center; text-wrap: balance; }
+/* Between the frames and the pictures under them, one line that says what those pictures are */
+.gap-note { grid-area: 2 / 1 / 3 / -1; margin: 0; padding: 7px 4px 7px; font-size: 12.5px; line-height: 17px; color: var(--muted); text-align: center; text-wrap: balance; }
 
 /* The scan line: one row of the page, read from every frame */
 .scanline {
@@ -131,6 +131,7 @@
   transform: translate3d(0, var(--y, 0px), 0);
 }
 .scanline::before { content: ''; position: absolute; left: 0; right: 0; top: -9px; height: 18px; }
+.scanline.is-out { opacity: 0; pointer-events: none; }
 .scanline .rule {
   position: absolute; left: 0; right: 0; top: -.5px; height: 1px; background: var(--ink);
   box-shadow: 0 -1px 0 #ffffffb3, 0 1px 0 #ffffffb3;
@@ -152,31 +153,38 @@
   position: relative; min-height: 0; overflow: hidden; border-radius: 8px; cursor: row-resize; touch-action: pan-y;
   background: repeating-linear-gradient(135deg, transparent 0 5px, #1115110a 5px 6px), var(--desk);
 }
-.core.good { grid-area: 2 / 1; }
-.core.bad { grid-area: 2 / 3; }
+.core.good { grid-area: 3 / 1; }
+.core.bad { grid-area: 3 / 3; }
 .core canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 .core-marks { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
 .stage[data-view='difference'] .core.bad { background: #111511; }
 /* Without a worker the subtraction is done by the canvas, and brightened here */
 .stage.is-plain[data-view='difference'] #scan-bad { filter: brightness(4); }
 .stage[data-view='geometry'] .core { background: var(--surface); }
-.c-seam { stroke: var(--surface); stroke-width: 1; opacity: .85; }
-.c-edge { fill: none; stroke: var(--forest); stroke-width: 1; opacity: .5; }
-.c-edge.off { stroke: var(--bad); stroke-width: 1.5; opacity: 1; }
-.c-ghost { fill: none; stroke: var(--m-good); stroke-width: 1.25; stroke-dasharray: 3 3; }
-.c-span { fill: none; stroke: var(--bad); stroke-width: 1.5; }
-.c-pill { fill: var(--paper); stroke: var(--bad); stroke-width: 1; }
-.c-label { fill: var(--bad-text); font-family: var(--sans); font-size: 11px; font-weight: 500; text-anchor: middle; font-variant-numeric: tabular-nums; }
-.stage[data-view='difference'] .c-ghost { stroke: #9ad3b1; }
-.stage[data-view='difference'] .c-span { stroke: #ffb680; }
-.stage[data-view='difference'] .c-pill { fill: #111511; stroke: #ffb680; }
-.stage[data-view='difference'] .c-label { fill: #ffd2b0; }
-.stage[data-view='difference'] .core.bad .c-seam { stroke: #111511; }
-.stage[data-view='difference'] .core.bad .c-edge { visibility: hidden; }
-.stage[data-view='geometry'] .c-edge { visibility: hidden; }
+.c-veil { fill: var(--surface); opacity: .7; }
+.c-band { fill: var(--forest); opacity: .17; }
+.c-band.off { fill: var(--bad); opacity: .3; }
+.c-seam { fill: none; stroke: var(--surface); stroke-width: 1; opacity: .7; }
+.c-hatch { stroke: var(--bad); stroke-width: 1.6; }
+.c-wedge { fill: url(#gap-hatch); }
+.c-ghost { fill: none; stroke: var(--forest); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.c-lead { fill: none; stroke: var(--bad); stroke-width: 1.25; }
+.c-dot { fill: var(--bad); }
+.c-call { fill: var(--paper); stroke: var(--bad); stroke-width: 1.25; }
+.c-call-text { fill: var(--bad-text); font-family: var(--sans); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.c-call-text.strong { font-weight: 500; font-size: 12.5px; }
+.c-axis { fill: var(--muted); font-family: var(--sans); font-size: 11px; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.c-arrow { fill: none; stroke: var(--faint); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
+.stage[data-view='difference'] .core.bad :is(.c-veil, .c-band, .c-wedge, .c-seam) { visibility: hidden; }
+.stage[data-view='difference'] .core.bad .c-ghost { stroke: #9ad3b1; }
+.stage[data-view='difference'] .core.bad :is(.c-lead, .c-call) { stroke: #ffb680; }
+.stage[data-view='difference'] .core.bad .c-call { fill: #111511; }
+.stage[data-view='difference'] .core.bad .c-dot { fill: #ffb680; }
+.stage[data-view='difference'] .core.bad .c-call-text { fill: #ffd2b0; }
+.stage[data-view='geometry'] :is(.c-veil, .c-band) { visibility: hidden; }
 
 /* The spine names the steps, each tied to the row where it starts */
-.spine { grid-area: 2 / 2; position: relative; min-height: 0; }
+.spine { grid-area: 3 / 2; position: relative; min-height: 0; }
 .leaders { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; pointer-events: none; }
 .leaders path { fill: none; stroke: var(--line-strong); stroke-width: 1; }
 .leaders path.now { stroke: var(--ink); }
@@ -200,6 +208,7 @@
 }
 .step.is-jump, .step.is-jump i { color: var(--bad-text); }
 .step:focus-visible { outline-offset: 0; }
+.steps.is-tight .step { top: -6.5px; height: 13px; font-size: 10.5px; line-height: 13px; }
 
 /* The needle marks the frame on show, across both cores */
 .needle { position: absolute; left: calc(var(--n0, 12px) - 8px); width: calc(var(--n3, 100%) - var(--n0, 12px) + 16px); top: 0; height: 0; z-index: 2; cursor: row-resize; touch-action: none; transform: translate3d(0, var(--y, 0px), 0); will-change: transform; }
@@ -481,9 +490,10 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
 @media (max-width: 919px) {
   .stage { height: auto; grid-template-rows: auto; }
   .bar { min-height: 50px; flex-wrap: wrap; padding-top: 7px; padding-bottom: 7px; row-gap: 6px; }
-  .bench { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto clamp(170px, 32svh, 300px); column-gap: 8px; }
+  .bench { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto clamp(150px, 24svh, 280px); column-gap: 8px; }
   .pane.bad, .core.bad { grid-column: 2; }
-  .spine, .gap-note { display: none; }
+  .spine { display: none; }
+  .core.bad { grid-row: 3; }
   .scanline .grip { left: auto; right: -4px; transform: none; }
   .scanline:active .grip { transform: scale(.96); }
   .transport { flex-wrap: wrap; gap: 8px 10px; padding: 8px 12px; }

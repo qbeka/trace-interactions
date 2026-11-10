@@ -143,7 +143,12 @@ const offsetAt = (t: number): number => {
 
 /* The two frames: a canvas of the screenshot, and marks drawn in the same coordinates */
 interface Camera { x: number; y: number; w: number; h: number; scale: number }
+/** What the two frames show now. It closes in on the start of the failure and opens out again as the panel grows. */
 let cam: Camera = { ...data.crop, scale: 1 };
+/** Where the camera is heading. */
+let camTo: Rect = data.crop;
+/** The part of the frame the cores are cut from, which is also what the frames show away from the failure. */
+let field: Rect = data.crop;
 /** Where the two frames differ, kept as its own layer so the browser blends and scales it off the main thread. */
 const glow = $<HTMLCanvasElement>('glow');
 const scratch = document.createElement('canvas');
@@ -210,44 +215,103 @@ function layout(): void {
   for (const [name, at] of [['--n0', first.left], ['--n1', first.right], ['--n2', core.left], ['--n3', core.right]] as const) bench.style.setProperty(name, `${(at - outer.left).toFixed(1)}px`);
   wide = $('spine').getBoundingClientRect().width > 0;
   if (whole) {
-    const scale = paneW / frame.width;
-    const h = paneH / scale;
-    cam = { x: 0, y: -(h - frame.height) / 2, w: frame.width, h, scale };
-  } else {
-    cam = { ...data.crop, scale: paneW / data.crop.w };
-  }
-  // A canvas holds the screenshot's own pixels for the part in view, so a frame is copied
-  // across without resampling, and the browser scales the finished picture to fit.
+    const h = paneH / (paneW / frame.width);
+    field = { x: 0, y: -(h - frame.height) / 2, w: frame.width, h };
+  } else field = data.crop;
+  // A canvas is as large as its frame on the screen, and the screenshot is scaled into it.
+  const ratio = Math.min(2, devicePixelRatio || 1);
   for (const canvas of [shots.good, shots.bad, glow, scratch]) {
-    canvas.width = Math.round(cam.w * frame.scale);
-    canvas.height = Math.round(cam.h * frame.scale);
-  }
-  const unit = 1 / cam.scale;
-  for (const m of Object.values(marks)) {
-    set(m.svg, { viewBox: `${cam.x} ${cam.y} ${cam.w} ${cam.h}` });
-    set(m.label, { 'font-size': 12 * unit });
-    for (const n of m.nodes.values()) set(n.name, { 'font-size': 11 * unit });
+    canvas.width = Math.round(paneW * ratio);
+    canvas.height = Math.round(paneH * ratio);
   }
   rowH = coreH / Math.max(1, cells.length);
-  drawn = '';
-  dirty = true;
-  placeScan();
+  aim(true);
   placeSteps();
   drawCoreMarks();
   scanDirty = true;
   if (index >= 0) render();
 }
 
+const boundsOf = (rects: Rect[]): Rect => {
+  const x = Math.min(...rects.map((r) => r.x));
+  const y = Math.min(...rects.map((r) => r.y));
+  return { x, y, w: Math.max(...rects.map((r) => r.x + r.w)) - x, h: Math.max(...rects.map((r) => r.y + r.h)) - y };
+};
+
+/**
+ * The close view of the failure: Inspect, and every rectangle the panel has recorded
+ * on either build since it reopened, with room under them for the ruler. It grows
+ * with the panel, and gives way to the usual view once the panel no longer fits.
+ */
+function closeAt(t: number): Rect | null {
+  if (whole || !paneW || t < jump.t || t >= jump.settled) return null;
+  const rects: Rect[] = [];
+  const button = rectAt(goodLine, 'trigger', jump.t);
+  if (button) rects.push(button);
+  for (const line of [goodLine, badLine]) {
+    for (const g of line.rects.get('panel') ?? []) if (g.rect && g.t >= jump.t && g.t <= t) rects.push(g.rect);
+  }
+  if (rects.length < 2) return null;
+  const box = boundsOf(rects);
+  const aspect = paneW / paneH;
+  // The rectangles, and under them the ruler and its label.
+  const content = { top: Math.max(0, box.y - 20), bottom: box.y + box.h + 46 };
+  let w = box.w + 2 * Math.max(40, box.w * 0.15);
+  let h = content.bottom - content.top;
+  if (w / h < aspect) w = h * aspect;
+  else h = w / aspect;
+  if (w > field.w || h > field.h) return null;
+  const x = clamp(box.x + box.w / 2 - w / 2, field.x, field.x + field.w - w);
+  // Centred on what it shows, and never more than a little above the top of the page.
+  const y = clamp((content.top + content.bottom) / 2 - h / 2, field.y - h * 0.14, field.y + field.h - h);
+  return { x, y, w, h };
+}
+
+/** Points the camera at what the frame on show calls for, at once if asked or if motion is reduced. */
+function aim(snap = false): void {
+  camTo = closeAt(time()) ?? field;
+  if (!paneW) return;
+  if (snap || calm()) {
+    cam = { ...camTo, scale: paneW / camTo.w };
+    applyCam();
+  } else schedule();
+}
+
+function applyCam(): void {
+  const unit = 1 / cam.scale;
+  for (const m of Object.values(marks)) {
+    set(m.svg, { viewBox: `${cam.x.toFixed(2)} ${cam.y.toFixed(2)} ${cam.w.toFixed(2)} ${cam.h.toFixed(2)}` });
+    set(m.label, { 'font-size': 14 * unit });
+    for (const n of m.nodes.values()) set(n.name, { 'font-size': 11 * unit });
+  }
+  drawn = '';
+  dirty = true;
+  placeScan();
+}
+
+/** Moves the camera a part of the way to where it is heading. Returns whether it is still moving. */
+function easeCam(dt: number): boolean {
+  const keys = ['x', 'y', 'w', 'h'] as const;
+  const far = keys.some((k) => Math.abs(cam[k] - camTo[k]) > 0.05);
+  if (!far) return false;
+  const p = 1 - Math.exp(-dt * 12);
+  const next = { ...cam };
+  for (const k of keys) next[k] = Math.abs(cam[k] - camTo[k]) < 0.5 ? camTo[k] : cam[k] + (camTo[k] - cam[k]) * p;
+  cam = { ...next, scale: paneW / next.w };
+  applyCam();
+  return true;
+}
+
 function blit(to: CanvasRenderingContext2D, name: string): void {
   const s = frame.scale;
-  const k = to.canvas.width / (cam.w * s);
+  const k = to.canvas.width / cam.w;
   // Only the part of the camera that the frame covers is drawn, at the place it belongs.
+  const left = Math.max(0, cam.x);
+  const right = Math.min(frame.width, cam.x + cam.w);
   const top = Math.max(0, cam.y);
   const bottom = Math.min(frame.height, cam.y + cam.h);
-  const sx = Math.round(cam.x * s);
-  const sw = Math.round(cam.w * s);
-  const sh = Math.round((bottom - top) * s);
-  to.drawImage(images.get(name)!, sx, Math.round(top * s), sw, sh, 0, Math.round((top - cam.y) * s * k), to.canvas.width, Math.round(sh * k));
+  to.imageSmoothingQuality = 'high';
+  to.drawImage(images.get(name)!, left * s, top * s, (right - left) * s, (bottom - top) * s, (left - cam.x) * k, (top - cam.y) * k, (right - left) * k, (bottom - top) * k);
 }
 
 /** Paints one build on white, so that the part outside the window compares as equal. */
@@ -266,7 +330,7 @@ const ctxBad = shots.bad.getContext('2d')!;
 function paint(): void {
   const cell = cells[index];
   if (!cell) return;
-  const key = `${view}|${cell.good}|${cell.bad}`;
+  const key = `${view}|${cell.good}|${cell.bad}|${cam.x.toFixed(1)}|${cam.y.toFixed(1)}|${cam.w.toFixed(1)}`;
   if (key === drawn) return;
   const { width: W, height: H } = shots.bad;
   if (view === 'geometry') {
@@ -320,10 +384,17 @@ function waiting(on: boolean): void {
 }
 
 const rectPath = (r: Rect) => `M${r.x} ${r.y}h${r.w}v${r.h}h${-r.w}z`;
-/** Every rectangle a panel recorded from the reopen until the two builds agree again. */
-function opening(line: Timelines): string {
-  return (line.rects.get('panel') ?? []).flatMap((g) => (g.rect && g.t >= jump.t && g.t <= jump.settled ? [rectPath(g.rect)] : [])).join('');
+/**
+ * The rectangles a panel recorded from the reopen until the two builds agree again:
+ * all of them for Geometry, and only the first and the last over a screenshot.
+ */
+function opening(line: Timelines, all: boolean): string {
+  const rects = (line.rects.get('panel') ?? []).flatMap((g) => (g.rect && g.t >= jump.t && g.t <= jump.settled ? [g.rect] : []));
+  return (all ? rects : [rects[0], rects.at(-1)]).flatMap((r) => (r ? [rectPath(r)] : [])).join('');
 }
+const setPaths = () => {
+  for (const side of ['good', 'bad'] as const) set(marks[side].path, { d: opening(lineOf(side), view === 'geometry') });
+};
 /** Every rectangle a panel recorded since it last appeared, up to `t`. */
 function fan(line: Timelines, t: number): string {
   const samples = line.rects.get('panel') ?? [];
@@ -356,8 +427,9 @@ function drawMarks(): void {
       set(m.edge, { x1: vp.width, y1: 0, x2: vp.width, y2: frame.height });
       set(m.outside, { x: vp.width, y: 0, width: frame.width - vp.width, height: frame.height });
     }
-    // Through the jump, every rectangle the panel recorded on its way open, so the whole path shows in one frame.
-    show(m.path, !geometry && t >= jump.t && t < jump.settled);
+    // Through the jump, where the panel started and where it ends, and in Geometry every rectangle between.
+    // Close on the start there is no room for the end, so it waits until the frame has opened out.
+    show(m.path, t >= jump.t && t < jump.settled && (geometry || camTo === field));
     show(m.world, geometry);
     if (!geometry) continue;
     set(m.view, { x: 0.5, y: 0.5, width: vp.width - 1, height: frame.height - 0.5 });
@@ -383,16 +455,22 @@ function drawMarks(): void {
     if (box) set(m.focus, { x: box.x - 3, y: box.y - 3, width: box.w + 6, height: box.h + 6, rx: 6 });
   }
 
+  // Each frame outlines its own panel through the failure, so the eye finds it at any size.
+  show(marks.good.ruler, on);
+  if (on && a) {
+    set(marks.good.outlineGood, { x: a.x, y: a.y, width: a.w, height: a.h, rx: 5 });
+    show(marks.good.outlineGood, !geometry);
+    for (const node of [marks.good.outlineBad, marks.good.extend, marks.good.span, marks.good.pill, marks.good.label]) show(node, false);
+  }
   // The ruler lives on the broken build, between where the panel is and where it should be.
   const m = marks.bad;
-  show(marks.good.ruler, false);
   show(m.ruler, on);
   if (!on || !a || !b) return;
   for (const [node, r] of [[m.outlineGood, a], [m.outlineBad, b]] as const) set(node, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 5 });
   show(m.outlineGood, !geometry);
   show(m.outlineBad, !geometry);
   // A dimension line under the panels, the way a drawing marks a distance.
-  const y = Math.min(258, cam.y + cam.h - 16 * unit);
+  const y = Math.min(cam.y + cam.h - 32 * unit, Math.max(a.y + a.h, b.y + b.h) + 14 * unit);
   const from = a.x;
   const to = a.x + gap * grow;
   const foot = Math.min(a.y + a.h, b.y + b.h) + 5 * unit;
@@ -402,26 +480,28 @@ function drawMarks(): void {
   set(m.span, { d });
   const text = `${Math.round(Math.abs(gap))} px`;
   if (m.label.textContent !== text) m.label.textContent = text;
-  const pillW = (text.length * 6.6 + 14) * unit;
+  const pillW = (text.length * 7.9 + 18) * unit;
   const fits = Math.abs(gap) > pillW + 6 * unit;
-  // Beside the line when it cannot sit over it, on whichever side still has room.
+  // Under the line when it is long enough, and beside it on whichever side still has room when it is not.
   const right = Math.max(a.x, b.x) + 8 * unit + pillW / 2;
   const cx = fits ? (a.x + b.x) / 2 : right + pillW / 2 < cam.x + cam.w - 4 * unit ? right : Math.min(a.x, b.x) - 8 * unit - pillW / 2;
-  const cy = fits ? y - 15 * unit : y - 1 * unit;
-  set(m.pill, { x: cx - pillW / 2, y: cy - 10 * unit, width: pillW, height: 20 * unit, rx: 10 * unit });
-  set(m.label, { x: cx, y: cy + 4.2 * unit });
+  const cy = fits ? y + 16 * unit : y - 1 * unit;
+  set(m.pill, { x: cx - pillW / 2, y: cy - 11 * unit, width: pillW, height: 22 * unit, rx: 11 * unit });
+  set(m.label, { x: cx, y: cy + 5 * unit });
   const done = grow > 0.85;
   show(m.pill, done);
   show(m.label, done);
 }
 
 /* The scan line */
-const scanRange = (): [number, number] => [Math.max(2, Math.ceil(cam.y) + 2), Math.min(frame.height - 2, Math.floor(cam.y + cam.h) - 2)];
+const scanRange = (): [number, number] => [Math.max(2, Math.ceil(field.y) + 2), Math.min(frame.height - 2, Math.floor(field.y + field.h) - 2)];
 
 function placeScan(): void {
   const [lo, hi] = scanRange();
   const y = clamp(scanY, lo, hi);
   scanline.style.setProperty('--y', `${((y - cam.y) * cam.scale).toFixed(2)}px`);
+  // Close on the failure, a line further down the page is out of the picture.
+  scanline.classList.toggle('is-out', y < cam.y + 2 || y > cam.y + cam.h - 2);
   set(scanline, { 'aria-valuemin': lo, 'aria-valuemax': hi, 'aria-valuenow': y, 'aria-valuetext': SAID.scan(y) });
   const text = SAID.scanShort(y);
   if ($('scan-y').textContent !== text) $('scan-y').textContent = text;
@@ -481,8 +561,8 @@ function startScans(): void {
 
 function drawPlain(): void {
   const width = Math.min(1400, Math.max(64, Math.round(coreW * Math.min(2, devicePixelRatio || 1))));
-  const x0 = Math.max(0, cam.x);
-  const x1 = Math.min(frame.width, cam.x + cam.w);
+  const x0 = Math.max(0, field.x);
+  const x1 = Math.min(frame.width, field.x + field.w);
   const key = `${session.id}|${scanY}|${x0}|${x1}|${width}|${view}`;
   if (key !== plainKey) {
     plainKey = key;
@@ -548,7 +628,7 @@ function requestScan(): void {
   const width = Math.min(1400, Math.max(64, Math.round(coreW * Math.min(2, devicePixelRatio || 1))));
   const request: ScanRequest = {
     id: ++scanId, good: cells.map((c) => c.good), bad: cells.map((c) => c.bad), y: scanY,
-    x0: Math.max(0, cam.x), x1: Math.min(frame.width, cam.x + cam.w), width, mode: view === 'difference' ? 'difference' : 'shots',
+    x0: Math.max(0, field.x), x1: Math.min(frame.width, field.x + field.w), width, mode: view === 'difference' ? 'difference' : 'shots',
   };
   if (!worker) return;
   scanBusy = true;
@@ -575,8 +655,8 @@ function showScan(result: ScanResult): void {
 /** Geometry: each row shows where the window, Inspect and the panel cross the scan line. */
 function drawGeometryCores(): void {
   const W = Math.max(64, Math.round(coreW));
-  const x0 = Math.max(0, cam.x);
-  const k = W / (Math.min(frame.width, cam.x + cam.w) - x0);
+  const x0 = Math.max(0, field.x);
+  const k = W / (Math.min(frame.width, field.x + field.w) - x0);
   for (const side of ['good', 'bad'] as const) {
     const canvas = scans[side];
     canvas.width = W;
@@ -603,53 +683,96 @@ function drawGeometryCores(): void {
 
 const coreMarks = $<SVGSVGElement>('core-marks');
 const coreMarksGood = shape('svg', 'core-marks', cores.good) as SVGSVGElement;
+/**
+ * What is drawn over the two cores, all of it from the recorded rectangles. Wherever
+ * the scan line crosses the panel, its band is toned and everything outside it is
+ * muted, so the shape the panel makes over time can be read. On the broken build the
+ * rows where it is out of place are toned as a failure, the place it should have been
+ * is hatched, and one note says how far off it was and for how long.
+ */
 function drawCoreMarks(): void {
   if (!coreW || !cells.length) return;
-  const x0 = Math.max(0, cam.x);
-  const x = (px: number) => ((px - x0) / (Math.min(frame.width, cam.x + cam.w) - x0)) * coreW;
+  const x0 = Math.max(0, field.x);
+  const x1 = Math.min(frame.width, field.x + field.w);
+  const x = (px: number) => clamp(((px - x0) / (x1 - x0)) * coreW, 0, coreW);
   const crosses = (r: Rect | null): r is Rect => !!r && scanY >= r.y && scanY <= r.y + r.h;
+  const f = (n: number) => n.toFixed(1);
   for (const side of ['good', 'bad'] as const) {
     const svg = side === 'good' ? coreMarksGood : coreMarks;
     svg.replaceChildren();
     set(svg, { viewBox: `0 0 ${coreW} ${coreH}` });
-    // A seam wherever the recording held one frame for longer than a tick.
-    let seams = '';
-    // The left edge of the panel, traced from the recorded rectangles wherever the scan line crosses it.
-    let edge = '';
+    let veil = `M0 0H${f(coreW)}V${f(coreH)}H0Z`;
+    let band = '';
     let off = '';
+    let wedge = '';
     let ghost = '';
-    let pen = '';
+    let seams = '';
+    let drawing = false;
+    let first: { x: number; y: number } | null = null;
     cells.forEach((cell, i) => {
-      if (i && cell.t - cells[i - 1]!.t > 16) seams += `M0 ${(i * rowH).toFixed(2)}H${coreW}`;
+      const top = i * rowH;
+      // A seam wherever the recording held one frame for longer than a tick.
+      if (i && cell.t - cells[i - 1]!.t > 16) seams += `M0 ${top.toFixed(2)}H${f(coreW)}`;
       const own = rectAt(lineOf(side), 'panel', cell.t);
       const other = rectAt(goodLine, 'panel', cell.t);
       const apart = side === 'bad' && !!own && !!other && Math.abs(own.x - other.x) >= 0.5;
-      const kind = !crosses(own) ? '' : apart ? 'off' : 'edge';
-      const seg = crosses(own) ? `${pen === kind ? 'L' : 'M'}${x(own.x).toFixed(1)} ${(i * rowH).toFixed(1)}V${((i + 1) * rowH).toFixed(1)}` : '';
-      if (kind === 'off') off += seg;
-      else if (kind === 'edge') edge += seg;
-      if (apart && crosses(other)) ghost += `${ghost && pen === 'off' ? 'L' : 'M'}${x(other.x).toFixed(1)} ${(i * rowH).toFixed(1)}V${((i + 1) * rowH).toFixed(1)}`;
-      pen = kind;
+      if (!apart || !crosses(other)) drawing = false;
+      if (!crosses(own)) return;
+      // The band stops at the edge of the window, as the panel does in the screenshot.
+      const edge = viewportAt(goodLine, cell.t, { width: frame.width, height: frame.height }).width;
+      const l = x(own.x);
+      const r = x(Math.min(own.x + own.w, edge));
+      if (r - l < 0.5) return;
+      const row = `M${f(l)} ${f(top)}H${f(r)}V${f(top + rowH)}H${f(l)}Z`;
+      veil += row;
+      if (apart) off += row;
+      else band += row;
+      if (!apart || !crosses(other)) return;
+      // Where the last good build has the panel's edge on this row, and the gap between that and where it is.
+      const g = x(other.x);
+      ghost += `${drawing ? 'L' : 'M'}${f(g)} ${f(top)}V${f(top + rowH)}`;
+      drawing = true;
+      if (l - g >= 0.5) wedge += `M${f(g)} ${f(top)}H${f(l)}V${f(top + rowH)}H${f(g)}Z`;
+      first ??= { x: (g + l) / 2, y: top };
     });
+    set(shape('path', 'c-veil', svg), { d: veil, 'fill-rule': 'evenodd' });
+    set(shape('path', 'c-band', svg), { d: band });
     set(shape('path', 'c-seam', svg), { d: seams });
-    set(shape('path', 'c-edge', svg), { d: edge });
-    if (side === 'good') continue;
-    // On the broken build, the edge the panel should have followed, from the last good build's rectangles.
+    if (side === 'good') {
+      // Which way time runs, in two words and an arrow.
+      const start = shape('text', 'c-axis', svg);
+      set(start, { x: 9, y: 16 });
+      start.textContent = SAID.axisStart;
+      const end = shape('text', 'c-axis', svg);
+      set(end, { x: 9, y: coreH - 8 });
+      end.textContent = SAID.axisEnd;
+      set(shape('path', 'c-arrow', svg), { d: `M14.5 24V${f(coreH - 26)}m-3.5 -5l3.5 5l3.5 -5` });
+      continue;
+    }
+    const defs = shape('defs', '', svg);
+    const hatch = shape('pattern', '', defs);
+    set(hatch, { id: 'gap-hatch', width: 5, height: 5, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' });
+    set(shape('line', 'c-hatch', hatch), { x1: 0, y1: 0, x2: 0, y2: 5 });
+    set(shape('path', 'c-band off', svg), { d: off });
+    set(shape('path', 'c-wedge', svg), { d: wedge });
     set(shape('path', 'c-ghost', svg), { d: ghost });
-    set(shape('path', 'c-edge off', svg), { d: off });
-    // A bracket down the rows where the two builds show different frames.
-    const top = jumpIndex * rowH;
-    const bottom = settledIndex * rowH;
-    const bx = coreW - 9;
-    set(shape('path', 'c-span', svg), { d: `M${bx - 5} ${top}H${bx}V${bottom}H${bx - 5}` });
-    // Its length sits above it, clear of the rows it measures, where the panel is shut on both builds.
-    const text = SAID.duration(jump.settled - jump.t);
-    const w = text.length * 6.2 + 14;
-    const cy = clamp(top - 15, 12, coreH - 12);
-    set(shape('rect', 'c-pill', svg), { x: bx - w + 3, y: cy - 10, width: w, height: 20, rx: 10 });
-    const label = shape('text', 'c-label', svg);
-    set(label, { x: bx + 3 - w / 2, y: cy + 4 });
-    label.textContent = text;
+    // One note for the break: how far off the panel opened, for how long, and on which step.
+    const lines = [SAID.breakHow(jump.px), SAID.breakWhen(jump.settled - jump.t, steps[jump.step]!.label)];
+    const w = Math.min(coreW - 12, Math.max(...lines.map((line) => line.length)) * 6.1 + 22);
+    const h = 40;
+    const jumpTop = jumpIndex * rowH;
+    const bx = coreW - w - 6;
+    const by = clamp(jumpTop - h - 12, 6, coreH - h - 6);
+    const aimAt = first ?? { x: coreW * 0.5, y: jumpTop };
+    const from = { x: clamp(aimAt.x + 26, bx + 12, bx + w - 12), y: by + h };
+    set(shape('path', 'c-lead', svg), { d: `M${f(from.x)} ${f(from.y)}L${f(aimAt.x)} ${f(aimAt.y + Math.min(rowH * 1.5, 6))}` });
+    set(shape('circle', 'c-dot', svg), { cx: f(aimAt.x), cy: f(aimAt.y + Math.min(rowH * 1.5, 6)), r: 2.5 });
+    set(shape('rect', 'c-call', svg), { x: f(bx), y: f(by), width: f(w), height: h, rx: 7 });
+    lines.forEach((line, k) => {
+      const text = shape('text', k ? 'c-call-text' : 'c-call-text strong', svg);
+      set(text, { x: f(bx + 11), y: f(by + 16 + k * 15) });
+      text.textContent = line;
+    });
   }
 }
 
@@ -683,6 +806,8 @@ function placeSteps(): void {
     at[at.length - 1] = coreH - 8;
     for (let i = at.length - 2; i >= 0; i--) at[i] = Math.min(at[i]!, at[i + 1]! - gap);
   }
+  // Where the names have to sit closer than a line apart, they are set a little smaller.
+  stepList.classList.toggle('is-tight', gap < 14);
   set(leaders, { viewBox: `0 0 ${spineW} ${coreH}` });
   leaders.replaceChildren();
   stepList.replaceChildren(...kept.map((s, i) => {
@@ -888,6 +1013,7 @@ function setIndex(next: number): void {
   } else if (!growFrom) grow = 1;
   dirty = true;
   render();
+  aim();
   if (!playing) idleLabel();
   saveUrl();
 }
@@ -978,6 +1104,7 @@ function tick(now: number): void {
     else moving = true;
   }
 
+  if (paneW && easeCam(dt)) moving = true;
   placeNeedle();
   // Nothing is painted until the stage has been measured once.
   if (dirty && paneW) {
@@ -1109,7 +1236,7 @@ function setSession(next: Session, at = time()): void {
   stage.dataset.session = next.id;
   stage.dataset.cells = String(cells.length);
   rowH = coreH / Math.max(1, cells.length);
-  for (const side of ['good', 'bad'] as const) set(marks[side].path, { d: opening(lineOf(side)) });
+  setPaths();
   placeSteps();
   drawCoreMarks();
   scanDirty = true;
@@ -1134,6 +1261,7 @@ function setView(next: View): void {
   for (const button of $('views').querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.view === next));
   $('source').textContent = SOURCE[next];
   $('core-note').textContent = coreNote(next);
+  if (goodLine) setPaths();
   drawn = '';
   dirty = true;
   scanDirty = true;

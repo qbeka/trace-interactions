@@ -74,7 +74,6 @@
           <figcaption class="chip good"><i></i>Last good build</figcaption>
           <span class="readout" id="readout" aria-hidden="true"></span>
         </figure>
-        <p class="gap-note" id="core-note" aria-hidden="true"></p>
         <figure class="pane bad" id="pane-bad">
           <canvas id="shot-bad" role="img"></canvas>
           <canvas id="glow" aria-hidden="true"></canvas>
@@ -82,7 +81,8 @@
           <svg class="marks" id="marks-bad" aria-hidden="true"></svg>
           <figcaption class="chip bad"><i></i>Broken build</figcaption>
         </figure>
-        <div class="scanline" id="scanline" role="slider" tabindex="0" aria-label="Scan line, in px from the top of the page" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="320" aria-valuenow="96">
+        <p class="gap-note" id="core-note"></p>
+        <div class="scanline" id="scanline" role="slider" tabindex="0" aria-label="Scan line, in px from the top of the page" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="320" aria-valuenow="84">
           <i class="rule"></i>
           <span class="grip"><svg width="10" height="14" viewBox="0 0 10 14" fill="none" aria-hidden="true"><path d="M2 5l3-3 3 3M2 9l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><b id="scan-y"></b></span>
         </div>
