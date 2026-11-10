@@ -523,8 +523,7 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
   .result-count b { font-size: 64px; line-height: 56px; }
   .make { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
   .ends-pair { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .ends-pair .ends-shot:first-child { display: none; }
-  .ends-sign { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; order: 2; }
+  .ends-sign { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; padding: 0 4px; }
   .ends-sign b { font-size: 36px; line-height: 36px; }
   .ends-cell span { visibility: hidden; }
   .ends-cell.on span { visibility: visible; }
