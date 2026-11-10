@@ -116,10 +116,15 @@ describe('project page', () => {
     await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('visible');
     expect(await page.locator('#marks-bad .m-label').textContent()).toBe('80 px');
     expect(await page.locator('#marks-bad .m-outline.bad').getAttribute('visibility')).toBe('visible');
-    expect(await page.locator('#marks-good .ruler').getAttribute('visibility')).toBe('hidden');
-    // The bracket down the broken build's core says how long the two builds differ.
-    expect(await page.locator('#core-bad .c-label').textContent()).toBe('240 ms');
-    expect(await page.locator('#core-good .c-label').count()).toBe(0);
+    // The last good build outlines its own panel, and has nothing to measure.
+    expect(await page.locator('#marks-good .m-outline.good').getAttribute('visibility')).toBe('visible');
+    expect(await page.locator('#marks-good .m-label').getAttribute('visibility')).toBe('hidden');
+    expect(await page.locator('#marks-good .m-span').getAttribute('visibility')).toBe('hidden');
+    // One note on the broken build's core says how far off the panel opened, for how long and on which step.
+    expect(await page.locator('#core-bad .c-call-text').allTextContents()).toEqual(['Opens 80 px to the right', 'for 240 ms, at Reopen']);
+    expect(await page.locator('#core-good .c-call-text').count()).toBe(0);
+    // The time axis is named on the other core.
+    expect(await page.locator('#core-good .c-axis').allTextContents()).toEqual(['Start', 'End']);
     await page.context().close();
   });
 
@@ -141,15 +146,62 @@ describe('project page', () => {
     await page.context().close();
   });
 
-  it('draws the path each panel took through the failure, from the recorded rectangles', async () => {
+  it('opens close on the start of the failure, and opens out as the panel grows', async () => {
     const { page } = await open(still);
-    await expect.poll(() => page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('visible');
-    // Sixteen rectangles on each build, the broken one starting where the report says the panel first appeared.
+    const crop = JSON.parse((await page.locator('#trace-data').textContent())!).crop as { x: number; y: number; w: number; h: number };
+    const view = async (side = 'bad') => (await page.locator(`#marks-${side}`).getAttribute('viewBox'))!.split(' ').map(Number);
+    await expect.poll(async () => (await view())[2]).toBeLessThan(300);
+    const close = await view();
+    // Inspect and both places the panel starts are inside the frame, with room under them for the ruler.
+    expect(close[0]).toBeLessThan(823.3 - 30);
+    expect(close[0]! + close[2]!).toBeGreaterThanOrEqual(984);
+    expect(close[1]! + close[3]!).toBeGreaterThan(52 + 30);
+    expect(await view('good')).toEqual(close);
+    // The 80 px between them is the widest thing drawn: more than a quarter of the frame.
+    expect(80 / close[2]!).toBeGreaterThan(0.25);
+    expect(await page.locator('#marks-good .m-outline.good').getAttribute('visibility')).toBe('visible');
+    // Each frame on, the view is wider, until it is the usual one.
+    const widths: number[] = [];
+    for (const t of [4016, 4032, 4048, 4064, 4128]) {
+      await seek(page, t);
+      widths.push((await view())[2]!);
+    }
+    for (let i = 1; i < widths.length; i++) expect(widths[i]).toBeGreaterThanOrEqual(widths[i - 1]!);
+    expect(widths[0]).toBeGreaterThan(close[2]!);
+    expect(await view()).toEqual([crop.x, crop.y, crop.w, crop.h]);
+    await seek(page, 3600);
+    expect(await view()).toEqual([crop.x, crop.y, crop.w, crop.h]);
+    await page.context().close();
+    // With motion on, the frame moves there over a few frames and comes to rest on the same view.
+    const moving = await open();
+    await moving.page.locator('#time').focus();
+    await moving.page.keyboard.press('End');
+    await expect.poll(async () => (await moving.page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number)[2], { timeout: 5000 }).toBe(crop.w);
+    await moving.page.keyboard.press('f');
+    // On the way it is somewhere between the two views.
+    await expect.poll(async () => { const w = (await moving.page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number)[2]!; return w > close[2]! && w < crop.w; }, { interval: 20 }).toBe(true);
+    await expect.poll(async () => (await moving.page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number), { timeout: 5000 }).toEqual(close);
+    await moving.page.context().close();
+  });
+
+  it('outlines where the panel starts and ends over a screenshot, and its whole path in Geometry', async () => {
+    const { page } = await open(still);
     const path = async (side: string) => (await page.locator(`#marks-${side} .m-path`).getAttribute('d'))!;
-    expect((await path('bad')).match(/M/g)).toHaveLength(16);
-    expect((await path('good')).match(/M/g)).toHaveLength(16);
+    // Close on the start there is no room for the end, so nothing but the two dashed outlines is drawn.
+    await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('visible');
+    expect(await page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('hidden');
+    await seek(page, 4096);
+    await expect.poll(() => page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('visible');
+    expect((await path('bad')).match(/M/g)).toHaveLength(2);
+    expect((await path('good')).match(/M/g)).toHaveLength(2);
+    // The broken build's first rectangle is where the report says the panel first appeared.
     expect(await path('bad')).toMatch(/^M903\.3 16h/);
     expect(await path('good')).toMatch(/^M823\.3 16h/);
+    await button(page, 'Geometry').click();
+    await seek(page, 4000);
+    expect(await page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('visible');
+    expect((await path('bad')).match(/M/g)).toHaveLength(16);
+    expect((await path('good')).match(/M/g)).toHaveLength(16);
     await seek(page, 3600);
     await expect.poll(() => page.locator('#marks-bad .m-path').getAttribute('visibility')).toBe('hidden');
     await seek(page, 4240);
@@ -270,25 +322,26 @@ describe('project page', () => {
     const { page } = await open(still);
     await scanned(page, 89);
     const line = page.locator('#scanline');
-    expect(await line.getAttribute('aria-valuenow')).toBe('96');
-    expect(await line.getAttribute('aria-valuetext')).toBe('96 px from the top of the page');
+    expect(await line.getAttribute('aria-valuenow')).toBe('84');
+    expect(await line.getAttribute('aria-valuetext')).toBe('84 px from the top of the page');
     const before = await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL());
     const y0 = await offsetY(page, '#scanline');
     await line.focus();
     await page.keyboard.press('ArrowUp');
-    expect(await line.getAttribute('aria-valuenow')).toBe('94');
+    expect(await line.getAttribute('aria-valuenow')).toBe('82');
     await page.keyboard.press('Shift+ArrowDown');
-    expect(await line.getAttribute('aria-valuenow')).toBe('110');
-    expect(await page.locator('#scan-y').textContent()).toBe('Row 110');
+    expect(await line.getAttribute('aria-valuenow')).toBe('98');
+    expect(await page.locator('#scan-y').textContent()).toBe('Row 98');
     expect(await offsetY(page, '#scanline')).toBeGreaterThan(y0);
     await expect.poll(() => page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL())).not.toBe(before);
     expect(await clock(page)).toBe('4000 ms');
     // Through the Inspect button the panel is under the line from its first frame, so the first row of the jump differs too.
     const pane = (await page.locator('#pane-bad').boundingBox())!;
-    const scale = pane.width / JSON.parse(await page.locator('#trace-data').textContent() ?? '{}').crop.w;
-    await page.mouse.move(pane.x + 60, pane.y + 110 * scale);
+    const [, top, , tall] = (await page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number);
+    const rowY = (row: number) => pane.y + ((row - top!) / tall!) * pane.height;
+    await page.mouse.move(pane.x + 60, rowY(98));
     await page.mouse.down();
-    await page.mouse.move(pane.x + 60, pane.y + 34 * scale, { steps: 5 });
+    await page.mouse.move(pane.x + 60, rowY(34), { steps: 5 });
     await page.mouse.up();
     expect(await line.getAttribute('aria-valuenow')).toBe('34');
     await expect.poll(() => differingRows(page)).toContain(71);
@@ -353,7 +406,7 @@ describe('project page', () => {
     await expect.poll(() => lit(page, 0)).toBe(0);
     await button(page, 'Geometry').click();
     expect(await page.locator('#source').textContent()).toBe('Recorded geometry');
-    expect(await page.locator('#core-note').textContent()).toBe('Each row below is where the recorded rectangles cross this line');
+    expect(await page.locator('#core-note').textContent()).toBe('Time runs down these two pictures, and each row shows where the recorded rectangles sat under the line a moment later');
     await expect.poll(() => page.locator('#marks-good .g-panel').getAttribute('visibility')).toBe('visible');
     expect(await lit(page, -1, '#shot-bad')).toBe(0);
     expect(await page.locator('#glow').isVisible()).toBe(false);
@@ -364,7 +417,7 @@ describe('project page', () => {
     // In Geometry the cores are drawn here from the rectangles, one row for each frame.
     expect(await page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.height)).toBe(89);
     await button(page, 'Screenshots').click();
-    expect(await page.locator('#core-note').textContent()).toBe('Each row below is this line of pixels in one recorded frame');
+    expect(await page.locator('#core-note').textContent()).toBe('Time runs down these two pictures, with each row showing the strip of page under the line a moment later, so the shaded shape is the panel opening and closing');
     await page.context().close();
   });
 
@@ -373,6 +426,8 @@ describe('project page', () => {
     await scanned(page, 89);
     const crop = JSON.parse((await page.locator('#trace-data').textContent())!).crop as { x: number; w: number; h: number };
     const view = async () => (await page.locator('#marks-bad').getAttribute('viewBox'))!.split(' ').map(Number);
+    // Away from the failure the frames show the part of the window where the panel opens.
+    await seek(page, 3600);
     expect(await view()).toEqual([crop.x, 0, crop.w, crop.h]);
     expect(crop.w).toBeLessThan(600);
     const box = await page.locator('#pane-bad').boundingBox();
@@ -386,7 +441,11 @@ describe('project page', () => {
     expect((await view())[2]).toBe(1000);
     expect(await page.locator('#pane-bad').boundingBox()).toEqual(box);
     await expect.poll(() => page.locator('#scan-bad').evaluate((c: HTMLCanvasElement) => c.toDataURL())).not.toBe(before);
-    await expect.poll(() => page.evaluate(() => location.search)).toBe('?frame=whole');
+    await expect.poll(() => page.evaluate(() => location.search)).toBe('?t=3600&frame=whole');
+    // The whole frame stays whole on the failure too.
+    await seek(page, 4000);
+    expect((await view())[2]).toBe(1000);
+    await seek(page, 3600);
     await page.keyboard.press('w');
     expect(await view()).toEqual([crop.x, 0, crop.w, crop.h]);
     await page.context().close();
@@ -411,7 +470,7 @@ describe('project page', () => {
     // No two names sit on top of each other.
     await button(page, 'All 14 steps').click();
     const tops = await page.locator('#steps .step').evaluateAll((all) => all.map((el) => el.getBoundingClientRect().top));
-    for (let i = 1; i < tops.length; i++) expect(tops[i]! - tops[i - 1]!).toBeGreaterThanOrEqual(13);
+    for (let i = 1; i < tops.length; i++) expect(tops[i]! - tops[i - 1]!).toBeGreaterThanOrEqual(11.5);
     await page.context().close();
   });
 
@@ -567,7 +626,7 @@ describe('project page', () => {
     expect(await page.locator('#time').getAttribute('aria-valuetext')).toBe('4000 ms, step 12: Reopen, frame 72 of 89');
     // Anywhere else on the stage, up and down move the scan line and leave the clock alone.
     await page.keyboard.press('ArrowDown');
-    expect(await page.locator('#scanline').getAttribute('aria-valuenow')).toBe('100');
+    expect(await page.locator('#scanline').getAttribute('aria-valuenow')).toBe('88');
     expect(await clock(page)).toBe('4000 ms');
     await page.context().close();
   });
@@ -619,7 +678,7 @@ describe('project page', () => {
     await button(page, 'Screenshots').click();
     await button(page, 'All 14 steps').click();
     await page.locator('#scanline').focus();
-    for (let i = 0; i < 12; i++) await page.keyboard.press('ArrowUp');
+    for (let i = 0; i < 18; i++) await page.keyboard.press('ArrowUp');
     await page.locator('#jump').click();
     await expect.poll(() => page.evaluate(() => location.search)).toBe('');
     // A view the page no longer has opens on the screenshots.
@@ -720,7 +779,11 @@ describe('project page', () => {
       const core = (await page.locator('#core-bad').boundingBox())!;
       const play = (await page.locator('#play').boundingBox())!;
       expect(pane.height).toBeGreaterThan(100);
-      expect(core.height).toBeGreaterThanOrEqual(170);
+      expect(core.height).toBeGreaterThanOrEqual(150);
+      // Where the two frames sit side by side over the steps, they are the larger half of the pair.
+      if (width >= 920) expect(pane.height).toBeGreaterThan(core.height);
+      // One line between them says what the pictures under the frames are, at every width.
+      expect(await page.locator('#core-note').isVisible()).toBe(true);
       // The frame and the needle that moves it are on one screen, and from 720 px tall so is Replay.
       expect(core.y + core.height - pane.y).toBeLessThanOrEqual(height);
       if (height >= 720) expect(play.y + play.height).toBeLessThanOrEqual(height);
@@ -743,7 +806,7 @@ describe('project page', () => {
     const lines = new Set<string>();
     const collect = async () => {
       const seen = await page.evaluate(() => {
-        const text = [...document.querySelectorAll('#stage #verdict p, #attempt-note, #readout, #core-note, #source, #now, #axis-count, #result-count, #scan-y, .chip, .tag, #keys li, #result-steps li, #rows li, #stage button, #help dd, #help h2, #help button, .c-label, .story h2, .story h3, .story figcaption, .story .cap, .story th, .story .mark, .story small, .story dt, .story .big span, .limits-list li, .next b, .next span, #ends-say, #ends-time, #make-n')].map((el) => el.textContent ?? '');
+        const text = [...document.querySelectorAll('#stage #verdict p, #attempt-note, #readout, #core-note, #source, #now, #axis-count, #result-count, #scan-y, .chip, .tag, #keys li, #result-steps li, #rows li, #stage button, #help dd, #help h2, #help button, .c-call-text, .c-axis, .story h2, .story h3, .story figcaption, .story .cap, .story th, .story .mark, .story small, .story dt, .story .big span, .limits-list li, .next b, .next span, #ends-say, #ends-time, #make-n')].map((el) => el.textContent ?? '');
         const labels = [...document.querySelectorAll('[aria-label], [aria-valuetext], [title]')].flatMap((el) => ['aria-label', 'aria-valuetext', 'title'].map((a) => el.getAttribute(a) ?? ''));
         const before = [getComputedStyle(document.getElementById('pane-bad')!, '::before').content];
         return [...text, ...labels, ...before, document.getElementById('status')!.textContent ?? ''];

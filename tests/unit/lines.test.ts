@@ -27,7 +27,9 @@ describe('one-line strings on the stage', () => {
     expect(lines).toContain('26 attempts left 4 steps, and taking any one of them away loses the jump');
     expect(lines).toContain('This frame did not load');
     expect(lines).toContain('Go to the jump');
-    expect(lines).toContain('Each row below is this line of pixels in one recorded frame');
+    expect(lines).toContain('Time runs down these two pictures, with each row showing the strip of page under the line a moment later, so the shaded shape is the panel opening and closing');
+    expect(lines).toContain('Opens 80 px to the right');
+    expect(lines).toContain('for 240 ms, at Reopen');
     expect(lines).toContain('Move the scan line');
     // The story under the stage: its headings, captions, labels and limits, and none of its prose.
     expect(lines).toContain('Both builds end on the same frame');
@@ -44,7 +46,7 @@ describe('one-line strings on the stage', () => {
       ...Object.values(OUTCOMES),
       ...[2, 96, 318].flatMap((y) => [SAID.scan(y), SAID.scanShort(y)]),
       ...[true, false].flatMap((on) => [SAID.whole(on), SAID.wholeLabel(on), SAID.act(on), SAID.inPlay(14, on)]),
-      SAID.duration(240), SAID.goodAt(4000), SAID.makeFrame(1, 16, 0),
+      SAID.goodAt(4000), SAID.makeFrame(1, 16, 0), SAID.axisStart, SAID.axisEnd, SAID.breakHow(80), SAID.breakWhen(240, 'Reopen'),
       endsLine(true, 58, false), endsLine(true, 0, false), endsLine(false, 0, true), endsLine(false, 0, false),
     ];
     expect(lines.every(Boolean)).toBe(true);
