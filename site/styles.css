@@ -157,6 +157,8 @@
 .core canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 .core-marks { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
 .stage[data-view='difference'] .core.bad { background: #111511; }
+/* Without a worker the subtraction is done by the canvas, and brightened here */
+.stage.is-plain[data-view='difference'] #scan-bad { filter: brightness(4); }
 .stage[data-view='geometry'] .core { background: var(--surface); }
 .c-seam { stroke: var(--surface); stroke-width: 1; opacity: .85; }
 .c-edge { fill: none; stroke: var(--forest); stroke-width: 1; opacity: .5; }

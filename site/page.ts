@@ -3,7 +3,7 @@ import { focusAt, lastAt, rectAt, timelines, viewportAt, type Timelines } from '
 import { initFigures } from './figures.ts';
 import { coreNote, frameLabel, OUTCOMES, readout, SAID, SOURCE, VIEWS, type View } from './lines.ts';
 import { aliveAfter, attemptNote, diedAt } from './reduction.ts';
-import { compose, pack, type Packed, type ScanRequest, type ScanResult } from './scan.ts';
+import type { ScanRequest, ScanResult } from './scan.ts';
 
 /**
  * The public project page. Each build is shown as the frame on the clock, with a
@@ -444,13 +444,24 @@ let scanDirty = true;
 let scanBusy = false;
 let scanId = 0;
 let worker: Worker | null = null;
-/** Without a worker, as when the page is opened from a file, the same code runs here a frame at a time. */
-const local = new Map<string, Packed>();
-let localQueue: string[] = [];
-let localBusy = false;
-const STEP = frame.scale;
+/**
+ * Without a worker, as when the page is opened from a file, the rows are copied
+ * straight from the frames here, a few each tick. A page opened from a file may
+ * draw its own images but not read them back, so nothing here reads a pixel.
+ */
+let plain = false;
+let plainKey = '';
+let plainDone: boolean[] = [];
 
 function startScans(): void {
+  const fall = () => {
+    worker = null;
+    scanBusy = false;
+    plain = true;
+    stage.classList.add('is-plain');
+    scanDirty = true;
+    schedule();
+  };
   try {
     worker = new Worker(new URL('scan.js', location.href));
     worker.onmessage = (e: MessageEvent<{ type: 'frame' } | ({ type: 'scan' } & ScanResult)>) => {
@@ -460,41 +471,70 @@ function startScans(): void {
         schedule();
       }
     };
-    worker.onerror = () => {
-      worker = null;
-      scanBusy = false;
-      localQueue = [...loaded];
-      readLocal();
-    };
-    worker.postMessage({ type: 'setup', scale: frame.scale, step: STEP, base: new URL('.', location.href).href });
+    worker.onerror = fall;
+    worker.postMessage({ type: 'setup', scale: frame.scale, step: frame.scale, base: new URL('.', location.href).href });
     worker.postMessage({ type: 'have', names: [...loaded] });
   } catch {
-    worker = null;
-    localQueue = [...loaded];
-    readLocal();
+    fall();
   }
 }
 
-function readLocal(): void {
-  if (localBusy || !localQueue.length) return;
-  localBusy = true;
-  setTimeout(() => {
-    localBusy = false;
-    const name = localQueue.shift();
-    const img = name && images.get(name);
-    if (name && img && !local.has(name)) {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const c = canvas.getContext('2d', { willReadFrequently: true })!;
-      c.drawImage(img, 0, 0);
-      local.set(name, pack(c.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height, STEP));
-      scanDirty = true;
-      schedule();
+function drawPlain(): void {
+  const width = Math.min(1400, Math.max(64, Math.round(coreW * Math.min(2, devicePixelRatio || 1))));
+  const x0 = Math.max(0, cam.x);
+  const x1 = Math.min(frame.width, cam.x + cam.w);
+  const key = `${session.id}|${scanY}|${x0}|${x1}|${width}|${view}`;
+  if (key !== plainKey) {
+    plainKey = key;
+    plainDone = cells.map(() => false);
+    for (const canvas of [scans.good, scans.bad]) {
+      canvas.width = width;
+      canvas.height = cells.length;
     }
-    readLocal();
-  }, 30);
+  }
+  const s = frame.scale;
+  const row = (c: CanvasRenderingContext2D, name: string, r: number) => c.drawImage(images.get(name)!, x0 * s, scanY * s, (x1 - x0) * s, s, 0, r, width, 1);
+  const good = scans.good.getContext('2d')!;
+  const bad = scans.bad.getContext('2d')!;
+  let budget = 6;
+  let more = false;
+  for (let r = 0; r < cells.length; r++) {
+    const cell = cells[r]!;
+    // A row whose frame is still on its way is copied when the frame arrives.
+    if (plainDone[r] || !loaded.has(cell.good) || !loaded.has(cell.bad)) continue;
+    if (!budget) {
+      more = true;
+      break;
+    }
+    good.clearRect(0, r, width, 1);
+    row(good, cell.good, r);
+    bad.globalCompositeOperation = 'source-over';
+    bad.clearRect(0, r, width, 1);
+    if (view === 'difference') {
+      // Both lines on white, one subtracted from the other, so that equal pixels come out black.
+      bad.fillStyle = '#fff';
+      bad.fillRect(0, r, width, 1);
+      row(bad, cell.good, r);
+      scratchRow.width = width;
+      const t = scratchRow.getContext('2d')!;
+      t.fillStyle = '#fff';
+      t.fillRect(0, 0, width, 1);
+      row(t, cell.bad, 0);
+      bad.globalCompositeOperation = 'difference';
+      bad.drawImage(scratchRow, 0, r);
+      bad.globalCompositeOperation = 'source-over';
+    } else row(bad, cell.bad, r);
+    plainDone[r] = true;
+    budget -= 1;
+  }
+  stage.dataset.rows = String(plainDone.filter(Boolean).length);
+  if (more) {
+    scanDirty = true;
+    schedule();
+  }
 }
+const scratchRow = document.createElement('canvas');
+scratchRow.height = 1;
 
 function requestScan(): void {
   if (view === 'geometry') {
@@ -504,15 +544,15 @@ function requestScan(): void {
   }
   if (scanBusy || !coreW || !started) return;
   scanDirty = false;
+  if (plain) return drawPlain();
   const width = Math.min(1400, Math.max(64, Math.round(coreW * Math.min(2, devicePixelRatio || 1))));
   const request: ScanRequest = {
     id: ++scanId, good: cells.map((c) => c.good), bad: cells.map((c) => c.bad), y: scanY,
     x0: Math.max(0, cam.x), x1: Math.min(frame.width, cam.x + cam.w), width, mode: view === 'difference' ? 'difference' : 'shots',
   };
-  if (worker) {
-    scanBusy = true;
-    worker.postMessage({ type: 'scan', ...request });
-  } else showScan(compose(local, request, frame.scale, STEP));
+  if (!worker) return;
+  scanBusy = true;
+  worker.postMessage({ type: 'scan', ...request });
 }
 
 function showScan(result: ScanResult): void {
@@ -1195,9 +1235,9 @@ function arrived(name: string): void {
   }
   if (!loaded.has(name)) return;
   if (worker) worker.postMessage({ type: 'have', names: [name] });
-  else if (started) {
-    localQueue.push(name);
-    readLocal();
+  else if (plain) {
+    scanDirty = true;
+    schedule();
   }
   for (const watch of watchers) watch(name);
 }
