@@ -169,7 +169,7 @@ The full method, raw runs and failures are in [docs/REPORT.md](docs/REPORT.md).
 |---|---|---|
 | `pnpm check` | Type checks everything | Under 1 s |
 | `pnpm test` | 152 unit tests | Under 1 s |
-| `pnpm test:e2e` | 106 real browser tests on all three engines | About 6 minutes |
+| `pnpm test:e2e` | 107 real browser tests on all three engines | About 6 minutes |
 | `pnpm bench:smoke` | One good pair and one seeded failure | About 4 s |
 | `pnpm bench` | The full measurement | 42 minutes |
 | `pnpm demo` | Rebuilds the reports, the page's screenshots and the project page in `demo/` | About 4 minutes |
