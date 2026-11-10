@@ -62,6 +62,7 @@ export const SAID = {
   duration: (ms: number) => `${ms} ms`,
   inPlay: (alive: number, total: number, done: boolean) => (done ? `of ${total} steps are needed` : `of ${total} steps still in play`),
   goodAt: (t: number) => `Last good build at ${t} ms`,
+  makeFrame: (n: number, total: number, t: number) => `Frame ${n} of ${total}, at ${t} ms`,
 };
 
 /**

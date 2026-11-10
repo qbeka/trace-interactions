@@ -379,6 +379,22 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
 #ends-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
 .ends-strip:has(#ends-range:focus-visible) { outline: 2px solid var(--forest); outline-offset: 4px; border-radius: 4px; }
 
+/* Figure: how one row of every frame becomes a picture */
+.make { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 72px; align-items: center; padding: 14px; }
+.make-frame { position: relative; aspect-ratio: var(--crop, 2); overflow: hidden; border-radius: 8px; background: var(--desk); }
+.make-frame canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.make-frame::after, .make-rows::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line-strong); pointer-events: none; }
+.make-line { position: absolute; left: 0; right: 0; top: calc(var(--scan, .37) * 100%); height: 1px; background: var(--ink); box-shadow: 0 -1px 0 #ffffffb3, 0 1px 0 #ffffffb3; }
+.make-rows { position: relative; aspect-ratio: var(--crop, 2); overflow: hidden; border-radius: 8px; background: var(--desk); cursor: row-resize; }
+.make-rows canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+.make-veil { position: absolute; left: 0; right: 0; bottom: 0; top: calc((var(--row, 0) + 1) / var(--rows, 16) * 100%); background: #fbfaf7e0; }
+.make-row { position: absolute; left: 0; right: 0; top: calc(var(--row, 0) / var(--rows, 16) * 100%); height: calc(100% / var(--rows, 16)); box-shadow: 0 0 0 1.5px var(--ink); pointer-events: none; }
+.make-thread { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.make-thread path { fill: none; stroke: var(--ink); stroke-width: 1; }
+#make-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; pointer-events: none; }
+.make-rows:has(#make-range:focus-visible) { outline: 2px solid var(--forest); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) { .make-row, .make-veil { transition: top .12s var(--ease); } }
+
 /* Figure: each build judged against the same list */
 .rules { width: 100%; border-collapse: collapse; }
 .rules th { padding: 12px 16px 10px; border-bottom: 1px solid var(--line-strong); font-size: 12.5px; line-height: 18px; font-weight: 400; color: var(--muted); text-align: left; white-space: nowrap; }
@@ -503,6 +519,7 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
   .search { --label-col: 132px; }
   .matrix { padding: 0 8px 6px 2px; }
   .result-count b { font-size: 64px; line-height: 56px; }
+  .make { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
   .ends-pair { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .ends-pair .ends-shot:first-child { display: none; }
   .ends-sign { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; order: 2; }

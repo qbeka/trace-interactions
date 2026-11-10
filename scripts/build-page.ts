@@ -79,7 +79,7 @@ export function stageLines(data: { steps: { label: string }[]; attempts: { kept:
     ...VIEWS.flatMap((v) => [readout(v, true), readout(v, false), coreNote(v)]),
     SAID.finished, SAID.scenario, SAID.command, SAID.copyFailed, SAID.replaying(data.attempts.length), ...VIEWS.map((v) => SAID.view(v)),
     SAID.scan(96), SAID.scanShort(96), SAID.whole(true), SAID.whole(false), SAID.wholeLabel(true), SAID.wholeLabel(false), SAID.act(true), SAID.act(false),
-    SAID.duration(240), SAID.inPlay(4, 14, true), SAID.inPlay(8, 14, false), SAID.goodAt(4000),
+    SAID.duration(240), SAID.inPlay(4, 14, true), SAID.inPlay(8, 14, false), SAID.goodAt(4000), SAID.makeFrame(11, 16, 160),
     endsLine(true, 58, false), endsLine(true, 0, false), endsLine(false, 0, true), endsLine(false, 0, false),
     ...[[true, 80], [true, 0], [false, 0]].map(([differs, px]) => frameLabel(4000, 12, data.steps.length, 'Reopen', differs as boolean, px as number)),
     ...markupLines(template),
@@ -223,6 +223,7 @@ export async function buildPage(demoDir: string): Promise<void> {
   if (!differing.length || differing[0]!.t !== jumpT || differing.at(-1)!.t >= settled) throw new Error('The frames that differ are no longer the frames of the jump.');
   if (cells.at(-1)!.differs) throw new Error('The last frames differ.');
   const jumpMs = settled - jumpT;
+  const firstOpen = cells.filter((c) => c.step === 0).length;
 
   const limits = [
     'The corpus is small and I wrote it, so it says nothing about how many real bugs Trace would catch',
@@ -275,7 +276,15 @@ export async function buildPage(demoDir: string): Promise<void> {
     '<section class="chapter reveal">',
     '<h2 class="display">One row of pixels, from every frame</h2>',
     '<p class="prose">The two tall pictures on the stage are slit scans. Each one takes the same single row of pixels out of every recorded frame and stacks the rows in time order, oldest at the top, so a whole session is one image. A panel that opens draws a funnel. A window that narrows draws a step. A frame that was held draws a seam.</p>',
-    '<p class="prose">The good build draws the same funnel every time the panel opens. The broken build draws it once more at the bottom, pushed to the right and flat against the edge of the window, and the dashed line beside it is where the recorded rectangles say it should have been. Move the scan line up to the row through Inspect, and the broken panel starts in line with where Inspect stood at the top of the picture, before the window changed size.</p>',
+    '<figure class="figure">',
+    '<div class="sheet make" id="make">',
+    '<div class="make-frame"><canvas id="make-shot" role="img" aria-label="One recorded frame of the last good build, with the scan line across it"></canvas><i class="make-line"></i><span class="chip" id="make-n"></span></div>',
+    '<div class="make-rows" id="make-rows"><canvas id="make-core" aria-hidden="true"></canvas><i class="make-veil"></i><i class="make-row"></i><input id="make-range" type="range" min="0" step="1" aria-label="Frame of the first opening"></div>',
+    '<svg class="make-thread" aria-hidden="true"><path id="make-link"/></svg>',
+    '</div>',
+    `<figcaption>The first time the panel opens, in ${firstOpen} recorded frames, where the line across each frame becomes one row of the picture beside it</figcaption>`,
+    '</figure>',
+    '<p class="prose" style="margin-top:28px">The good build draws the same funnel every time the panel opens. The broken build draws it once more at the bottom, pushed to the right and flat against the edge of the window, and the dashed line beside it is where the recorded rectangles say it should have been. Move the scan line up to the row through Inspect, and the broken panel starts in line with where Inspect stood at the top of the picture, before the window changed size.</p>',
     '</section>',
 
     '<section class="chapter reveal">',
@@ -388,6 +397,7 @@ export async function buildPage(demoDir: string): Promise<void> {
     .replace('<!--DETAILS-->', () => story)
     .replace('/*STYLES*/', () => css)
     .replace('/*CROP*/', () => `${crop.w} / ${crop.h}`)
+    .replace('/*SCAN*/', () => String(round((scanY - crop.y) / crop.h)))
     .replace('/*DATA*/', () => JSON.stringify(data).replace(/</g, '\\u003c'))
     .replace('/*SCRIPT*/', () => script.outputFiles[0]!.text.replace(/<\/script/g, '<\\/script'));
   writeFileSync(join(demoDir, 'index.html'), html);
