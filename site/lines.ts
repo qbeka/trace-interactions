@@ -19,10 +19,11 @@ export function readout(view: View, differs: boolean): string {
   return differs ? 'The two builds show different frames' : 'The two frames are the same';
 }
 
-/** What the line between the two frames says the pictures under them are made of. */
+/** The one line between the frames and the pictures under them, which says what those pictures are. */
 export function coreNote(view: View): string {
-  if (view === 'geometry') return 'Each row below is where the recorded rectangles cross this line';
-  return 'Each row below is this line of pixels in one recorded frame';
+  if (view === 'geometry') return 'Time runs down these two pictures, and each row shows where the recorded rectangles sat under the line a moment later';
+  if (view === 'difference') return 'Time runs down these two pictures, and the one on the right is lit only where the two builds differ';
+  return 'Time runs down these two pictures, with each row showing the strip of page under the line a moment later, so the shaded shape is the panel opening and closing';
 }
 
 /** The frame's name for a screen reader: where the replay is, and how the two builds compare there. */
@@ -59,10 +60,13 @@ export const SAID = {
   whole: (on: boolean) => (on ? 'Showing the whole frame' : 'Showing the part of the page where the panel opens'),
   wholeLabel: (on: boolean) => (on ? 'Show the part where the panel opens' : 'Show the whole frame'),
   act: (search: boolean) => (search ? 'The search for the steps that matter' : 'The jump, frame by frame'),
-  duration: (ms: number) => `${ms} ms`,
   inPlay: (total: number, done: boolean) => (done ? `of ${total} steps are needed` : `of ${total} steps still in play`),
   goodAt: (t: number) => `Last good build at ${t} ms`,
   makeFrame: (n: number, total: number, t: number) => `Frame ${n} of ${total}, at ${t} ms`,
+  axisStart: 'Start',
+  axisEnd: 'End',
+  breakHow: (px: number) => `Opens ${px} px to the right`,
+  breakWhen: (ms: number, step: string) => `for ${ms} ms, at ${step}`,
 };
 
 /**
