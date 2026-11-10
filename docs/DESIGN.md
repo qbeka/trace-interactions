@@ -69,6 +69,19 @@ along, the aligned traces and the transport. When the replay sits on a failed
 `geometry-origin` sample, the failing stage draws the distance the verdict states as a
 dimension line, read from the same two rectangles the oracle read.
 
+The two stages share one frame: the part of the window that the tracked elements of either
+build used during the action under the clock. The elements fill the stage, a position on one
+stage means the same on the other, and the frame only changes when the action does, so it
+never moves under a motion. Resting on a measured failure, the frame closes in on the two
+rectangles the verdict is about. The whole window is one press away.
+
+Where the diagnostic pass took a screenshot of the same moment, it lies under the
+rectangles, and the stage says which it is drawing over. An action's own screenshot is taken
+after the action ran, so it shows the page as the trace has it at that time. This is only
+offered under controlled time, where both passes reach the same state at the same moment.
+The strip of screenshots and the pair under the tables are cut to the same frames, and each
+of the pair links to its whole window.
+
 There are no metric tiles. A passing report has the same shape as a failing one:
 the sentence says what held, and the stages still replay.
 
@@ -79,16 +92,41 @@ the verdict, which is saved with the run and shown as it was written.
 
 ## The project page
 
-The page compares the two builds in one viewer instead of two stacked panes, because the
-failure is a difference and reads best where the two pictures share one set of
-coordinates. Overlay, Swipe and Difference blend the recorded screenshots in the browser.
-Geometry draws the report's rectangles and the path each panel took. The outlines and the
-ruler are always drawn from the report's rectangles, never from the pictures.
+The page shows each build twice: as the frame on the clock, and as a slit scan under it. A
+slit scan takes one row of pixels at the same height from every recorded frame and stacks
+the rows in time order, so a whole session is one picture. An opening panel draws a funnel,
+a resize draws a step, and the failure is the place where the two pictures part. A frame
+and its scan share one horizontal scale, so a place on one is the same place on the other.
+The scan line can be moved, and both pictures are cut again along it.
 
-The timeline is a film strip with one cell for each recorded frame, sliding under a fixed
-gate, over a line that plots how far apart the builds are across the whole recording. The
-reduction is a grid with one row for each step and one column for each attempt the reducer
-saved, so the invalid and rejected attempts stay in view.
+Two builds side by side replaced the earlier single viewer, because each scan has to sit
+under its own frame. The broken build still carries both outlines and the ruler, so the
+distance is read in one set of coordinates. The frames are cut to the part of the window
+where the panel is from the reopen onward, and the whole frame is one press away. Through
+the failure each frame also draws every rectangle the panel recorded on its way open, so
+the two paths can be compared without playing anything.
+
+The scans are read off the main thread. A worker keeps each frame as runs of equal pixels,
+which is a few kilobytes for a screenshot of an interface, and answers with both pictures
+whenever the line, the session or the view changes. Where a worker cannot start, as when the
+page is opened from a file, the same code runs on the page a frame at a time.
+
+Difference lights the pixels where the two builds disagree, in the frame and in the scan,
+where everything outside the failure is black. Geometry draws the report's rectangles in the
+frame, and in the scans the places where they cross the line. The outlines, the ruler, the
+traced edge of the panel and the bracket are always drawn from the report's rectangles,
+never from the pictures.
+
+The reduction has the stage to itself in a second act. It is a grid with one row for each
+step and one column for each attempt the reducer saved, over a band for each step that runs
+for as long as the reducer still had that step in play, so the bands close in on the steps
+that are left. The invalid and rejected attempts stay in view.
+
+Under the stage, the page explains itself with figures drawn from the same runs: the last
+frame of each build above the frames that differ, a scan built one row at a time, each
+requirement with what each build did against it, and every measured result as one mark for
+each build, run or session, with its scope in the caption. The figures start only when they
+are near the screen.
 
 ## What the runner does not do
 
