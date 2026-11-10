@@ -17,13 +17,16 @@ interface Props {
   gap: OriginGap | null;
   /** What the verdict says about this build, for the caption. */
   outcome: 'held' | 'failed' | null;
+  /** The screenshot of this moment, when there is one. The rectangles are then drawn over the real page. */
+  shot: { path: string; t: number } | null;
 }
 
 /**
  * Draws the recorded rectangles, not a video. The stage shows what a screenshot
- * cannot: where focus is and the path the panel took to get there.
+ * cannot: where focus is and the path the panel took to get there. Where the
+ * diagnostic pass took a screenshot of the same moment, it lies underneath.
  */
-export function Stage({ title, label, line, ghost, time, scenario, primary, stateKey, failing, frame, gap, outcome }: Props) {
+export function Stage({ title, label, line, ghost, time, scenario, primary, stateKey, failing, frame, gap, outcome, shot }: Props) {
   const vp = viewportAt(line, time, scenario.viewport);
   const names = Object.keys(scenario.targets).filter((n) => scenario.targets[n]?.traceId);
   const focus = focusAt(line, time);
@@ -36,22 +39,23 @@ export function Stage({ title, label, line, ghost, time, scenario, primary, stat
   const summary = `${title} at ${Math.round(time)} ms, where ${stateKey ?? 'state'} is ${state ?? 'unknown'} and focus is on ${focusName(focus)}`;
 
   return (
-    <figure className={failing ? 'stage is-failing' : 'stage'}>
+    <figure className={`stage${failing ? ' is-failing' : ''}${shot ? ' has-shot' : ''}`}>
       <figcaption>
         <span className="stage-title">{title}</span>
         <span className="stage-label">{label}</span>
         {outcome && <span className={`stage-outcome is-${outcome}`}>{outcome === 'failed' ? 'Fails here' : 'Holds'}</span>}
       </figcaption>
-      <svg viewBox={`${frame.x} ${frame.y} ${frame.w} ${frame.h}`} role="img" aria-label={summary} preserveAspectRatio="xMidYMid meet" style={{ aspectRatio: String(Math.max(1.5, Math.min(2.4, frame.w / frame.h))) }}>
+      <svg viewBox={`${frame.x} ${frame.y} ${frame.w} ${frame.h}`} role="img" aria-label={summary} preserveAspectRatio="xMidYMid meet">
         <rect className="outside" x={frame.x} y={frame.y} width={frame.w} height={frame.h} />
         <rect className="vp" x={0.5} y={frame.y - unit * 20} width={vp.width - 1} height={vp.height + unit * 40} />
+        {shot && <image href={`screenshots/${shot.path}`} x={0} y={0} width={vp.width} height={vp.height} preserveAspectRatio="none" />}
         {names.map((n) => {
           const r = rectAt(line, n, time);
           if (!r || n === primary) return null;
           return (
             <g key={n}>
               <rect className="node" x={r.x} y={r.y} width={r.w} height={r.h} rx={unit * 0.5} />
-              {r.w >= unit * 6 && <text className="node-name" x={r.x + r.w / 2} y={r.y + r.h / 2 + unit * 0.7} style={{ fontSize: unit * 1.9 }}>{n}</text>}
+              {!shot && r.w >= unit * 6 && <text className="node-name" x={r.x + r.w / 2} y={r.y + r.h / 2 + unit * 0.7} style={{ fontSize: unit * 1.9 }}>{n}</text>}
             </g>
           );
         })}
@@ -86,6 +90,10 @@ export function Stage({ title, label, line, ghost, time, scenario, primary, stat
         <div>
           <dt>focus</dt>
           <dd className={!focus ? 'muted-value' : undefined}>{focusName(focus)}</dd>
+        </div>
+        <div className="stage-source">
+          <dt>picture</dt>
+          <dd>{shot ? `screenshot at ${Math.round(shot.t)} ms` : 'recorded rectangles'}</dd>
         </div>
       </dl>
     </figure>

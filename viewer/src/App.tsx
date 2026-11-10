@@ -7,9 +7,10 @@ import {
   busyTimes,
   describeRequirement,
   failingSide,
+  failureFrame,
   focusName,
   formatMs,
-  frameOf,
+  frameAt,
   mainStateKey,
   lastAt,
   originGap,
@@ -17,8 +18,14 @@ import {
   primaryViolation,
   ackStatus,
   requirementStatus,
+  shotAt,
   skipIdle,
+  takenBefore,
   timelines,
+  viewportAt,
+  windowFrame,
+  type Frame,
+  type Timelines,
 } from './model.ts';
 import { REPORT_SCHEMA, type ReportCase, type ReportData, type RunSide } from './types.ts';
 
@@ -123,7 +130,6 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   const cand = useMemo(() => timelines(c.candidate.events), [c]);
   const end = Math.max(base.end, 1);
   const primary = useMemo(() => primaryTarget(c.scenario), [c]);
-  const frame = useMemo(() => frameOf([base, cand], c.scenario.viewport), [base, cand, c]);
   const stateKey = useMemo(() => mainStateKey(c.scenario), [c]);
   const failure = primaryViolation(c);
   const side = failingSide(c);
@@ -132,6 +138,7 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   const [time, setTime] = useState(pin === null ? end : Math.min(pin, end));
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(0.25);
+  const [whole, setWhole] = useState(false);
   const busy = useMemo(() => busyTimes(c.baseline.events, c.candidate.events), [c]);
   const clock = useRef<{ wall: number; trace: number } | null>(null);
 
@@ -200,6 +207,18 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   const onFailure = pin !== null && Math.abs(time - pin) < stepMs / 2;
   const broken = failure?.index !== undefined ? c.scenario.requirements[failure.index] : undefined;
   const outcome = (which: 'baseline' | 'candidate') => (side === null ? null : side === which || c.comparison.shared.length > 0 ? 'failed' : 'held');
+  // Resting on a measured failure, the stages close in on the two rectangles the verdict is about.
+  const close = !whole && !playing && onFailure && gap !== null;
+  const span = base.actions.findLastIndex((a) => a.t <= time);
+  const view = useMemo(
+    () => (whole ? windowFrame(viewportAt(base, time, c.scenario.viewport)) : close ? failureFrame(gap!) : frameAt([base, cand], time, c.scenario.viewport)),
+    // The frame belongs to the action under the clock, so it is worked out again only when that changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [whole, close, span, base, cand, c],
+  );
+  const frame = useEased(view);
+  // A stage shows the real page under its rectangles only while it rests on a moment that has a screenshot.
+  const picture = (which: RunSide, t: number) => (playing ? null : shotAt(which, t, stepMs / 2));
 
   return (
     <main>
@@ -224,11 +243,16 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
 
       <section className="deck" aria-label="Replay">
         <div className="stages">
-          <Stage title="Baseline" label={c.baseline.label} line={base} ghost={null} time={time} scenario={c.scenario} primary={primary} stateKey={stateKey} frame={frame} failing={side === 'baseline' && pin !== null && time >= pin} gap={side === 'baseline' && onFailure ? gap : null} outcome={outcome('baseline')} />
-          <Stage title="Candidate" label={c.candidate.label} line={cand} ghost={{ line: base, time }} time={candTime} scenario={c.scenario} primary={primary} stateKey={stateKey} frame={frame} failing={side === 'candidate' && pin !== null && time >= pin} gap={side === 'candidate' && onFailure ? gap : null} outcome={outcome('candidate')} />
+          <Stage title="Baseline" label={c.baseline.label} line={base} ghost={null} time={time} shot={picture(c.baseline, time)} scenario={c.scenario} primary={primary} stateKey={stateKey} frame={frame} failing={side === 'baseline' && pin !== null && time >= pin} gap={side === 'baseline' && onFailure ? gap : null} outcome={outcome('baseline')} />
+          <Stage title="Candidate" label={c.candidate.label} line={cand} ghost={{ line: base, time }} time={candTime} shot={picture(c.candidate, candTime)} scenario={c.scenario} primary={primary} stateKey={stateKey} frame={frame} failing={side === 'candidate' && pin !== null && time >= pin} gap={side === 'candidate' && onFailure ? gap : null} outcome={outcome('candidate')} />
         </div>
-        <Legend gap={gap !== null} />
-        <Film c={c} side={side ?? 'candidate'} time={time} onSeek={seek} />
+        <div className="under-stages">
+          <Legend gap={gap !== null} />
+          <button type="button" className="link framing" aria-pressed={whole} onClick={() => setWhole((w) => !w)}>
+            {whole ? 'Frame the tracked elements' : 'Show the whole window'}
+          </button>
+        </div>
+        <Film c={c} side={side ?? 'candidate'} lines={[base, cand]} time={time} onSeek={seek} />
         <Strip baseline={base} candidate={cand} stateKey={stateKey} end={end} time={time} pin={pin} />
         <div className="transport" role="group" aria-label="Replay transport">
           <button type="button" className="button primary play" onClick={() => setPlaying((p) => !p)} aria-pressed={playing}>
@@ -269,13 +293,60 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
       </div>
       <FocusHistory c={c} onSeek={seek} />
       <Geometry c={c} primary={primary} onSeek={seek} pin={pin} />
-      <Screenshots c={c} onSeek={seek} />
+      <Screenshots c={c} lines={[base, cand]} onSeek={seek} />
       <Environment data={data} c={c} />
     </main>
   );
 }
 
 const RATES = [0.1, 0.25, 0.5, 1];
+
+/** Moves the frame to a new place over a third of a second, or at once with reduced motion. */
+function useEased(to: Frame): Frame {
+  const [frame, setFrame] = useState(to);
+  const from = useRef(to);
+  useEffect(() => {
+    const start = from.current;
+    if (prefersReducedMotion() || (start.x === to.x && start.y === to.y && start.w === to.w && start.h === to.h)) {
+      from.current = to;
+      setFrame(to);
+      return;
+    }
+    let raf = 0;
+    const began = performance.now();
+    const step = (now: number) => {
+      const p = Math.min(1, (now - began) / 320);
+      const e = 1 - (1 - p) ** 3;
+      const next = { x: start.x + (to.x - start.x) * e, y: start.y + (to.y - start.y) * e, w: start.w + (to.w - start.w) * e, h: start.h + (to.h - start.h) * e };
+      from.current = next;
+      setFrame(next);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [to]);
+  return frame;
+}
+
+/** A screenshot cut down to the part of the window the stages frame, so the tracked elements fill it. */
+function Crop({ frame, shot, viewport, label }: { frame: Frame; shot: { path: string }; viewport: { width: number; height: number }; label?: string }) {
+  return (
+    <svg className="crop" viewBox={`${frame.x} ${frame.y} ${frame.w} ${frame.h}`} preserveAspectRatio="xMidYMid slice" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
+      <image href={`screenshots/${shot.path}`} x={0} y={0} width={viewport.width} height={viewport.height} preserveAspectRatio="none" />
+    </svg>
+  );
+}
+
+/** Where to cut a screenshot, and how large the window was when it was taken. */
+function useCrops(c: ReportCase, lines: Timelines[]) {
+  const gap = useMemo(() => originGap(c), [c]);
+  return useCallback((shot: { t: number; label: string }, shots: { t: number; label: string; path: string; tick: number }[]) => {
+    // A screenshot taken before an action belongs to the action before it.
+    const at = takenBefore(shot as never, shots as never) ? Math.max(0, shot.t - 0.5) : shot.t;
+    const failure = gap !== null && shot.t === gap.t && at === shot.t;
+    return { frame: failure ? failureFrame(gap) : frameAt(lines, at, c.scenario.viewport), viewport: viewportAt(lines[0]!, at, c.scenario.viewport), failure };
+  }, [c, lines, gap]);
+}
 
 function Legend({ gap }: { gap: boolean }) {
   return (
@@ -294,25 +365,28 @@ function Legend({ gap }: { gap: boolean }) {
  * The screenshots from the diagnostic pass, in order, as a strip to step along.
  * They are evidence beside the trace and take no part in the verdict.
  */
-function Film({ c, side, time, onSeek }: { c: ReportCase; side: 'baseline' | 'candidate'; time: number; onSeek: (t: number) => void }) {
+function Film({ c, side, lines, time, onSeek }: { c: ReportCase; side: 'baseline' | 'candidate'; lines: Timelines[]; time: number; onSeek: (t: number) => void }) {
   const shots = c[side].screenshots;
+  const crop = useCrops(c, lines);
+  const failed = primaryViolation(c)?.at.t;
   if (shots.length === 0) return null;
-  // Two screenshots can share a time. The one taken for the failure is the one to show there.
-  const last = lastAt(shots, time);
-  const sameTime = shots.findIndex((s) => s.t === shots[last]?.t && s.label.startsWith('at '));
-  const current = sameTime >= 0 ? sameTime : last;
+  // Two screenshots can share a time. The later one shows the page after the action there.
+  const current = lastAt(shots, time);
   return (
     <div className="film">
       <p className="film-title">{side === 'candidate' ? 'Candidate' : 'Baseline'} screenshots, one for each action</p>
       <ol className="film-reel">
         {shots.map((s, i) => {
-          const failure = s.label.startsWith('at ');
-          const action = c.scenario.actions.find((a) => a.at === s.t && (a.note ?? a.type) === s.label);
+          const before = takenBefore(s, shots);
+          const failure = s.t === failed && !before;
+          const action = c.scenario.actions.find((a) => a.at === s.t && (before || (a.note ?? a.type) === s.label));
+          const name = failure ? 'failure' : action ? `${before ? 'before ' : ''}${actionName(action)}` : s.label;
+          const { frame, viewport } = crop(s, shots);
           return (
             <li key={i}>
               <button type="button" className={`frame${failure ? ' is-failure' : ''}`} aria-current={i === current ? 'true' : undefined} onClick={() => onSeek(s.t)}>
-                <img src={`screenshots/${s.path}`} alt="" loading="lazy" decoding="async" />
-                <span className="frame-name">{failure ? 'failure' : action ? actionName(action) : s.label}</span>
+                <Crop frame={frame} shot={s} viewport={viewport} />
+                <span className="frame-name">{name}</span>
                 <span className="frame-time">{formatMs(s.t)}</span>
               </button>
             </li>
@@ -536,31 +610,37 @@ function Geometry({ c, primary, onSeek, pin }: { c: ReportCase; primary: string 
   );
 }
 
-function Screenshots({ c, onSeek }: { c: ReportCase; onSeek: (t: number) => void }) {
+function Screenshots({ c, lines, onSeek }: { c: ReportCase; lines: Timelines[]; onSeek: (t: number) => void }) {
+  const crop = useCrops(c, lines);
   const shots = useMemo(() => {
-    const failing = c.candidate.screenshots.filter((s) => s.label.startsWith('at '));
-    const list = failing.length > 0 ? failing : c.candidate.screenshots.slice(-1);
-    return list.map((s) => ({ s, b: c.baseline.screenshots.find((x) => x.label === s.label && x.t === s.t) ?? c.baseline.screenshots.at(-1) }));
+    // The picture of a failure is the last one taken at its time. With no failure, the last one of the run.
+    const times = [...new Set(c.candidate.screenshots.filter((s) => s.label.startsWith('at ')).map((s) => s.t))];
+    const last = (side: RunSide, t: number) => side.screenshots.findLast((x) => x.t === t);
+    const list = times.length > 0 ? times.flatMap((t) => last(c.candidate, t) ?? []) : c.candidate.screenshots.slice(-1);
+    return list.map((s) => ({ s, b: last(c.baseline, s.t) ?? c.baseline.screenshots.at(-1) }));
   }, [c]);
   if (shots.length === 0) return null;
   return (
     <section className="block">
       <h2>Screenshots</h2>
       <p className="note">Supporting evidence from a separate diagnostic pass that did not decide the verdict</p>
-      {shots.map(({ s, b }, i) => (
-        <div className="shots" key={i}>
-          {b && (
+      {shots.map(({ s, b }, i) => {
+        const cut = crop(s, c.candidate.screenshots);
+        return (
+          <div className="shots" key={i}>
+            {b && (
+              <figure>
+                <Crop frame={cut.frame} shot={b} viewport={cut.viewport} label={`Baseline at ${b.t} ms`} />
+                <figcaption>Baseline at <button type="button" className="link" onClick={() => onSeek(b.t)}>{formatMs(b.t)}</button><a href={`screenshots/${b.path}`}>whole window</a></figcaption>
+              </figure>
+            )}
             <figure>
-              <img src={`screenshots/${b.path}`} alt={`Baseline at ${b.t} ms`} loading="lazy" />
-              <figcaption>Baseline at <button type="button" className="link" onClick={() => onSeek(b.t)}>{formatMs(b.t)}</button></figcaption>
+              <Crop frame={cut.frame} shot={s} viewport={cut.viewport} label={`Candidate at ${s.t} ms`} />
+              <figcaption>Candidate at <button type="button" className="link" onClick={() => onSeek(s.t)}>{formatMs(s.t)}</button><a href={`screenshots/${s.path}`}>whole window</a></figcaption>
             </figure>
-          )}
-          <figure>
-            <img src={`screenshots/${s.path}`} alt={`Candidate at ${s.t} ms`} loading="lazy" />
-            <figcaption>Candidate at <button type="button" className="link" onClick={() => onSeek(s.t)}>{formatMs(s.t)}</button></figcaption>
-          </figure>
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </section>
   );
 }
