@@ -34,15 +34,17 @@ p { margin: 22px 0 0; font: 400 50px/58px 'Geist Serif', serif; letter-spacing: 
 .core { position: relative; min-height: 0; border-radius: 12px; overflow: hidden; background: repeating-linear-gradient(135deg, transparent 0 9px, #1115110a 9px 11px), #efede7; box-shadow: inset 0 0 0 1.5px #1115112e; }
 .core canvas, .core svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 .core::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1.5px #1115112e; }
-.ghost { fill: none; stroke: #1d3a2a; stroke-width: 2.5; stroke-dasharray: 6 5; }
-.edge { fill: none; stroke: #b4561a; stroke-width: 3.5; }
-.span { fill: none; stroke: #b4561a; stroke-width: 4; }
+.veil { fill: #fbfaf7; opacity: .66; }
+.band { fill: #1d3a2a; opacity: .14; }
+.off { fill: #b4561a; opacity: .3; }
+.wedge { fill: #b4561a; opacity: .85; }
+.ghost { fill: none; stroke: #1d3a2a; stroke-width: 3; stroke-dasharray: 7 5; }
 </style></head><body>
 <div class="words"><h1>Trace</h1><p>${sentence}</p></div>
 <div class="art">
   <span class="name"><i></i>Last good build</span><span class="name bad"><i></i>Broken build</span>
-  <div class="core"><canvas id="good"></canvas></div>
-  <div class="core"><canvas id="bad"></canvas><svg id="marks"></svg></div>
+  <div class="core"><canvas id="good"></canvas><svg id="marks-good"></svg></div>
+  <div class="core"><canvas id="bad"></canvas><svg id="marks-bad"></svg></div>
 </div>
 <script>const __OG__ = { data: ${data}, base: ${JSON.stringify(server.url)} };</script>
 <script>${script.outputFiles[0]!.text.replace(/<\/script/g, '<\\/script')}</script>
