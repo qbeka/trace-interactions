@@ -642,12 +642,13 @@ function drawCoreMarks(): void {
     const bottom = settledIndex * rowH;
     const bx = coreW - 9;
     set(shape('path', 'c-span', svg), { d: `M${bx - 5} ${top}H${bx}V${bottom}H${bx - 5}` });
+    // Its length sits above it, clear of the rows it measures, where the panel is shut on both builds.
     const text = SAID.duration(jump.settled - jump.t);
     const w = text.length * 6.2 + 14;
-    const cy = clamp((top + bottom) / 2, 12, coreH - 12);
-    set(shape('rect', 'c-pill', svg), { x: bx - w - 7, y: cy - 10, width: w, height: 20, rx: 10 });
+    const cy = clamp(top - 15, 12, coreH - 12);
+    set(shape('rect', 'c-pill', svg), { x: bx - w + 3, y: cy - 10, width: w, height: 20, rx: 10 });
     const label = shape('text', 'c-label', svg);
-    set(label, { x: bx - 7 - w / 2, y: cy + 4 });
+    set(label, { x: bx + 3 - w / 2, y: cy + 4 });
     label.textContent = text;
   }
 }
