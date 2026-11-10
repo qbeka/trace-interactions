@@ -27,6 +27,11 @@ const set = (node: Element, attrs: Record<string, number | string>) => {
   for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
 };
 const show = (node: Element, on: boolean) => node.setAttribute('visibility', on ? 'visible' : 'hidden');
+/** Shows or removes a whole group. A part marked visible would still show through a group that is only hidden. */
+const showAll = (group: Element, on: boolean) => {
+  show(group, on);
+  (group as SVGElement).style.display = on ? '' : 'none';
+};
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text = '') => {
   const node = document.createElement(tag);
   if (cls) node.className = cls;
@@ -430,8 +435,7 @@ function drawMarks(): void {
     // Through the jump, where the panel started and where it ends, and in Geometry every rectangle between.
     // Close on the start there is no room for the end, so it waits until the frame has opened out.
     show(m.path, t >= jump.t && t < jump.settled && (geometry || camTo === field));
-    // The whole drawing is taken out, since a part marked visible would show through a hidden group.
-    (m.world as SVGGElement).style.display = geometry ? '' : 'none';
+    showAll(m.world, geometry);
     if (!geometry) continue;
     set(m.view, { x: 0.5, y: 0.5, width: vp.width - 1, height: frame.height - 0.5 });
     for (const [name, node] of m.nodes) {
@@ -457,7 +461,7 @@ function drawMarks(): void {
   }
 
   // Each frame outlines its own panel through the failure, so the eye finds it at any size.
-  show(marks.good.ruler, on);
+  showAll(marks.good.ruler, on);
   if (on && a) {
     set(marks.good.outlineGood, { x: a.x, y: a.y, width: a.w, height: a.h, rx: 5 });
     show(marks.good.outlineGood, !geometry);
@@ -465,7 +469,7 @@ function drawMarks(): void {
   }
   // The ruler lives on the broken build, between where the panel is and where it should be.
   const m = marks.bad;
-  show(m.ruler, on);
+  showAll(m.ruler, on);
   if (!on || !a || !b) return;
   for (const [node, r] of [[m.outlineGood, a], [m.outlineBad, b]] as const) set(node, { x: r.x, y: r.y, width: r.w, height: r.h, rx: 5 });
   show(m.outlineGood, !geometry);

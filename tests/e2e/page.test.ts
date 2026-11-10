@@ -139,6 +139,8 @@ describe('project page', () => {
     }
     await seek(page, 4240);
     await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('hidden');
+    // Once the builds agree, nothing of the ruler or the outlines is left on either frame.
+    for (const part of ['#marks-bad .m-outline.bad', '#marks-bad .m-outline.good', '#marks-bad .m-label', '#marks-bad .m-pill', '#marks-good .m-outline.good']) expect(await page.locator(part).isVisible()).toBe(false);
     await seek(page, 4016);
     await expect.poll(() => page.locator('#marks-bad .ruler').getAttribute('visibility')).toBe('visible');
     await seek(page, 3600);
