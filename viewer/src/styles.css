@@ -88,9 +88,8 @@ a:hover { text-decoration-color: currentColor; }
 
 /* The finding */
 .finding { padding: 44px 0 30px; max-width: 860px; }
-.verdict { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 3px 10px 3px 9px; border-radius: 999px; background: #1d3a2a12; color: var(--forest); font-weight: 500; font-size: 12.5px; line-height: 18px; }
-.verdict::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.verdict-regression, .verdict-shared-failure, .verdict-diverged, .verdict-invalid { background: var(--fail-wash); color: var(--fail-text); }
+.verdict { color: var(--forest); }
+.verdict-regression, .verdict-shared-failure, .verdict-diverged, .verdict-invalid { color: var(--fail-text); }
 .finding h1::first-letter { text-transform: uppercase; }
 .finding h1 { margin: 0; font: 400 clamp(26px, 4vw, 40px)/1.14 var(--serif); letter-spacing: -0.022em; text-wrap: pretty; overflow-wrap: anywhere; }
 .lede { margin: 16px 0 0; color: var(--body); font-size: 15px; line-height: 24px; overflow-wrap: anywhere; }

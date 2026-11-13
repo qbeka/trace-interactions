@@ -44,6 +44,9 @@ const VERDICT: Record<string, string> = {
   diverged: 'Could not finish',
 };
 
+/** The sentence follows the verdict on one line, so it carries on in lower case. */
+const lowerFirst = (s: string): string => s.charAt(0).toLowerCase() + s.slice(1);
+
 const prefersReducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function App() {
@@ -223,8 +226,7 @@ function CaseView({ data, c, canToggle, onToggle }: { data: ReportData; c: Repor
   return (
     <main>
       <section className="finding" aria-labelledby="verdict">
-        <p className={`verdict verdict-${verdict}`}>{VERDICT[verdict]}</p>
-        <h1 id="verdict">{c.comparison.sentence}</h1>
+        <h1 id="verdict"><span className={`verdict verdict-${verdict}`}>{VERDICT[verdict]}</span>: {lowerFirst(c.comparison.sentence)}</h1>
         <p className="lede">
           {c.baseline.label} against {c.candidate.label}, {c.scenario.actions.length} action{c.scenario.actions.length === 1 ? '' : 's'}
           {reduction && reduction.status === 'reduced' && c.id === 'reduced'
