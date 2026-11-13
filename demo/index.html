@@ -96,6 +96,11 @@ body {
 .shell { width: 100%; max-width: calc(var(--stage-width) + var(--gutter) * 2); margin: 0 auto; padding: 0 var(--gutter); }
 .topbar { display: flex; align-items: center; justify-content: space-between; height: 52px; }
 .topbar nav { display: flex; align-items: center; gap: 4px; margin-right: -8px; }
+/* With the story link the top bar holds four links, so on a phone they sit a little closer. */
+@media (max-width: 419px) {
+  .topbar nav { gap: 0; margin-right: -6px; }
+  .topbar nav .quiet { padding: 0 6px; white-space: nowrap; }
+}
 .title { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 16px; margin-bottom: 16px; }
 .title h1 { margin: 0; font: 400 40px/44px var(--serif); letter-spacing: -0.03em; }
 
@@ -203,6 +208,7 @@ body {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
   max-width: var(--reading-width); margin: 56px 0 0; padding: 0 0 40px;
 }
+.page-end nav { display: flex; align-items: center; gap: 4px; }
 .page-end .quiet:last-child { margin-right: -8px; }
 @media (max-width: 559px) {
   .results > div { grid-template-columns: minmax(0, 1fr); row-gap: 2px; }
@@ -385,7 +391,7 @@ body {
 .c-call { fill: var(--paper); stroke: var(--bad); stroke-width: 1.25; }
 .c-call-text { fill: var(--bad-text); font-family: var(--sans); font-size: 12px; font-variant-numeric: tabular-nums; }
 .c-call-text.strong { font-weight: 500; font-size: 12.5px; }
-.c-axis { fill: var(--muted); font-family: var(--sans); font-size: 12px; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.c-axis { fill: var(--muted); font-family: var(--sans); font-size: 14px; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
 .c-arrow { fill: none; stroke: var(--faint); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
 .stage[data-view='difference'] .core.bad :is(.c-veil, .c-band, .c-wedge, .c-seam) { visibility: hidden; }
 .stage[data-view='difference'] .core.bad .c-ghost { stroke: #9ad3b1; }
@@ -799,6 +805,7 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
       Qendrim Beka
     </a>
     <nav aria-label="More about Trace">
+      <a class="quiet" href="/work/trace">Read the story</a>
       <a class="quiet" href="#details">Details</a>
       <a class="quiet" href="https://github.com/qbeka/trace-interactions">GitHub</a>
     </nav>
@@ -1010,7 +1017,10 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 4L6 8L10 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Qendrim Beka
       </a>
-      <a class="quiet" href="https://github.com/qbeka/trace-interactions">GitHub</a>
+      <nav aria-label="Where to read more">
+        <a class="quiet" href="/work/trace">Read the story</a>
+        <a class="quiet" href="https://github.com/qbeka/trace-interactions">GitHub</a>
+      </nav>
     </footer>
   </main>
 </div>
