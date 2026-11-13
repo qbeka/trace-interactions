@@ -97,7 +97,6 @@ body {
 .topbar nav { display: flex; align-items: center; gap: 4px; margin-right: -8px; }
 .title { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 16px; margin-bottom: 16px; }
 .title h1 { margin: 0; font: 400 40px/44px var(--serif); letter-spacing: -0.03em; }
-.title p { grid-column: 1 / -1; margin: 2px 0 0; font: 400 17px/24px var(--serif); color: var(--body); letter-spacing: -0.008em; }
 
 /* Links */
 .quiet {
@@ -802,7 +801,6 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
     <header class="title">
       <h1>Trace</h1>
       <a class="control outline" href="regression/">Open the full report</a>
-      <p>Find the part where it broke</p>
     </header>
 
     <section class="stage" id="stage" data-act="jump" data-view="shots" aria-label="Recorded replay of a panel that opens in the wrong place">
