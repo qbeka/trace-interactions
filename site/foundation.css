@@ -181,6 +181,7 @@ body {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
   max-width: var(--reading-width); margin: 56px 0 0; padding: 0 0 40px;
 }
+.page-end nav { display: flex; align-items: center; gap: 4px; }
 .page-end .quiet:last-child { margin-right: -8px; }
 @media (max-width: 559px) {
   .results > div { grid-template-columns: minmax(0, 1fr); row-gap: 2px; }
