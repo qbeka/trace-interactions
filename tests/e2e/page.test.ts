@@ -997,14 +997,15 @@ describe('project page', () => {
 
   it('links to reports that exist, as folders, keeps every path relative, and carries a share card and a tab icon', async () => {
     const { page } = await open(still);
-    // The way back is the one root path, to the work row on the site that hosts the page.
+    // The root paths lead onto the site that hosts the page: the way back to the work row, and the story.
     expect(await page.locator('a.back').evaluateAll((all) => all.map((a) => a.getAttribute('href')))).toEqual(['/#work-trace', '/#work-trace']);
+    expect(await page.locator('a[href^="/"]:not(.back)').evaluateAll((all) => all.map((a) => a.getAttribute('href')))).toEqual(['/work/trace', '/work/trace']);
     const links = await page.locator('main a:not(.back)').evaluateAll((all) => all.map((a) => a.getAttribute('href')!));
-    const local = links.filter((href) => !href.startsWith('http') && !href.startsWith('#'));
+    const local = links.filter((href) => !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('/'));
     expect(local).toEqual(['regression/', 'fixed/', 'regression/', 'fixed/']);
     for (const href of local) expect(existsSync(join(root, 'demo', href, 'index.html'))).toBe(true);
     const html = await page.content();
-    expect(html.replaceAll('href="/#work-trace"', '')).not.toMatch(/\/Users\/|href="\/|src="\/|index\.html/);
+    expect(html.replaceAll('href="/#work-trace"', '').replaceAll('href="/work/trace"', '')).not.toMatch(/\/Users\/|href="\/|src="\/|index\.html/);
     const meta = (name: string) => page.locator(`meta[property="${name}"], meta[name="${name}"]`).getAttribute('content');
     expect(await meta('og:title')).toBe('Trace');
     expect(await meta('og:description')).toBe('Find the part where it broke');
