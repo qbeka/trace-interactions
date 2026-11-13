@@ -762,9 +762,20 @@ function drawCoreMarks(): void {
     set(shape('path', 'c-wedge', svg), { d: wedge });
     set(shape('path', 'c-ghost', svg), { d: ghost });
     // One note for the break: how far off the panel opened, for how long, and on which step.
-    const lines = [SAID.breakHow(jump.px), SAID.breakWhen(jump.settled - jump.t, steps[jump.step]!.label)];
-    const w = Math.min(coreW - 12, Math.max(...lines.map((line) => line.length)) * 6.1 + 22);
-    const h = 40;
+    // A narrow core gets more lines rather than words that run out of the box.
+    const room = Math.max(8, Math.floor((coreW - 34) / 6.6));
+    const wrap = (line: string, strong: boolean) => {
+      const out: { line: string; strong: boolean }[] = [];
+      for (const word of line.split(' ')) {
+        const last = out.at(-1);
+        if (last && last.line.length + 1 + word.length <= room) last.line += ` ${word}`;
+        else out.push({ line: word, strong });
+      }
+      return out;
+    };
+    const lines = [...wrap(SAID.breakHow(jump.px), true), ...wrap(SAID.breakWhen(jump.settled - jump.t, steps[jump.step]!.label), false)];
+    const w = Math.min(coreW - 12, Math.max(...lines.map(({ line }) => line.length)) * 6.1 + 22);
+    const h = 10 + lines.length * 15;
     const jumpTop = jumpIndex * rowH;
     const bx = coreW - w - 6;
     const by = clamp(jumpTop - h - 12, 6, coreH - h - 6);
@@ -773,8 +784,8 @@ function drawCoreMarks(): void {
     set(shape('path', 'c-lead', svg), { d: `M${f(from.x)} ${f(from.y)}L${f(aimAt.x)} ${f(aimAt.y + Math.min(rowH * 1.5, 6))}` });
     set(shape('circle', 'c-dot', svg), { cx: f(aimAt.x), cy: f(aimAt.y + Math.min(rowH * 1.5, 6)), r: 2.5 });
     set(shape('rect', 'c-call', svg), { x: f(bx), y: f(by), width: f(w), height: h, rx: 7 });
-    lines.forEach((line, k) => {
-      const text = shape('text', k ? 'c-call-text' : 'c-call-text strong', svg);
+    lines.forEach(({ line, strong }, k) => {
+      const text = shape('text', strong ? 'c-call-text strong' : 'c-call-text', svg);
       set(text, { x: f(bx + 11), y: f(by + 16 + k * 15) });
       text.textContent = line;
     });
