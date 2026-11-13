@@ -16,8 +16,7 @@
 /* The first second: the name, the sentence and the stage arrive in that order */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes arrive { from { opacity: 0; transform: translateY(10px); } }
-  .js .title h1, .js .title p, .js .title .control, .js .stage { animation: arrive .52s var(--ease) backwards; }
-  .js .title p { animation-delay: .07s; }
+  .js .title h1, .js .title .control, .js .stage { animation: arrive .52s var(--ease) backwards; }
   .js .title .control { animation-delay: .12s; }
   .js .stage { animation-delay: .14s; }
 }
