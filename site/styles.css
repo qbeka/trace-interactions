@@ -541,6 +541,10 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
   .verdicts > *:nth-child(n + 3) { border-top: 1px solid var(--line); }
   .rules th, .rules td { padding-left: 12px; padding-right: 12px; }
   .rules th:nth-child(2), .rules td:nth-child(2), .rules th:nth-child(3), .rules td:nth-child(3) { padding-left: 0; }
+  /* The verdict columns wrap instead of running out of the sheet. */
+  .rules th { white-space: normal; }
+  .mark { align-items: flex-start; white-space: normal; }
+  .mark::before { margin-top: 6px; }
   .measures { grid-template-columns: minmax(0, 1fr); }
   .tally > div { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
   .field { grid-template-columns: repeat(30, minmax(0, 1fr)); gap: 3px; }
