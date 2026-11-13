@@ -74,6 +74,11 @@ body {
 .shell { width: 100%; max-width: calc(var(--stage-width) + var(--gutter) * 2); margin: 0 auto; padding: 0 var(--gutter); }
 .topbar { display: flex; align-items: center; justify-content: space-between; height: 52px; }
 .topbar nav { display: flex; align-items: center; gap: 4px; margin-right: -8px; }
+/* With the story link the top bar holds four links, so on a phone they sit a little closer. */
+@media (max-width: 419px) {
+  .topbar nav { gap: 0; margin-right: -6px; }
+  .topbar nav .quiet { padding: 0 6px; white-space: nowrap; }
+}
 .title { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 16px; margin-bottom: 16px; }
 .title h1 { margin: 0; font: 400 40px/44px var(--serif); letter-spacing: -0.03em; }
 
