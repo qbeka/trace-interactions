@@ -172,7 +172,7 @@
 .c-call { fill: var(--paper); stroke: var(--bad); stroke-width: 1.25; }
 .c-call-text { fill: var(--bad-text); font-family: var(--sans); font-size: 12px; font-variant-numeric: tabular-nums; }
 .c-call-text.strong { font-weight: 500; font-size: 12.5px; }
-.c-axis { fill: var(--muted); font-family: var(--sans); font-size: 12px; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.c-axis { fill: var(--muted); font-family: var(--sans); font-size: 14px; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
 .c-arrow { fill: none; stroke: var(--faint); stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
 .stage[data-view='difference'] .core.bad :is(.c-veil, .c-band, .c-wedge, .c-seam) { visibility: hidden; }
 .stage[data-view='difference'] .core.bad .c-ghost { stroke: #9ad3b1; }
