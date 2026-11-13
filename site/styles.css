@@ -493,7 +493,7 @@ kbd { min-width: 20px; padding: 1px 5px; border: 1px solid var(--line-strong); b
   .pane.bad, .core.bad { grid-column: 2; }
   .spine { display: none; }
   .core.bad { grid-row: 3; }
-  .scanline .grip { left: auto; right: -4px; transform: none; }
+  .scanline .grip { left: auto; right: 4px; transform: none; }
   .scanline:active .grip { transform: scale(.96); }
   .transport { flex-wrap: wrap; gap: 8px 10px; padding: 8px 12px; }
   .now { flex: 1 1 120px; }
