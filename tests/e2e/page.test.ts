@@ -99,7 +99,7 @@ describe('project page', () => {
     await expect.poll(() => page.locator('#verdict p.on').textContent()).toContain('starts 80 px to the right');
     expect(await clock(page)).toBe('4000 ms');
     expect(await page.locator('#source').textContent()).toBe('Recorded screenshots');
-    expect(await page.locator('.title p').textContent()).toBe('Find the part where it broke');
+    expect(await page.locator('.title p').count()).toBe(0);
     expect(await page.locator('#now').textContent()).toBe('12Reopen');
     expect(await button(page, 'The jump').getAttribute('aria-pressed')).toBe('true');
     expect(await page.locator('#search').isVisible()).toBe(false);
