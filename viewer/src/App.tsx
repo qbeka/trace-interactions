@@ -104,7 +104,7 @@ function Report({ data }: { data: ReportData }) {
   return (
     <div className="page">
       <header className="masthead">
-        <span className="brand">Trace</span>
+        <a className="brand" href="../">Trace</a>
         <span className="mast-meta mast-id">{active.scenario.id}</span>
         <span className="mast-meta mast-builds">
           <span>{active.baseline.label}</span>
