@@ -149,11 +149,11 @@ body {
   .control.outline:active { background: var(--wash-strong); }
 }
 
-.control.primary { background: var(--ink); color: #fff; font-weight: 500; padding: 0 14px; }
-.control.primary:active { background: #000; }
+.control.primary { background: var(--forest); color: #fff; font-weight: 500; padding: 0 14px; }
+.control.primary:active { background: var(--forest-pressed); }
 @media (hover: hover) {
-  .control.primary:hover { background: #2a2d2a; color: #fff; }
-  .control.primary:active { background: #000; color: #fff; }
+  .control.primary:hover { background: var(--forest-hover); color: #fff; }
+  .control.primary:active { background: var(--forest-pressed); color: #fff; }
 }
 
 /* Disabled stays focusable, so that a key press never drops focus. */
@@ -164,10 +164,10 @@ body {
   .control[aria-disabled='true']:active { background: transparent; color: var(--faint); }
 }
 .control.primary[aria-busy='true'],
-.control.primary[aria-busy='true']:active { background: #2a2d2a; color: #ffffffd9; cursor: progress; }
+.control.primary[aria-busy='true']:active { background: var(--forest-hover); color: #ffffffd9; cursor: progress; }
 @media (hover: hover) {
   .control.primary[aria-busy='true']:hover,
-  .control.primary[aria-busy='true']:active { background: #2a2d2a; color: #ffffffd9; }
+  .control.primary[aria-busy='true']:active { background: var(--forest-hover); color: #ffffffd9; }
 }
 
 /* The demo has one boundary. Anything inside it uses hairlines. */
